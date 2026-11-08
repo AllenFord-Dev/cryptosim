@@ -11,7 +11,7 @@ export function DesktopAside() {
     <aside className="device-aside">
       <Wordmark size={22} />
       <h2 className="pt-6 text-[40px] font-extrabold leading-[1.04] tracking-[-0.035em] text-ink">
-        Make your first crypto mistakes with fake money.
+        Learn crypto before it costs you.
       </h2>
       <p className="pt-4 text-[16px] leading-[1.55] text-muted">
         A practice wallet and market for first-timers. Real prices, practice money, and missions that recreate the scams and slip-ups

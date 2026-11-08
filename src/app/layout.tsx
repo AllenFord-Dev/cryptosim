@@ -16,7 +16,7 @@ import { Device } from "@/components/device";
 export const metadata: Metadata = {
   title: "CryptoSim · Practice crypto safely",
   description:
-    "A practice crypto wallet and market for first-timers. Make your first mistakes here, not with your money.",
+    "Learn crypto before it costs you. A practice wallet and market for first-timers, with real prices and practice money.",
   appleWebApp: { capable: true, title: "CryptoSim", statusBarStyle: "default" },
 };
 
