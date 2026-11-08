@@ -96,7 +96,8 @@ type Action =
   | { type: "lesson"; skill: string }
   | { type: "starter" }
   | { type: "tour"; step: TourStep | null }
-  | { type: "reset" };
+  | { type: "reset" }
+  | { type: "restart" };
 
 export const todayKey = () => {
   const d = new Date();
@@ -109,6 +110,9 @@ function reducer(state: State, action: Action): State {
       return action.state;
     case "reset":
       return { ...initialState, name: state.name, onboarded: true, starterDone: true };
+    case "restart":
+      // Wipe everything, including the name, so the app opens like it does for a brand-new user.
+      return initialState;
     case "onboard":
       return { ...state, name: action.name.trim().slice(0, 20), onboarded: true, tour: state.starterDone || state.onboarded ? state.tour : "coin" };
     case "trade": {

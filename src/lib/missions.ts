@@ -1,5 +1,8 @@
 import type { SkillId } from "./skills";
 
+// Low-fee networks where USDC is common. All use the same 0x address format, which is why a wrong-network send is easy to make.
+const NETWORKS = ["Base", "Arbitrum", "Optimism", "Polygon"];
+
 export type Visual =
   | {
       type: "chat";
@@ -95,7 +98,8 @@ export const MISSIONS: MissionDef[] = [
       const friend = pick(r, ["Maya", "Jordan", "Priya", "Leo", "Sam"]);
       const amount = pick(r, [25, 40, 60]);
       const reason = pick(r, ["the concert tickets", "dinner", "the Uber", "groceries"]);
-      const network = pick(r, ["Base", "Base", "Arbitrum"]);
+      // Rotate real networks so the lesson is "ask, then match," not "pick Base."
+      const network = pick(r, NETWORKS);
       const real = address(r);
       const fakeA = poison(r, real);
       const fakeB = poison(r, real);
@@ -685,6 +689,7 @@ export const MISSIONS: MissionDef[] = [
     build: (r) => {
       const amount = pick(r, [50, 80, 120]);
       const gig = pick(r, ["the logo design", "tutoring", "the video edit", "the photo shoot"]);
+      const network = pick(r, NETWORKS);
       const mine = address(r);
       return [
         {
@@ -698,10 +703,10 @@ export const MISSIONS: MissionDef[] = [
               contact: "Client",
               messages: [{ from: "them", text: `Thanks for ${gig}! I'll pay the $${amount} in USDC. Where should I send it?` }],
             },
-            { type: "rows", title: "Your wallet · Receive", rows: [{ label: "Your Base address", value: chunk(mine), mono: true }] },
+            { type: "rows", title: "Your wallet · Receive", rows: [{ label: `Your ${network} address`, value: chunk(mine), mono: true }] },
           ],
           options: shuffle(r, [
-            { id: "both", label: "My address, plus \"USDC on Base\"", correct: true, good: "Right. Address plus network means the money lands where you can see it." },
+            { id: "both", label: `My address, plus "USDC on ${network}"`, correct: true, good: "Right. Address plus network means the money lands where you can see it." },
             {
               id: "addr",
               label: "Just my address",
@@ -730,7 +735,7 @@ export const MISSIONS: MissionDef[] = [
           prompt: "The client sends an image that says \"Payment complete.\" Your wallet still shows nothing. What do you trust?",
           visuals: [
             { type: "chat", app: "Messages", contact: "Client", messages: [{ from: "them", text: "Sent! Here's the proof. Can you send the final files now?" }, { from: "them", text: "[image: 'Payment complete']" }] },
-            { type: "rows", title: "Your wallet", rows: [{ label: "USDC on Base", value: "0.00", tone: "bad" }] },
+            { type: "rows", title: "Your wallet", rows: [{ label: `USDC on ${network}`, value: "0.00", tone: "bad" }] },
           ],
           options: shuffle(r, [
             { id: "wallet", label: "My wallet and the block explorer, not the image", correct: true, good: "Exactly. A screenshot is just a picture. The blockchain is the record." },
@@ -767,7 +772,7 @@ export const MISSIONS: MissionDef[] = [
               rows: [
                 { label: "Status", value: "Confirmed", tone: "good" },
                 { label: "Amount", value: `${amount} USDC` },
-                { label: "Network", value: "Base" },
+                { label: "Network", value: network },
                 { label: "From", value: short(address(r)), mono: true },
                 { label: "Network fee", value: "Paid by sender" },
               ],

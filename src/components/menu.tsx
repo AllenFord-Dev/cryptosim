@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { habits, useApp } from "@/lib/store";
@@ -122,7 +123,7 @@ export function MenuDrawer({
 
         <div className="mt-auto px-5 pt-6">
           <button onClick={go(onReset)} className="min-h-[44px] text-[14px] font-bold text-down">
-            Reset practice progress
+            Start over
           </button>
           <p className="pt-1 text-[12px] leading-[1.45] text-faint">
             Practice money only. Progress is saved on this device. CryptoSim isn&apos;t financial advice.
@@ -222,20 +223,32 @@ export function TradeHistorySheet({ open, onClose }: { open: boolean; onClose: (
 
 export function ResetSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { dispatch } = useApp();
+  const router = useRouter();
   return (
-    <Sheet open={open} onClose={onClose} title="Reset progress?">
+    <Sheet open={open} onClose={onClose} title="Start over?">
       <p className="text-[15px] leading-[1.5] text-body">
-        This clears your practice money, coins, missions, skills and habits on this device. You&apos;ll start over with $1,000.
+        Both options clear your practice money, coins, missions, skills and habits on this device. You&apos;ll start again with $1,000.
       </p>
       <div className="flex flex-col gap-2.5 pt-5">
+        <button
+          onClick={() => {
+            dispatch({ type: "restart" });
+            onClose();
+            router.push("/");
+          }}
+          className="btn bg-down text-white"
+        >
+          Start over as a new user
+        </button>
+        <p className="px-1 text-[12px] leading-[1.45] text-muted">Shows the welcome screen and the 2-minute first trade again.</p>
         <button
           onClick={() => {
             dispatch({ type: "reset" });
             onClose();
           }}
-          className="btn bg-down text-white"
+          className="btn btn-ghost mt-1"
         >
-          Reset everything
+          Reset progress, keep my name
         </button>
         <button onClick={onClose} className="btn btn-ghost">
           Cancel
