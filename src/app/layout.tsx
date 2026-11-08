@@ -31,8 +31,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Already set up: skip the purple launch cover before first paint. */}
-        <script dangerouslySetInnerHTML={{ __html: `try{var s=JSON.parse(localStorage.getItem("cryptosim-v2")||"null");if(s&&s.onboarded)document.documentElement.dataset.nosplash="1"}catch(e){}` }} />
+        {/* Before first paint: returning users get the launch animation once per session; otherwise skip the cover. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var s=JSON.parse(localStorage.getItem("cryptosim-v2")||"null"),d=document.documentElement;if(s&&s.onboarded){if(sessionStorage.getItem("cs-launch")==="1")d.dataset.nosplash="1";else d.dataset.launch="1"}}catch(e){}`,
+          }}
+        />
       </head>
       <body>
         <AppProvider>

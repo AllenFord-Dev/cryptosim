@@ -161,6 +161,15 @@ html[data-nosplash] .splash { display: none; }
 .welcome-name { animation: wFade 0.6s ease 0.45s both; }
 .welcome-bottom { animation: wSlide 0.7s cubic-bezier(0.22, 1, 0.36, 1) 1.25s both; }
 @media (prefers-reduced-motion: reduce) { .welcome-anim .logo-coin, .welcome-anim .logo-spark, .welcome-name, .welcome-bottom { animation: none !important; } }
+.splash-brand { display: none; }
+html[data-launch] .splash-brand { display: flex; transform-origin: 50% 28%; animation: launchZoom 0.6s cubic-bezier(0.7, 0, 0.84, 0) 1.1s forwards; }
+html[data-launch] .splash .logo-coin { animation: wDrop 0.5s cubic-bezier(0.22, 1, 0.36, 1) both; }
+html[data-launch] .splash .logo-spark { transform-box: fill-box; transform-origin: center; animation: wPop 0.4s cubic-bezier(0.22, 1, 0.36, 1) 0.4s both; }
+html[data-launch] .splash-name { animation: wFade 0.45s ease 0.3s both; }
+html[data-launch] .splash { animation: launchOut 0.25s ease 1.55s forwards; }
+@keyframes launchZoom { to { transform: scale(18); opacity: 0; } }
+@keyframes launchOut { to { opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { html[data-launch] .splash-brand, html[data-launch] .splash, html[data-launch] .splash .logo-coin, html[data-launch] .splash .logo-spark, html[data-launch] .splash-name { animation: none !important; } }
 @keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
 html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
 .splash-leave .logo-lock-wrap { animation: lockOff 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }

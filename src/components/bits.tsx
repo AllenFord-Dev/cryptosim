@@ -130,12 +130,41 @@ export const BRAND_GRADIENT =
   "radial-gradient(120% 70% at 85% 0%, rgba(160,130,255,0.55) 0%, rgba(160,130,255,0) 60%), linear-gradient(165deg, #6A3BFF 0%, #5521F5 38%, #3412B8 72%, #1D0868 100%)";
 
 // Brief launch screen, once per visit.
-// A plain purple launch screen, drawn on the server so nothing flashes while saved progress loads.
-// First-timers go straight into the animated welcome; returning users skip it (see the script in layout).
+// Launch cover, drawn on the server so nothing flashes while saved progress loads.
+// First visit: plain purple that hands straight to the animated welcome.
+// Returning users, once per session: the logo lands, then zooms through to Home (tap to skip).
+// The script in layout sets data-launch / data-nosplash before first paint.
 export function Splash() {
-  const { ready } = useApp();
-  if (ready) return null;
-  return <div aria-hidden className="splash fixed inset-0 z-[90] mx-auto max-w-[430px]" style={{ background: BRAND_GRADIENT }} />;
+  const { state, ready } = useApp();
+  const [launching] = useState(() => typeof document !== "undefined" && document.documentElement.dataset.launch === "1");
+  const [gone, setGone] = useState(false);
+  useEffect(() => {
+    if (!launching) return;
+    try {
+      sessionStorage.setItem("cs-launch", "1");
+    } catch {}
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const t = setTimeout(() => setGone(true), reduced ? 600 : 2200);
+    return () => clearTimeout(t);
+  }, [launching]);
+  if (gone || (ready && (!state.onboarded || !launching))) return null;
+  return (
+    <div
+      aria-hidden
+      onClick={() => setGone(true)}
+      onAnimationEnd={(e) => e.animationName === "launchOut" && setGone(true)}
+      className="splash fixed inset-0 z-[90] mx-auto flex max-w-[430px] items-center justify-center"
+      style={{ background: BRAND_GRADIENT }}
+    >
+      <div className="splash-brand -mt-10 flex-col items-center gap-4 text-white">
+        <LogoMark size={104} tone="light" animate />
+        <span className="splash-name text-[34px] leading-none tracking-[-0.04em]">
+          <span className="font-medium">crypto</span>
+          <span className="font-extrabold text-[#C9B8FF]">sim</span>
+        </span>
+      </div>
+    </div>
+  );
 }
 
 export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
