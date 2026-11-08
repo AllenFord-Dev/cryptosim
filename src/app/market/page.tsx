@@ -49,7 +49,7 @@ export default function Market() {
         <div className="px-5 pt-4">
           <div className="tabular text-[40px] font-extrabold leading-none tracking-[-0.04em]">{usd(p.value)}</div>
           <div className={`tabular pt-2 text-[14px] font-bold ${flat ? "text-muted" : up ? "text-up" : "text-down"}`}>
-            {flat ? "—" : up ? "▲" : "▼"} {usd(Math.abs(p.result))} ({Math.abs(p.resultPct).toFixed(1)}%) <span className="font-medium text-muted">from the market</span>
+            {flat ? "—" : up ? "▲" : "▼"} {usd(Math.abs(p.result))} ({Math.abs(p.resultPct).toFixed(Math.abs(p.resultPct) < 0.1 ? 2 : 1)}%) <span className="font-medium text-muted">from the market</span>
           </div>
           <div className="tabular pt-1 text-[14px] font-semibold text-muted">{usd(state.cash)} buying power</div>
           <div className="mt-5 flex gap-2" role="tablist" aria-label="Filter coins">

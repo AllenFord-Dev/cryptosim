@@ -56,7 +56,7 @@ export default function Home() {
               <div className="text-[14px] font-semibold text-muted">Portfolio</div>
               <div className="tabular text-[46px] font-extrabold leading-[1.05] tracking-[-0.035em]">{usd(p.value)}</div>
               <div className={`tabular text-[14px] font-bold ${Math.abs(p.result) < 0.005 ? "text-muted" : up ? "text-up" : "text-down"}`}>
-                {Math.abs(p.result) < 0.005 ? "—" : up ? "▲" : "▼"} {usd(Math.abs(p.result))} ({Math.abs(p.resultPct).toFixed(1)}%){" "}
+                {Math.abs(p.result) < 0.005 ? "—" : up ? "▲" : "▼"} {usd(Math.abs(p.result))} ({Math.abs(p.resultPct).toFixed(Math.abs(p.resultPct) < 0.1 ? 2 : 1)}%){" "}
                 <span className="font-medium text-muted">from the market</span>
               </div>
               <div className="text-[12px] font-medium text-muted">Results reflect the market, not skill</div>

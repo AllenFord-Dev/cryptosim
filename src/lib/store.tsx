@@ -339,7 +339,8 @@ export type Habit = {
 // Habits are concrete behaviors the user has shown. There is deliberately no overall score:
 // the app counts habits locked in and never implies someone is "good at crypto".
 export function habits(state: State) {
-  const trades = state.trades;
+  // Automatic recurring buys aren't choices, so they don't count toward habits.
+  const trades = state.trades.filter((t) => !t.auto);
   const sells = trades.filter((t) => t.side === "sell");
   const pay = state.missions["pay-back"];
   const rate = (good: number, total: number, min: number): HabitStatus =>

@@ -1,7 +1,7 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { PriceSource } from "@/components/bits";
 import { SparkleIcon } from "@/components/icons";
 import { useUI } from "@/components/shell";
@@ -18,7 +18,7 @@ import { useApp } from "@/lib/store";
 export default function CoinPage() {
   const { id } = useParams<{ id: string }>();
   const coin = coinById(id);
-  const { state, dispatch } = useApp();
+  const { state, dispatch, ready } = useApp();
   useEffect(() => {
     if (state.tour === "coin") dispatch({ type: "tour", step: "buy" });
   }, [state.tour, dispatch]);
@@ -26,14 +26,16 @@ export default function CoinPage() {
   const { openBuddy } = useUI();
   const [trade, setTrade] = useState<"buy" | "sell" | null>(null);
   const [recurring, setRecurring] = useState(false);
-  // Deep links from Market practice: ?buy=1, ?sell=1, ?recurring=1
+  // Deep links from Market practice: ?buy=1, ?sell=1, ?recurring=1 (applied once saved progress has loaded).
+  const linked = useRef(false);
   useEffect(() => {
+    if (!ready || linked.current) return;
+    linked.current = true;
     const q = new URLSearchParams(window.location.search);
     if (q.get("buy")) setTrade("buy");
     else if (q.get("sell") && state.holdings[id]) setTrade("sell");
     else if (q.get("recurring")) setRecurring(true);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [ready, id, state.holdings]);
   const [range, setRange] = useState<RangeKey>("1M");
   const history = useHistory(RANGES.find((r) => r.key === range)!.days, coin ? [coin.id] : []);
 
