@@ -175,9 +175,6 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
           <WelcomeArt />
         </div>
         <h1 className="anim-enter text-[36px] font-extrabold leading-[1.04] tracking-[-0.035em]">Practice crypto with real prices and fake money.</h1>
-        <p className="anim-enter pt-3 text-[16px] leading-[1.5] text-white/75">
-          Start with ${STARTING_CASH.toLocaleString()} in practice money. Make your first mistakes here, not with your savings.
-        </p>
         <button onClick={() => setStep(1)} className="btn mt-7 bg-white text-brand">
           Get started
         </button>
