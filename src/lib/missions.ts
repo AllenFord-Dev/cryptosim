@@ -110,7 +110,7 @@ export const MISSIONS: MissionDef[] = [
               app: "Messages",
               contact: friend,
               messages: [
-                { from: "them", text: `hey! can you send the $${amount} for ${reason}? USDC on ${network} works` },
+                { from: "them", text: `hey! can you send the $${amount} for ${reason}? usdc pls` },
                 { from: "them", text: "here's my address" },
                 { from: "them", text: real, mono: true },
               ],
@@ -174,26 +174,48 @@ export const MISSIONS: MissionDef[] = [
         },
         {
           id: "network",
-          kicker: "Step 3 · Pick the network",
-          prompt: `${friend} asked for USDC on ${network}. Which network do you send on?`,
-          visuals: [{ type: "note", text: "The same coin can exist on several blockchains. The sender and receiver have to use the same one." }],
-          options: shuffle(
-            r,
-            [network, "Ethereum", "Solana"].map((n) =>
-              n === network
-                ? { id: n, label: n, correct: true, good: `Yes. Matching the network ${friend} asked for means the money arrives.` }
-                : {
-                    id: n,
-                    label: n,
-                    correct: false,
-                    mistake: {
-                      title: "Wrong network",
-                      why: `${friend} is expecting USDC on ${network}. Sending on ${n} means it may never show up in their wallet, and getting it back is hard or impossible.`,
-                      real: "Wrong-network sends are one of the most common ways beginners lose money.",
-                    },
-                  },
-            ),
-          ),
+          kicker: "Step 3 · Before you hit send",
+          prompt: `Your wallet filled in the network for you. ${friend} never said which one. What do you do?`,
+          visuals: [
+            {
+              type: "rows",
+              title: "Send USDC",
+              rows: [
+                { label: "To", value: short(real), mono: true },
+                { label: "Amount", value: `${amount} USDC` },
+                { label: "Network", value: "Ethereum (default)" },
+                { label: "Network fee", value: "≈ $1.80" },
+              ],
+            },
+          ],
+          options: shuffle(r, [
+            {
+              id: "ask",
+              label: `Ask ${friend} which network they use, then match it`,
+              correct: true,
+              good: `Right. ${friend} replies "${network}!" If you'd sent on Ethereum, the money could have landed somewhere their wallet doesn't show.`,
+            },
+            {
+              id: "default",
+              label: "Send. The wallet picked it, so it must be right",
+              correct: false,
+              mistake: {
+                title: "Defaults don't know your friend",
+                why: `Your wallet picks a network for you, not for ${friend}. ${friend} uses ${network}. Sent on Ethereum, the USDC may never show up in their wallet.`,
+                real: "Wrong-network sends are one of the most common ways beginners lose money, and getting it back is hard or impossible.",
+              },
+            },
+            {
+              id: "cheap",
+              label: "Switch to the network with the lowest fee",
+              correct: false,
+              mistake: {
+                title: "Cheapest isn't the same as correct",
+                why: `Fees don't decide where the money can arrive. If you guess a network ${friend} doesn't use, the money may be stuck, even if the fee was low.`,
+                real: "Saving $1.80 in fees isn't worth risking the whole payment.",
+              },
+            },
+          ]),
         },
         {
           id: "review",
@@ -206,7 +228,7 @@ export const MISSIONS: MissionDef[] = [
               rows: [
                 { label: "To", value: short(real), mono: true },
                 { label: "Amount", value: `${amount} USDC` },
-                { label: "Network", value: network },
+                { label: "Network", value: `${network} (matched)` },
                 { label: "Network fee", value: "≈ $0.01" },
               ],
             },

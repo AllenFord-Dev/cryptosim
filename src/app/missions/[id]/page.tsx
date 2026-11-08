@@ -25,7 +25,9 @@ export default function MissionPage() {
 
 function MissionInner() {
   const { id } = useParams<{ id: string }>();
-  const prove = useSearchParams().get("mode") === "prove";
+  const params = useSearchParams();
+  const prove = params.get("mode") === "prove";
+  const starter = params.get("starter") === "1";
   const mission = missionById(id);
   const [phase, setPhase] = useState<Phase>({ kind: "intro" });
 
@@ -37,18 +39,18 @@ function MissionInner() {
       </div>
     );
   }
-  if (phase.kind === "intro") return <Intro mission={mission} prove={prove} onStart={() => setPhase({ kind: "play", seed: Date.now() })} />;
+  if (phase.kind === "intro") return <Intro mission={mission} prove={prove} starter={starter} onStart={() => setPhase({ kind: "play", seed: Date.now() })} />;
   if (phase.kind === "play")
-    return <Play key={phase.seed} mission={mission} seed={phase.seed} prove={prove} onDone={(r) => setPhase({ kind: "done", ...r })} />;
-  return <Done mission={mission} result={phase} onReplay={() => setPhase({ kind: "play", seed: Date.now() })} />;
+    return <Play key={phase.seed} mission={mission} seed={phase.seed} prove={prove} starter={starter} onDone={(r) => setPhase({ kind: "done", ...r })} />;
+  return <Done mission={mission} result={phase} starter={starter} onReplay={() => setPhase({ kind: "play", seed: Date.now() })} />;
 }
 
-function Intro({ mission, prove, onStart }: { mission: MissionDef; prove: boolean; onStart: () => void }) {
+function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prove: boolean; starter: boolean; onStart: () => void }) {
   const { state } = useApp();
   const rec = state.missions[mission.id];
   const skill = skillById(mission.skills[0])!;
   const st = skillStatus(state, skill);
-  const locked = prove ? !st.practiced : !st.learned;
+  const locked = starter ? false : prove ? !st.practiced : !st.learned;
 
   return (
     <div className="flex min-h-[var(--app-h)] flex-col">
@@ -63,7 +65,7 @@ function Intro({ mission, prove, onStart }: { mission: MissionDef; prove: boolea
           )}
         </div>
         <div className="pt-5 text-[13px] font-bold text-brand">
-          {prove ? "Prove" : "Practice"} · {skill.name} · {mission.minutes} min
+          {starter ? "Getting started · 2 of 2" : `${prove ? "Prove" : "Practice"} · ${skill.name} · ${mission.minutes} min`}
         </div>
         <h1 className="pt-1 text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{prove ? `Prove it: ${mission.title}` : mission.title}</h1>
         <p className="pt-3 text-[16px] leading-[1.5] text-muted">{mission.blurb}</p>
@@ -120,7 +122,7 @@ function Rule({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Play({ mission, seed, prove, onDone }: { mission: MissionDef; seed: number; prove: boolean; onDone: (r: Result) => void }) {
+function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; seed: number; prove: boolean; starter?: boolean; onDone: (r: Result) => void }) {
   const { state, dispatch } = useApp();
   const steps = useMemo(() => mission.build(seeded(seed)), [mission, seed]);
   const [i, setI] = useState(0);
@@ -172,6 +174,7 @@ function Play({ mission, seed, prove, onDone }: { mission: MissionDef; seed: num
       phrase: mission.flag === "phrase" ? (clean ? "kept" : "shared") : undefined,
       prove: prove ? skill : undefined,
     });
+    if (starter) dispatch({ type: "starter" });
     onDone({ mistakes, reward, loss, prove });
   };
 
@@ -278,7 +281,7 @@ function Play({ mission, seed, prove, onDone }: { mission: MissionDef; seed: num
   );
 }
 
-function Done({ mission, result, onReplay }: { mission: MissionDef; result: Result; onReplay: () => void }) {
+function Done({ mission, result, starter, onReplay }: { mission: MissionDef; result: Result; starter?: boolean; onReplay: () => void }) {
   const { state } = useApp();
   const clean = result.mistakes === 0;
   const skill = skillById(mission.skills[0])!;
@@ -328,7 +331,11 @@ function Done({ mission, result, onReplay }: { mission: MissionDef; result: Resu
         </div>
       </div>
       <div className="sticky bottom-0 flex flex-col gap-2.5 bg-bg/90 px-5 pb-[calc(16px+var(--safe-bottom))] pt-3 backdrop-blur">
-        {st.step === "prove" && !result.prove ? (
+        {starter ? (
+          <Link href="/" className="btn btn-brand">
+            You&apos;re all set · go home
+          </Link>
+        ) : st.step === "prove" && !result.prove ? (
           <Link href={nextHref} className="btn btn-brand">
             Next: prove it
           </Link>

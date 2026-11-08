@@ -23,6 +23,7 @@ export function MissionIcon({ icon, size = 44 }: { icon: MissionDef["icon"]; siz
 }
 
 export function CoinRow({ id, sub, value, change, last }: { id: string; sub: string; value: string; change: number; last?: boolean }) {
+  const coach = `coin-${id}`;
   const { quotes } = usePrices();
   const c = COINS.find((x) => x.id === id)!;
   const spark = quotes[id]?.spark ?? [];
@@ -30,6 +31,7 @@ export function CoinRow({ id, sub, value, change, last }: { id: string; sub: str
   const tone = stable || Math.abs(change) < 0.05 ? "text-muted" : change >= 0 ? "text-up" : "text-down";
   return (
     <Link
+      data-coach={coach}
       href={`/coin/${id}`}
       className={`flex items-center gap-3 py-2.5 ${last ? "" : "border-b border-line"}`}
     >
@@ -162,20 +164,6 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
   const { state, dispatch } = useApp();
   const [step, setStep] = useState(0);
   const [name, setName] = useState(state.name);
-  const slides = [
-    null,
-    {
-      kicker: "Missions",
-      title: "Make your first mistakes here.",
-      body: "Missions recreate the scams and slip-ups that cost real people real money. Mess up, and Buddy explains what happened.",
-    },
-    {
-      kicker: "Habits, not hype",
-      title: "Build the habits that keep you safe.",
-      body: "We track five safe habits, not trading wins. When you've practiced enough, you'll try one small, real send on a free test network.",
-    },
-  ];
-
   if (step === 0) {
     return (
       <div
@@ -198,59 +186,53 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
     );
   }
 
-  const s = slides[Math.min(step, 2)]!;
+  const save = (n: string) => {
+    dispatch({ type: "onboard", name: n });
+    onDone?.();
+  };
   return (
-    <div className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-white px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(24px+var(--safe-top))]">
-      <div className="flex gap-1.5 pt-2" aria-hidden>
-        {[1, 2, 3].map((i) => (
-          <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-brand" : "bg-track"}`} />
-        ))}
+    <div className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-white pb-[calc(16px+var(--safe-bottom))] pt-[calc(8px+var(--safe-top))]">
+      <div className="flex h-12 items-center justify-between px-2">
+        <button onClick={() => setStep(0)} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12111A" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M15 5l-7 7 7 7" />
+          </svg>
+        </button>
+        <button onClick={() => save("")} className="h-11 px-4 text-[15px] font-semibold text-muted">
+          Skip
+        </button>
       </div>
-      {step < 3 ? (
-        <div key={step} className="anim-enter flex flex-1 flex-col justify-center gap-4">
-          <OnboardArt step={step} />
-          <div className="text-[13px] font-bold text-brand">{s.kicker}</div>
-          <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{s.title}</h1>
-          <p className="text-[16px] leading-[1.5] text-muted">{s.body}</p>
-        </div>
-      ) : (
-        <form
-          className="anim-enter flex flex-1 flex-col justify-center gap-4"
-          onSubmit={(e) => {
-            e.preventDefault();
-            dispatch({ type: "onboard", name });
-            onDone?.();
-          }}
-        >
-          <div className="text-[13px] font-bold text-brand">Almost there</div>
-          <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">What should we call you?</h1>
-          <label className="flex flex-col gap-2">
-            <span className="text-[13px] font-bold text-muted">First name (optional, stays on this device)</span>
-            <input
-              id="onboard-name"
-              autoFocus
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              maxLength={20}
-              placeholder="Your name"
-              className="h-14 rounded-[16px] border-[1.5px] border-track bg-white px-4 text-[17px] font-semibold outline-none focus:border-brand"
-            />
+      <form
+        className="flex flex-1 flex-col px-6"
+        onSubmit={(e) => {
+          e.preventDefault();
+          save(name);
+        }}
+      >
+        <div className="anim-enter pt-4">
+          <h1 className="text-[30px] font-bold leading-[1.12] tracking-[-0.03em]">What should we call you?</h1>
+          <p className="pt-2 text-[16px] text-muted">Just a first name. It stays on this phone.</p>
+          <label htmlFor="onboard-name" className="sr-only">
+            First name
           </label>
-          <button type="submit" className="btn btn-brand mt-2">
-            {state.onboarded ? "Done" : `Start with $${STARTING_CASH.toLocaleString()} practice money`}
-          </button>
-        </form>
-      )}
-      {step < 3 && (
-        <div className="flex gap-3">
-          <button onClick={() => setStep(step - 1)} className="btn btn-ghost !w-auto px-6">
-            Back
-          </button>
-          <button onClick={() => setStep(step + 1)} className="btn btn-brand flex-1">
+          <input
+            id="onboard-name"
+            autoFocus
+            autoComplete="given-name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            maxLength={20}
+            placeholder="First name"
+            style={{ outline: "none" }}
+            className="mt-8 w-full border-b-2 border-track bg-transparent pb-2 text-[30px] font-bold tracking-[-0.02em] outline-none transition-colors placeholder:text-[#D4D1DE] focus:border-brand"
+          />
+        </div>
+        <div className="mt-auto">
+          <button type="submit" disabled={!name.trim()} className="btn btn-brand">
             Continue
           </button>
         </div>
-      )}
+      </form>
     </div>
   );
 }
@@ -282,43 +264,6 @@ function WelcomeArt() {
   );
 }
 
-function OnboardArt({ step }: { step: number }) {
-  if (step === 0)
-    return (
-      <div className="mb-4 rounded-[24px] bg-bg p-5">
-        <div className="text-[13px] font-semibold text-muted">Portfolio</div>
-        <div className="text-[38px] font-extrabold tracking-[-0.035em]">$1,000.00</div>
-        <div className="flex gap-2 pt-3">
-          {COINS.map((c) => (
-            <CoinMark key={c.id} id={c.id} size={34} />
-          ))}
-        </div>
-      </div>
-    );
-  if (step === 1)
-    return (
-      <div className="mb-4 flex flex-col gap-2 rounded-[24px] bg-bg p-5">
-        <div className="max-w-[85%] self-start rounded-[18px] rounded-bl-[6px] bg-white px-4 py-2.5 text-[14px]">
-          Hi, this is Wallet Support. Please verify your recovery phrase.
-        </div>
-        <div className="flex items-center gap-2 self-start rounded-full bg-down-soft px-3 py-1.5 text-[12px] font-bold text-down">
-          Red flag: support never asks for this
-        </div>
-      </div>
-    );
-  return (
-    <div className="mb-4 flex flex-col gap-2 rounded-[24px] bg-bg p-5">
-      {["Check fees before buying", "Ignore hype posts", "Never share your recovery phrase"].map((h, i) => (
-        <div key={h} className="flex items-center gap-3 rounded-[14px] bg-white px-3.5 py-3 text-[14px] font-bold">
-          <span className={`flex h-6 w-6 items-center justify-center rounded-full ${i < 2 ? "bg-up" : "bg-track"}`}>
-            {i < 2 && <CheckIcon size={14} color="#fff" />}
-          </span>
-          {h}
-        </div>
-      ))}
-    </div>
-  );
-}
 
 // Home's one next-step card: habit progress plus the single action that builds the next habit.
 export function HabitCard() {

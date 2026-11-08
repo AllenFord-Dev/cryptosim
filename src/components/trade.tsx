@@ -1,6 +1,8 @@
 "use client";
 
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { Coach } from "./coach";
 import { useMemo, useState } from "react";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { FEE_RATE, SPREAD_RATE, Trade, useApp } from "@/lib/store";
@@ -19,10 +21,12 @@ export function TradeSheet({
   onClose: () => void;
 }) {
   const { state, dispatch } = useApp();
+  const router = useRouter();
   const coin = coinById(coinId)!;
   const h = state.holdings[coinId];
   const maxUsd = side === "buy" ? state.cash : h ? h.qty * price * (1 - SPREAD_RATE) : 0;
-  const [amount, setAmount] = useState("");
+  const touring = state.tour === "fees" || state.tour === "confirm";
+  const [amount, setAmount] = useState(touring && side === "buy" ? "20" : "");
   const [feesOpen, setFeesOpen] = useState(false);
   const [done, setDone] = useState<Trade | null>(null);
   const usdAmt = Math.min(parseFloat(amount) || 0, maxUsd + 0.004);
@@ -41,10 +45,11 @@ export function TradeSheet({
   }, [usdAmt, price, side]);
 
   const tooMuch = (parseFloat(amount) || 0) > maxUsd + 0.004;
-  const valid = usdAmt >= 1 && !tooMuch;
+  const valid = usdAmt >= 1 && !tooMuch && !(touring && !feesOpen);
   const chips = side === "buy" ? [25, 50, 100] : [];
 
   const confirm = () => {
+    if (touring) dispatch({ type: "tour", step: "send" });
     dispatch({ type: "trade", coin: coinId, side, usd: usdAmt, price, feeChecked: feesOpen });
     const now = Date.now();
     const panic = side === "sell" && !!h && now - h.lastBuyAt < 15 * 60 * 1000 && price < h.lastBuyPrice * 0.995;
@@ -78,14 +83,30 @@ export function TradeSheet({
                 : `Heads up: you didn't open the fee details. This trade cost ${usd(done.fee + q.spread)} in fees and spread. Real apps vary a lot, so checking first is a habit worth building.`}
           </p>
         </div>
-        <div className="flex flex-col gap-2.5 pt-4">
-          <button onClick={onClose} className="btn btn-dark">
-            Done
-          </button>
-          <Link href="/skills" className="btn btn-ghost">
-            See your habits
-          </Link>
-        </div>
+        {state.tour === "send" ? (
+          <div className="mt-4 flex flex-col gap-3 rounded-[18px] bg-ink p-4 text-white">
+            <div className="text-[12px] font-bold text-white/60">One more, about 2 minutes</div>
+            <div className="text-[18px] font-bold leading-tight">Pay a friend back without falling for a look-alike address.</div>
+            <button
+              onClick={() => {
+                onClose();
+                router.push("/missions/pay-back?starter=1");
+              }}
+              className="btn bg-white text-ink"
+            >
+              Continue
+            </button>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2.5 pt-4">
+            <button onClick={onClose} className="btn btn-dark">
+              Done
+            </button>
+            <Link href="/skills" className="btn btn-ghost">
+              See your habits
+            </Link>
+          </div>
+        )}
       </Sheet>
     );
   }
@@ -144,7 +165,11 @@ export function TradeSheet({
           </span>
         </div>
         <button
-          onClick={() => setFeesOpen(!feesOpen)}
+          data-coach="fees"
+          onClick={() => {
+            if (state.tour === "fees" && !feesOpen) dispatch({ type: "tour", step: "confirm" });
+            setFeesOpen(!feesOpen);
+          }}
           aria-expanded={feesOpen}
           className="flex min-h-[52px] w-full items-center justify-between border-t border-line px-4 text-left"
         >
@@ -169,10 +194,16 @@ export function TradeSheet({
         )}
       </div>
 
-      <button disabled={!valid} onClick={confirm} className="btn btn-brand mt-5">
+      <button data-coach="confirm" disabled={!valid} onClick={confirm} className="btn btn-brand mt-5">
         {valid ? `${side === "buy" ? "Buy" : "Sell"} ${usd(usdAmt)} of ${coin.symbol}` : "Enter an amount ($1 or more)"}
       </button>
       <p className="pt-3 text-center text-[12px] text-muted">Practice money only. Nothing real is bought or sold.</p>
+      {state.tour === "fees" && (
+        <Coach target="fees" radius={14} step={3} total={3} title="Check the fees first" body="Most people skip this. Open it to see what this trade really costs." />
+      )}
+      {state.tour === "confirm" && feesOpen && (
+        <Coach target="confirm" radius={999} step={3} total={3} title="Now buy" body={`${usd(q.fee + q.spread)} goes to fees and spread. Checking that is one of your five safe habits.`} />
+      )}
     </Sheet>
   );
 }

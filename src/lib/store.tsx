@@ -23,6 +23,8 @@ export type Trade = {
 
 export type Mistake = { mission: string; title: string; why: string; at: number };
 
+export type TourStep = "coin" | "buy" | "fees" | "confirm" | "send";
+
 export type State = {
   name: string;
   onboarded: boolean;
@@ -40,6 +42,7 @@ export type State = {
   readiness: { passed: boolean; score: number; at: number } | null;
   graduation: { steps: string[]; tx: string; at: number } | null;
   starterDone: boolean;
+  tour: TourStep | null;
   lessons: Record<string, boolean>;
   proven: Record<string, boolean>;
 };
@@ -63,6 +66,7 @@ export const initialState: State = {
   readiness: null,
   graduation: null,
   starterDone: false,
+  tour: null,
   lessons: {},
   proven: {},
 };
@@ -91,6 +95,7 @@ type Action =
   | { type: "graduation-tx"; tx: string }
   | { type: "lesson"; skill: string }
   | { type: "starter" }
+  | { type: "tour"; step: TourStep | null }
   | { type: "reset" };
 
 export const todayKey = () => {
@@ -105,7 +110,7 @@ function reducer(state: State, action: Action): State {
     case "reset":
       return { ...initialState, name: state.name, onboarded: true, starterDone: true };
     case "onboard":
-      return { ...state, name: action.name.trim().slice(0, 20), onboarded: true };
+      return { ...state, name: action.name.trim().slice(0, 20), onboarded: true, tour: state.starterDone || state.onboarded ? state.tour : "coin" };
     case "trade": {
       const { coin, side, usd, price, feeChecked } = action;
       const now = Date.now();
@@ -146,7 +151,9 @@ function reducer(state: State, action: Action): State {
     case "lesson":
       return { ...state, lessons: { ...state.lessons, [action.skill]: true } };
     case "starter":
-      return { ...state, starterDone: true };
+      return { ...state, starterDone: true, tour: null };
+    case "tour":
+      return { ...state, tour: action.step };
     case "mistake":
       return { ...state, lastMistake: action.mistake };
     case "mission": {

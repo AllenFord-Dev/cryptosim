@@ -2,19 +2,18 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import { CoinRow, HabitCard, Onboarding, PriceSource, holdingSub } from "@/components/bits";
 import { BoltIcon } from "@/components/icons";
 import { HeaderButton, TabScreen, useUI } from "@/components/shell";
 import { AreaChart, RangeTabs } from "@/components/ui";
+import { Coach } from "@/components/coach";
 import { COINS, usd } from "@/lib/coins";
 import { portfolio } from "@/lib/portfolio";
 import { RANGES, RangeKey, useHistory, usePrices } from "@/lib/prices";
 import { todayKey, useApp } from "@/lib/store";
 
 export default function Home() {
-  const { state, ready } = useApp();
-  const router = useRouter();
+  const { state, ready, dispatch } = useApp();
   const { quotes } = usePrices();
   const [range, setRange] = useState<RangeKey>("1M");
   const history = useHistory(RANGES.find((r) => r.key === range)!.days, Object.keys(state.holdings));
@@ -25,8 +24,10 @@ export default function Home() {
   const up = p.result >= 0;
 
   useEffect(() => {
-    if (ready && state.onboarded && !state.starterDone) router.replace("/start");
-  }, [ready, state.onboarded, state.starterDone, router]);
+    if (!ready || !state.onboarded || state.starterDone || state.tour) return;
+    // Older progress without the starter: skip it if they've already traded, otherwise start the tour.
+    dispatch(state.trades.length ? { type: "starter" } : { type: "tour", step: "coin" });
+  }, [ready, state.onboarded, state.starterDone, state.tour, state.trades.length, dispatch]);
 
   if (ready && !state.onboarded) return <Onboarding />;
 
@@ -68,7 +69,17 @@ export default function Home() {
         </>
       }
     >
-      <HabitCard />
+      {state.tour === "send" ? (
+        <Link href="/missions/pay-back?starter=1" className="flex items-center gap-3 rounded-[20px] bg-ink p-4 text-white">
+          <div className="min-w-0 flex-1">
+            <div className="text-[12px] font-bold text-white/60">Getting started · 2 of 2</div>
+            <div className="pt-0.5 text-[16px] font-bold leading-tight">Pay a friend back safely</div>
+          </div>
+          <span className="flex h-10 items-center rounded-full bg-white px-4 text-[14px] font-bold text-ink">Start</span>
+        </Link>
+      ) : (
+        <HabitCard />
+      )}
 
       <div className="rounded-[20px] bg-white px-4 pb-1.5 pt-3.5">
         <div className="flex items-baseline justify-between pb-1">
@@ -100,6 +111,9 @@ export default function Home() {
             ))}
       </div>
       <PriceSource />
+      {state.tour === "coin" && (
+        <Coach target="coin-bitcoin" radius={14} step={1} total={3} title="Your first trade" body="Real Bitcoin price, practice money. Tap Bitcoin to start." />
+      )}
     </TabScreen>
   );
 }

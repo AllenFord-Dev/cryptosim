@@ -1,11 +1,12 @@
 "use client";
 
 import { useParams } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { PriceSource } from "@/components/bits";
 import { SparkleIcon } from "@/components/icons";
 import { useUI } from "@/components/shell";
 import { TradeSheet } from "@/components/trade";
+import { Coach } from "@/components/coach";
 import { AreaChart, CoinMark, RangeTabs, SubHeader } from "@/components/ui";
 import { coinById, pct, qtyFmt, usd } from "@/lib/coins";
 import { RANGES, RangeKey, useHistory, usePrices } from "@/lib/prices";
@@ -16,7 +17,10 @@ import { useApp } from "@/lib/store";
 export default function CoinPage() {
   const { id } = useParams<{ id: string }>();
   const coin = coinById(id);
-  const { state } = useApp();
+  const { state, dispatch } = useApp();
+  useEffect(() => {
+    if (state.tour === "coin") dispatch({ type: "tour", step: "buy" });
+  }, [state.tour, dispatch]);
   const { quotes } = usePrices();
   const { openBuddy } = useUI();
   const [trade, setTrade] = useState<"buy" | "sell" | null>(null);
@@ -103,11 +107,20 @@ export default function CoinPage() {
             Sell
           </button>
         )}
-        <button onClick={() => setTrade("buy")} className="btn btn-brand flex-1 shadow-[0_8px_24px_rgba(85,33,245,0.28)]" disabled={!q}>
+        <button
+          data-coach="buy"
+          onClick={() => {
+            if (state.tour === "buy") dispatch({ type: "tour", step: "fees" });
+            setTrade("buy");
+          }}
+          className="btn btn-brand flex-1 shadow-[0_8px_24px_rgba(85,33,245,0.28)]" disabled={!q}>
           Buy
         </button>
       </div>
 
+      {state.tour === "buy" && !trade && (
+        <Coach target="buy" radius={999} step={2} total={3} title="Tap Buy" body="You&apos;ll pick an amount next. Nothing real is bought." />
+      )}
       {q && trade && <TradeSheet coinId={coin.id} side={trade} price={q.price} onClose={() => setTrade(null)} />}
     </div>
   );
