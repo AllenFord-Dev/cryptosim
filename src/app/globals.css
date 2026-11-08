@@ -101,11 +101,11 @@ body {
 }
 
 .glass {
-  background: rgba(255, 255, 255, 0.8);
+  background: rgba(255, 255, 255, 0.94);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
-  border: 1px solid rgba(255, 255, 255, 0.75);
-  box-shadow: 0 10px 30px rgba(18, 17, 26, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(18, 17, 26, 0.06);
+  box-shadow: 0 10px 30px rgba(18, 17, 26, 0.16), 0 1px 3px rgba(18, 17, 26, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 @media (prefers-reduced-transparency: reduce) {
   .glass { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: var(--color-line); }
