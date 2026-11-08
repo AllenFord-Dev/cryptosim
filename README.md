@@ -4,6 +4,8 @@
 
 CryptoSim is a practice crypto wallet and market for first-timers (18–25). You trade real coins at live prices with practice money, play missions that recreate the scams and slip-ups that cost real people real money, and build five safe habits before trying one small, real send on a free test network.
 
+**Try it:** [cryptosim-rose.vercel.app](https://cryptosim-rose.vercel.app) (best on a phone; add it to your home screen)
+
 > Everything in CryptoSim is practice money. Nothing can be deposited, withdrawn or lost.
 
 ## Why
