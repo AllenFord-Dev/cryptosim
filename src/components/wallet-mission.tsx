@@ -28,7 +28,7 @@ export function WalletMission({
   seed: number;
   prove: boolean;
   onMistake: (m: Mistake) => void;
-  onFinish: (mistakes: number) => void;
+  onFinish: (mistakes: number, log: { step: string; ok: boolean; note?: string }[], loss: number) => void;
 }) {
   const s = useMemo(() => payBackScenario(seeded(seed)), [seed]);
   const [step, setStep] = useState<Step>("address");
@@ -40,8 +40,15 @@ export function WalletMission({
   const [mistakes, setMistakes] = useState(0);
   const [reply, setReply] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
+  // First mistake per stage, for the results screen; money "sent" by mistakes, in practice dollars.
+  const [notes, setNotes] = useState<Partial<Record<"Address" | "Network" | "Test", string>>>({});
+  const [lost, setLost] = useState(0);
 
   const miss = (r: Reveal, m: Mistake) => {
+    const stage = r.kind === "address" ? "Address" : r.kind === "network" ? "Network" : "Test";
+    const note = r.kind === "address" ? (r.how === "history" ? "Look-alike from history" : "Typed it wrong") : r.kind === "network" ? `Sent on ${r.sentOn}` : "Skipped the test";
+    setNotes((n) => (n[stage] ? n : { ...n, [stage]: note }));
+    if (r.kind !== "notest") setLost((x) => x + s.amount);
     setSheet(null);
     setReveal(r);
     setMistakes((n) => n + 1);
@@ -142,7 +149,16 @@ export function WalletMission({
         </div>
         <div className="px-5">
           {done ? (
-            <button onClick={() => onFinish(mistakes)} className="btn btn-brand">
+            <button
+              onClick={() =>
+                onFinish(
+                  mistakes,
+                  (["Address", "Network", "Test"] as const).map((st) => ({ step: st, ok: !notes[st], note: notes[st] })),
+                  lost,
+                )
+              }
+              className="btn btn-brand"
+            >
               Finish
             </button>
           ) : (

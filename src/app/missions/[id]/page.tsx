@@ -13,7 +13,8 @@ import { skillStatus } from "@/lib/progress";
 import { SkillId, skillById } from "@/lib/skills";
 import { useApp } from "@/lib/store";
 
-type Result = { mistakes: number; reward: number; loss: number; prove: boolean };
+type StepLog = { step: string; ok: boolean; note?: string };
+type Result = { mistakes: number; reward: number; loss: number; prove: boolean; log: StepLog[] };
 type Phase = { kind: "intro" } | { kind: "play"; seed: number } | ({ kind: "done" } & Result);
 
 export default function MissionPage() {
@@ -128,11 +129,11 @@ function Rule({ children }: { children: React.ReactNode }) {
 // Records the result of a finished mission (shared by the quiz-style and wallet-style missions).
 function useFinish(mission: MissionDef, prove: boolean, starter: boolean | undefined, onDone: (r: Result) => void) {
   const { state, dispatch } = useApp();
-  return (mistakes: number) => {
+  return (mistakes: number, log: StepLog[], lossOverride?: number) => {
     const clean = mistakes === 0;
     const replay = (state.missions[mission.id]?.done ?? 0) > 0;
     const reward = clean ? (replay || prove ? Math.round(mission.reward / 2) : mission.reward) : 0;
-    const loss = clean ? 0 : mission.loss;
+    const loss = lossOverride ?? (clean ? 0 : mission.loss);
     const skill = mission.skills[0] as SkillId;
     dispatch({
       type: "mission",
@@ -146,7 +147,7 @@ function useFinish(mission: MissionDef, prove: boolean, starter: boolean | undef
       prove: prove ? skill : undefined,
     });
     if (starter) dispatch({ type: "starter" });
-    onDone({ mistakes, reward, loss, prove });
+    onDone({ mistakes, reward, loss, prove, log });
   };
 }
 
@@ -173,6 +174,7 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
   const [tried, setTried] = useState<Set<string>>(new Set());
   const [mistakes, setMistakes] = useState(0);
   const [missed, setMissed] = useState(false);
+  const [misses, setMisses] = useState<Record<number, string>>({});
   const step = steps[i];
   const last = i === steps.length - 1;
   const correct = step.options.find((o) => o.correct)!;
@@ -185,6 +187,7 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
       setWrong(o);
       setTried(new Set(tried).add(o.id));
       setMistakes((m) => m + 1);
+      setMisses((ms) => (ms[i] ? ms : { ...ms, [i]: o.mistake?.title ?? "Missed" }));
       if (prove) setMissed(true);
       if (o.mistake) dispatch({ type: "mistake", mistake: { mission: mission.id, title: o.mistake.title, why: o.mistake.why, at: Date.now() } });
     }
@@ -200,7 +203,10 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
       window.scrollTo(0, 0);
       return;
     }
-    finish(mistakes);
+    finish(
+      mistakes,
+      steps.map((st, k) => ({ step: st.kicker.split("·").pop()!.trim(), ok: !misses[k], note: misses[k] })),
+    );
   };
 
   const canAdvance = !!picked || missed;
@@ -313,65 +319,72 @@ function Done({ mission, result, starter, onReplay }: { mission: MissionDef; res
   const st = skillStatus(state, skill);
   const proven = result.prove && clean;
   const nextHref = st.step === "prove" ? `/missions/${skill.prove}?mode=prove` : `/skills/${skill.id}`;
+  const title = proven ? "Skill proven" : result.prove ? "Not proven yet" : clean ? "Clean run" : `${result.mistakes} mistake${result.mistakes === 1 ? "" : "s"}`;
+  const money = result.reward - result.loss;
+  const skillState = proven || st.proven ? "Proven" : st.practiced ? "Practiced" : "Practice again for a clean run";
 
   return (
-    <div className="flex min-h-[var(--app-h)] flex-col">
-      <SubHeader back="/missions" />
-      <div className="flex flex-1 flex-col gap-3 px-4 pb-6">
-        <div className="flex flex-col items-center rounded-[28px] bg-white px-5 pb-6 pt-7 text-center">
-          <div className={`anim-pop flex h-16 w-16 items-center justify-center rounded-full ${proven ? "bg-ink" : clean ? "bg-up" : "bg-brand"}`}>
-            {proven ? <ShieldIcon size={30} color="#fff" /> : clean ? <CheckIcon size={30} color="#fff" /> : <SparkleIcon size={30} color="#fff" />}
-          </div>
-          <div className="pt-4 text-[13px] font-bold text-muted">{skill.name}</div>
-          <h1 className="pt-1 text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em]">
-            {proven ? "Skill proven" : result.prove ? "Not proven yet" : clean ? "Clean run" : `Done, with ${result.mistakes} mistake${result.mistakes === 1 ? "" : "s"}`}
-          </h1>
-          <p className="pt-2 text-[15px] leading-[1.5] text-muted">
-            {proven
-              ? "A version you'd never seen, no retries, no mistakes. You've rehearsed this moment."
-              : result.prove
-                ? "Close. Practice once more, then take the challenge again. It changes every time."
-                : clean
-                  ? "You didn't fall for anything. That counts as practiced."
-                  : "Better here than with real money. Play again for a clean run."}
-          </p>
-          <div className="mt-4 flex gap-2">
-            {result.reward > 0 && <Chip tone="good">+${result.reward} practice money</Chip>}
-            {result.loss > 0 && <Chip tone="bad">−${result.loss} practice money lost</Chip>}
-          </div>
-        </div>
-
-        <div className="rounded-[20px] bg-white p-4">
-          <div className="flex items-center gap-2 text-[16px] font-extrabold">
-            <WalletIcon size={20} color="#5521F5" /> {mission.realWallet.title}
-          </div>
-          <ul className="flex flex-col gap-2.5 pt-3">
-            {mission.realWallet.points.map((pt) => (
-              <li key={pt} className="flex gap-2.5 text-[14px] leading-[1.5] text-body">
-                <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-                {pt}
-              </li>
-            ))}
-          </ul>
-        </div>
+    <div className="anim-enter flex min-h-[var(--app-h)] flex-col bg-white pb-[calc(20px+var(--safe-bottom))] pt-[calc(6px+var(--safe-top))]">
+      <div className="flex h-12 items-center justify-between px-3">
+        <Link href="/missions" aria-label="Close" className="flex h-11 w-11 items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#12111A" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </Link>
+        <span className="text-[16px] font-bold">{mission.title}</span>
+        <span className="w-11" />
       </div>
-      <div className="sticky bottom-0 flex flex-col gap-2.5 bg-bg/90 px-5 pb-[calc(16px+var(--safe-bottom))] pt-3 backdrop-blur">
-        {starter ? (
-          <Link href="/" className="btn btn-brand">
-            You&apos;re all set · go home
-          </Link>
-        ) : st.step === "prove" && !result.prove ? (
-          <Link href={nextHref} className="btn btn-brand">
-            Next: prove it
-          </Link>
-        ) : (
-          <Link href="/missions" className="btn btn-brand">
-            Back to your path
-          </Link>
-        )}
-        <button onClick={onReplay} className="btn btn-ghost">
-          {result.prove && !clean ? "Try the challenge again" : "Play a new variation"}
-        </button>
+
+      <div className="flex flex-1 flex-col justify-center px-5 pb-6 pt-6 text-center">
+        <h1 className={`text-[40px] font-extrabold leading-none tracking-[-0.04em] ${proven || clean ? "text-ink" : "text-bad-ink"}`}>{title}</h1>
+        <p className="pt-3 text-[16px] leading-[1.4] text-body">
+          {proven
+            ? "A version you'd never seen, with no retries."
+            : result.prove
+              ? "Practice once more, then try again. It changes every time."
+              : clean
+                ? "You didn't fall for anything."
+                : "Better here than with real money."}
+        </p>
+      </div>
+
+      <div className="px-5">
+        <div className="border-t border-line">
+          {result.log.map((l) => (
+            <div key={l.step} className="flex min-h-[54px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
+              <span className="shrink-0 font-semibold text-muted">{l.step}</span>
+              <span className={`text-right font-bold ${l.ok ? "text-good-ink" : "text-bad-ink"}`}>{l.ok ? "✓ Right" : l.note}</span>
+            </div>
+          ))}
+          <div className="flex min-h-[54px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
+            <span className="font-semibold text-muted">Practice money</span>
+            <span className={`tabular font-extrabold ${money > 0 ? "text-up" : money < 0 ? "text-down" : "text-ink"}`}>
+              {money > 0 ? `+$${money}` : money < 0 ? `−$${-money}` : "$0"}
+            </span>
+          </div>
+          <div className="flex min-h-[54px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
+            <span className="shrink-0 font-semibold text-muted">{skill.name}</span>
+            <span className="text-right font-bold">{skillState}</span>
+          </div>
+        </div>
+        <div className="flex flex-col gap-2.5 pt-6">
+          {starter ? (
+            <Link href="/" className="btn btn-brand">
+              You&apos;re all set · go home
+            </Link>
+          ) : st.step === "prove" && !result.prove ? (
+            <Link href={nextHref} className="btn btn-brand">
+              Next: prove it
+            </Link>
+          ) : (
+            <Link href="/missions" className="btn btn-brand">
+              Back to your path
+            </Link>
+          )}
+          <button onClick={onReplay} className="btn btn-ghost">
+            {result.prove && !clean ? "Try the challenge again" : "Play a new variation"}
+          </button>
+        </div>
       </div>
     </div>
   );
