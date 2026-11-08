@@ -7,6 +7,7 @@ import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { habits, useApp } from "@/lib/store";
 import { BoltIcon, ChevronIcon, CloseIcon, ExternalIcon, HistoryIcon, InfoIcon, ShieldIcon, SparkleIcon } from "./icons";
 import { Sheet } from "./ui";
+import { ThemeChoice, useTheme } from "@/lib/theme";
 
 export const PROJECT_URL = "https://github.com/AllenFord-Dev/cryptosim";
 
@@ -60,7 +61,7 @@ export function MenuDrawer({
         role="dialog"
         aria-modal="true"
         aria-label="Menu"
-        className="anim-drawer absolute inset-y-0 left-0 flex w-[86%] max-w-[350px] flex-col overflow-y-auto bg-white pb-[calc(20px+var(--safe-bottom))] pt-[calc(12px+var(--safe-top))] outline-none"
+        className="anim-drawer absolute inset-y-0 left-0 flex w-[86%] max-w-[350px] flex-col overflow-y-auto bg-card pb-[calc(20px+var(--safe-bottom))] pt-[calc(12px+var(--safe-top))] outline-none"
       >
         <div className="flex items-center justify-between px-5 pt-1">
           <span className="text-[13px] font-bold text-muted">Menu</span>
@@ -121,6 +122,8 @@ export function MenuDrawer({
           <Item icon={<ExternalIcon size={18} />} label="About this project" href={PROJECT_URL} external onClick={onClose} />
         </nav>
 
+        <Appearance />
+
         <div className="mt-auto px-5 pt-6">
           <button onClick={go(onReset)} className="min-h-[44px] text-[14px] font-bold text-down">
             Start over
@@ -161,7 +164,7 @@ function Item({
     <>
       <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-brand-soft text-brand">{icon}</span>
       <span className="flex-1">{label}</span>
-      <ChevronIcon color="#C9C6D4" />
+      <ChevronIcon color="var(--color-faint)" />
     </>
   );
   if (href && external)
@@ -263,5 +266,34 @@ export function MenuIcon({ size = 22 }: { size?: number }) {
     <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" aria-hidden>
       <path d="M4 7h16M4 12h16M4 17h16" />
     </svg>
+  );
+}
+
+function Appearance() {
+  const { choice, set } = useTheme();
+  const opts: { id: ThemeChoice; label: string }[] = [
+    { id: "auto", label: "Automatic" },
+    { id: "light", label: "Light" },
+    { id: "dark", label: "Dark" },
+  ];
+  return (
+    <div className="px-5 pt-5">
+      <div className="pb-2 text-[14px] font-bold text-muted" id="appearance">
+        Appearance
+      </div>
+      <div role="radiogroup" aria-labelledby="appearance" className="grid grid-cols-3 gap-1 rounded-full bg-bg p-1">
+        {opts.map((o) => (
+          <button
+            key={o.id}
+            role="radio"
+            aria-checked={choice === o.id}
+            onClick={() => set(o.id)}
+            className={`min-h-[38px] rounded-full text-[14px] font-bold ${choice === o.id ? "bg-card text-ink shadow-[0_1px_4px_rgba(0,0,0,0.12)]" : "text-muted"}`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

@@ -31,6 +31,41 @@
   --color-bad-soft: #fef3f2;
 }
 
+
+/* Dark mode: same tokens, darker surfaces, lighter purple and brighter red/green so they stay readable on black. */
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --color-bg: #0b0a10;
+  --color-card: #15141c;
+  --color-ink: #f3f1f9;
+  --color-body: #d4d1de;
+  --color-muted: #9d99ad;
+  --color-faint: #6e6a7e;
+  --color-line: #24222f;
+  --color-track: #2c2938;
+  --color-brand: #7457ff;
+  --color-brand-dark: #b8a6ff;
+  --color-brand-soft: #2a2147;
+  --color-brand-tint: #1d1733;
+  --color-up: #3dd68c;
+  --color-up-soft: #10261b;
+  --color-down: #ff7a5c;
+  --color-down-soft: #2e1712;
+  --color-good: #2fbf71;
+  --color-good-ink: #3dd68c;
+  --color-good-soft: #10261b;
+  --color-bad: #f0544a;
+  --color-bad-ink: #ff8178;
+  --color-bad-soft: #331513;
+}
+html[data-theme="dark"], html[data-theme="dark"] body { background: #08070c; }
+html[data-theme="dark"] .glass { background: rgba(28, 26, 37, 0.94); border-color: rgba(255, 255, 255, 0.06); box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.05); }
+@media (min-width: 1024px) and (min-height: 660px) and (hover: hover) {
+  html[data-theme="dark"] body { background: radial-gradient(1200px 700px at 70% 40%, #1a1630 0%, #0b0a10 60%); }
+}
+
+:root { --coach-bg: #16151e; }
+html[data-theme="dark"] { --coach-bg: #2b2838; }
 :root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --app-h: 100dvh; }
 
 /* Device frame: invisible on phones, a realistic iPhone on laptops. */
@@ -50,12 +85,12 @@
   .device-btn-up { left: -3px; top: 205px; height: 62px; }
   .device-btn-down { left: -3px; top: 280px; height: 62px; }
   .device-btn-power { right: -3px; top: 240px; height: 96px; }
-  .device-screen { display: block; position: relative; width: 390px; height: 844px; border-radius: 55px; overflow: hidden; transform: translateZ(0); background: #F2F2F2; }
+  .device-screen { display: block; position: relative; width: 390px; height: 844px; border-radius: 55px; overflow: hidden; transform: translateZ(0); background: var(--color-bg); }
   .app-scroll { display: block; height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; --app-h: 844px; --safe-top: 47px; --safe-bottom: 20px; }
   .app-scroll::-webkit-scrollbar { display: none; }
-  .device-status { display: flex; position: absolute; z-index: 80; top: 0; left: 0; right: 0; height: 47px; padding: 4px 30px 0 46px; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px; color: #12111A; pointer-events: none; }
+  .device-status { display: flex; position: absolute; z-index: 80; top: 0; left: 0; right: 0; height: 47px; padding: 4px 30px 0 46px; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px; color: var(--color-ink); pointer-events: none; }
   .device-island { display: block; position: absolute; z-index: 81; top: 11px; left: 50%; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; pointer-events: none; }
-  .device-home { display: block; position: absolute; z-index: 81; bottom: 8px; left: 50%; width: 136px; height: 5px; margin-left: -68px; border-radius: 3px; background: #12111A; pointer-events: none; }
+  .device-home { display: block; position: absolute; z-index: 81; bottom: 8px; left: 50%; width: 136px; height: 5px; margin-left: -68px; border-radius: 3px; background: var(--color-ink); pointer-events: none; }
 }
 @media (min-width: 1024px) and (max-height: 940px) and (hover: hover) { .device { --device-scale: 0.9; } }
 @media (min-width: 1024px) and (max-height: 840px) and (hover: hover) { .device { --device-scale: 0.8; } }
@@ -87,11 +122,11 @@ body {
 .btn:disabled { opacity: 0.4; pointer-events: none; }
 .btn-brand { background: var(--color-brand); color: #fff; }
 .btn-brand:hover { background: var(--color-brand-dark); }
-.btn-dark { background: var(--color-ink); color: #fff; }
-.btn-ghost { background: #fff; color: var(--color-ink); border: 1.5px solid #dcd9e5; }
+.btn-dark { background: var(--color-ink); color: var(--color-card); }
+.btn-ghost { background: var(--color-card); color: var(--color-ink); border: 1.5px solid var(--color-track); }
 
 .option {
-  background: #fff;
+  background: var(--color-card);
   border: 1.5px solid var(--color-track);
   border-radius: 18px;
   text-align: left;
@@ -108,7 +143,7 @@ body {
   box-shadow: 0 10px 30px rgba(18, 17, 26, 0.16), 0 1px 3px rgba(18, 17, 26, 0.06), inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 @media (prefers-reduced-transparency: reduce) {
-  .glass { background: #fff; backdrop-filter: none; -webkit-backdrop-filter: none; border-color: var(--color-line); }
+  .glass { background: var(--color-card); backdrop-filter: none; -webkit-backdrop-filter: none; border-color: var(--color-line); }
 }
 
 :focus-visible { outline: 3px solid var(--color-brand); outline-offset: 2px; }

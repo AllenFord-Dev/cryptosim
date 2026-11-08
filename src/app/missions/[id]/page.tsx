@@ -63,7 +63,7 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
         <div className="relative overflow-hidden rounded-[24px]">
           <MissionCover id={mission.id} />
           {prove && (
-            <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[12px] font-bold text-white">
+            <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[12px] font-bold text-card">
               <ShieldIcon size={14} color="#fff" /> Prove it
             </span>
           )}
@@ -74,7 +74,7 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
         <h1 className="pt-1 text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{prove ? `Prove it: ${mission.title}` : mission.title}</h1>
         <p className="pt-3 text-[16px] leading-[1.5] text-muted">{mission.blurb}</p>
 
-        <div className="mt-5 flex flex-col gap-2.5 rounded-[20px] bg-white p-4">
+        <div className="mt-5 flex flex-col gap-2.5 rounded-[20px] bg-card p-4">
           {prove ? (
             <>
               <Rule>A new version you haven&apos;t seen.</Rule>
@@ -91,11 +91,11 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
         </div>
 
         <div className="mt-3 grid grid-cols-2 gap-2.5">
-          <div className="rounded-[16px] bg-white px-4 py-3">
+          <div className="rounded-[16px] bg-card px-4 py-3">
             <div className="text-[12px] font-semibold text-muted">Clean run</div>
             <div className="text-[17px] font-extrabold text-up">+${mission.reward}</div>
           </div>
-          <div className="rounded-[16px] bg-white px-4 py-3">
+          <div className="rounded-[16px] bg-card px-4 py-3">
             <div className="text-[12px] font-semibold text-muted">If you slip</div>
             <div className="text-[17px] font-extrabold text-down">{mission.loss ? `−$${mission.loss}` : "Lesson only"}</div>
           </div>
@@ -225,7 +225,7 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
       <div className="px-5">
         <div className="flex gap-1.5" aria-hidden>
           {steps.map((s, k) => (
-            <span key={s.id} className={`h-1.5 flex-1 rounded-full ${k < i || (k === i && canAdvance) ? (prove ? "bg-ink" : "bg-brand") : k === i ? "bg-brand/40" : "bg-[#E2E0EA]"}`} />
+            <span key={s.id} className={`h-1.5 flex-1 rounded-full ${k < i || (k === i && canAdvance) ? (prove ? "bg-ink" : "bg-brand") : k === i ? "bg-brand/40" : "bg-track"}`} />
           ))}
         </div>
       </div>
@@ -263,13 +263,13 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
           })}
         </div>
         {picked && (
-          <div className="anim-enter rounded-[18px] bg-white p-4">
+          <div className="anim-enter rounded-[18px] bg-card p-4">
             <div className="text-[13px] font-bold text-up">Good call</div>
             <p className="pt-1 text-[14px] leading-[1.5] text-body">{picked.good}</p>
           </div>
         )}
         {missed && !wrong && (
-          <div className="anim-enter rounded-[18px] bg-white p-4">
+          <div className="anim-enter rounded-[18px] bg-card p-4">
             <div className="text-[13px] font-bold text-down">Not this time</div>
             <p className="pt-1 text-[14px] leading-[1.5] text-body">{correct.good}</p>
           </div>
@@ -291,12 +291,12 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
             <h2 className="text-[24px] font-extrabold leading-[1.15] tracking-[-0.02em]">{wrong.mistake.title}</h2>
             <div className="rounded-[18px] bg-bg p-4">
               <div className="flex items-center gap-2 text-[13px] font-bold text-brand">
-                <SparkleIcon size={16} color="#5521F5" /> Buddy explains
+                <SparkleIcon size={16} color="var(--color-brand)" /> Buddy explains
               </div>
               <p className="pt-1 text-[15px] leading-[1.5] text-body">{wrong.mistake.why}</p>
             </div>
             <div className="flex gap-3 rounded-[18px] border border-line p-4">
-              <WalletIcon size={20} color="#C4320A" />
+              <WalletIcon size={20} color="var(--color-down)" />
               <div>
                 <div className="text-[13px] font-bold text-down">In a real wallet</div>
                 <p className="pt-0.5 text-[14px] leading-[1.5] text-body">{wrong.mistake.real}</p>
@@ -324,10 +324,10 @@ function Done({ mission, result, starter, onReplay }: { mission: MissionDef; res
   const skillState = proven || st.proven ? "Proven" : st.practiced ? "Practiced" : "Practice again for a clean run";
 
   return (
-    <div className="anim-enter flex min-h-[var(--app-h)] flex-col bg-white pb-[calc(20px+var(--safe-bottom))] pt-[calc(6px+var(--safe-top))]">
+    <div className="anim-enter flex min-h-[var(--app-h)] flex-col bg-card pb-[calc(20px+var(--safe-bottom))] pt-[calc(6px+var(--safe-top))]">
       <div className="flex h-12 items-center justify-between px-3">
         <Link href="/missions" aria-label="Close" className="flex h-11 w-11 items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#12111A" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         </Link>

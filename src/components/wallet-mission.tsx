@@ -252,7 +252,7 @@ export function WalletMission({
       {sheet === "review" && (
         <div className="fixed inset-0 z-50">
           <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.42)]" onClick={() => setSheet(null)} />
-          <div className="anim-sheet absolute inset-x-0 bottom-0 mx-auto max-w-[430px] rounded-t-[28px] bg-white px-5 pb-[calc(20px+var(--safe-bottom))] pt-3">
+          <div className="anim-sheet absolute inset-x-0 bottom-0 mx-auto max-w-[430px] rounded-t-[28px] bg-card px-5 pb-[calc(20px+var(--safe-bottom))] pt-3">
             <div className="mx-auto mb-4 h-1.5 w-10 rounded-full bg-track" />
             <div className="text-[20px] font-extrabold tracking-[-0.02em]">Review</div>
             <div className="mt-3 border-t border-line">
@@ -374,10 +374,10 @@ function RevealScreen({
 
 function Shell({ title, n, children }: { title: string; n?: number; children: React.ReactNode }) {
   return (
-    <div className="anim-enter flex min-h-[var(--app-h)] flex-col bg-white pb-[calc(20px+var(--safe-bottom))] pt-[calc(6px+var(--safe-top))]">
+    <div className="anim-enter flex min-h-[var(--app-h)] flex-col bg-card pb-[calc(20px+var(--safe-bottom))] pt-[calc(6px+var(--safe-top))]">
       <div className="flex h-12 items-center justify-between px-3">
         <Link href="/missions" aria-label="Leave mission" className="flex h-11 w-11 items-center justify-center">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#12111A" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
         </Link>
@@ -391,7 +391,7 @@ function Shell({ title, n, children }: { title: string; n?: number; children: Re
 
 function Notif({ from, text, address }: { from: string; text: string; address?: string }) {
   return (
-    <div key={text} className="notif-in mx-3 mt-1 flex gap-3 rounded-[22px] bg-[#F2F1F6] px-3.5 py-3">
+    <div key={text} className="notif-in mx-3 mt-1 flex gap-3 rounded-[22px] bg-bg px-3.5 py-3">
       <span className="flex h-[34px] w-[34px] shrink-0 items-center justify-center rounded-[9px] bg-[#34C759]">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden>
           <path d="M12 3C6.5 3 2 6.6 2 11c0 2.4 1.3 4.6 3.4 6.1L4.5 21l4.2-2.2c1 .3 2.2.4 3.3.4 5.5 0 10-3.6 10-8.1S17.5 3 12 3z" />
@@ -467,7 +467,7 @@ function Buddy({ children }: { children: React.ReactNode }) {
   return (
     <div className="my-4 rounded-[16px] bg-brand-tint px-3.5 py-3 text-[15px] leading-[1.42] text-body [&_b]:font-extrabold [&_b]:text-ink">
       <div className="flex items-center gap-1.5 pb-1 text-[13px] font-extrabold text-brand">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="#5521F5" aria-hidden>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="var(--color-brand)" aria-hidden>
           <path d="M12 2l2.2 6.3 6.3 2.2-6.3 2.2L12 19l-2.2-6.3-6.3-2.2 6.3-2.2z" />
         </svg>
         Buddy
@@ -482,11 +482,11 @@ function ActionSheet({ title, onCancel, children }: { title: string; onCancel: (
     <div className="fixed inset-0 z-50">
       <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.38)]" onClick={onCancel} />
       <div className="anim-sheet absolute inset-x-0 bottom-0 mx-auto max-w-[430px] px-2.5 pb-[calc(10px+var(--safe-bottom))]">
-        <div className="overflow-hidden rounded-[18px] bg-[#FAFAFC]">
-          <div className="border-b border-[#E6E4EC] px-4 py-3.5 text-center text-[13.5px] font-semibold text-muted">{title}</div>
+        <div className="overflow-hidden rounded-[18px] bg-card">
+          <div className="border-b border-line px-4 py-3.5 text-center text-[13.5px] font-semibold text-muted">{title}</div>
           {children}
         </div>
-        <button onClick={onCancel} className="mt-2 w-full rounded-[18px] bg-white py-4 text-[18px] font-extrabold text-brand-dark">
+        <button onClick={onCancel} className="mt-2 w-full rounded-[18px] bg-card py-4 text-[18px] font-extrabold text-brand-dark">
           Cancel
         </button>
       </div>
@@ -496,7 +496,7 @@ function ActionSheet({ title, onCancel, children }: { title: string; onCancel: (
 
 function SheetOption({ onClick, sub, mono, children }: { onClick: () => void; sub?: string; mono?: boolean; children: React.ReactNode }) {
   return (
-    <button onClick={onClick} className="block w-full border-b border-[#E6E4EC] px-4 py-3.5 text-center last:border-0 active:bg-[#EEEDF3]">
+    <button onClick={onClick} className="block w-full border-b border-line px-4 py-3.5 text-center last:border-0 active:bg-track">
       <span className="block text-[18px] font-semibold text-brand-dark">{children}</span>
       {sub && <span className={`block pt-0.5 text-[13px] text-muted ${mono ? "font-mono" : ""}`}>{sub}</span>}
     </button>

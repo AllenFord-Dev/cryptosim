@@ -71,12 +71,12 @@ export function Coach({ target, title, body, step, total, radius = 20 }: { targe
       />
       <div
         role="status"
-        className="anim-enter fixed z-[72] w-[290px] rounded-[18px] bg-[#16151E] px-4 pb-4 pt-3.5 text-white shadow-[0_20px_44px_-14px_rgba(0,0,0,0.6)]"
+        className="anim-enter fixed z-[72] w-[290px] rounded-[18px] bg-[var(--coach-bg)] px-4 pb-4 pt-3.5 text-white shadow-[0_20px_44px_-14px_rgba(0,0,0,0.6)]"
         style={{ left: tipLeft, ...(below ? { top: box.y + box.h + 14 } : { bottom: view.h - box.y + 14 }) }}
       >
         <span
           aria-hidden
-          className="absolute h-3.5 w-3.5 rotate-45 rounded-[3px] bg-[#16151E]"
+          className="absolute h-3.5 w-3.5 rotate-45 rounded-[3px] bg-[var(--coach-bg)]"
           style={{ left: arrowLeft, ...(below ? { top: -6 } : { bottom: -6 }) }}
         />
         <div className="flex items-center gap-1.5" aria-label={`Step ${step} of ${total}`}>

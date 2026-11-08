@@ -48,7 +48,7 @@ function RestartButton() {
         dispatch({ type: "restart" });
         router.push("/");
       }}
-      className="mt-5 inline-flex min-h-[40px] items-center gap-2 self-start rounded-full border border-line bg-white px-4 text-[14px] font-bold text-ink hover:border-brand"
+      className="mt-5 inline-flex min-h-[40px] items-center gap-2 self-start rounded-full border border-line bg-card px-4 text-[14px] font-bold text-ink hover:border-brand"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="M3 12a9 9 0 1 0 3-6.7" />

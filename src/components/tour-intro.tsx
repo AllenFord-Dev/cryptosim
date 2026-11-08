@@ -18,9 +18,9 @@ export function TourIntro({ onStart }: { onStart: () => void }) {
   return (
     <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="Your first trade">
       <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.45)]" />
-      <div className="anim-sheet absolute inset-x-2 bottom-2 mx-auto max-w-[414px] rounded-[34px] bg-white px-5 pb-[calc(20px+var(--safe-bottom))] pt-5">
-        <div className="relative h-[232px] overflow-hidden rounded-[24px] bg-[#F4F2FA]" aria-hidden>
-          <span className="absolute bottom-10 left-[42px] top-14 border-l-2 border-dashed border-[#D6D1E6]" />
+      <div className="anim-sheet absolute inset-x-2 bottom-2 mx-auto max-w-[414px] rounded-[34px] bg-card px-5 pb-[calc(20px+var(--safe-bottom))] pt-5">
+        <div className="relative h-[232px] overflow-hidden rounded-[24px] bg-brand-tint" aria-hidden>
+          <span className="absolute bottom-10 left-[42px] top-14 border-l-2 border-dashed border-track" />
           <Frag className="left-4 top-5 w-[240px]">
             <CoinMark id="bitcoin" size={34} />
             <span>
@@ -35,7 +35,7 @@ export function TourIntro({ onStart }: { onStart: () => void }) {
             </span>
             <span className="text-[12px] font-extrabold text-up">Checked</span>
           </Frag>
-          <Frag className="left-7 top-[162px] w-[260px] !bg-ink text-white">
+          <Frag className="left-7 top-[162px] w-[260px] !bg-[#12111A] text-white">
             <span>
               <span className="block text-[12px] text-white/60">Practice trade</span>
               <b className="block text-[14px] font-extrabold">Bought ${TRADE} of BTC</b>
@@ -56,7 +56,7 @@ export function TourIntro({ onStart }: { onStart: () => void }) {
 
 function Frag({ className, children }: { className: string; children: React.ReactNode }) {
   return (
-    <div className={`absolute flex items-center gap-2.5 rounded-[16px] bg-white px-3.5 py-3 shadow-[0_10px_26px_-12px_rgba(30,20,70,0.35)] ${className}`}>
+    <div className={`absolute flex items-center gap-2.5 rounded-[16px] bg-card px-3.5 py-3 shadow-[0_10px_26px_-12px_rgba(30,20,70,0.35)] ${className}`}>
       {children}
     </div>
   );

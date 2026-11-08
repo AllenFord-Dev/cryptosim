@@ -67,7 +67,7 @@ function BuddySheet({ open, topic, onClose }: { open: boolean; topic?: string; o
       title={
         <span className="flex items-center gap-2.5">
           <span className="flex h-9 w-9 items-center justify-center rounded-full bg-brand-soft">
-            <SparkleIcon size={20} color="#5521F5" />
+            <SparkleIcon size={20} color="var(--color-brand)" />
           </span>
           Buddy
         </span>
@@ -100,7 +100,7 @@ function BuddySheet({ open, topic, onClose }: { open: boolean; topic?: string; o
                   onClick={() => setExpanded(isOpen ? "" : a.id)}
                 >
                   {a.q}
-                  <ChevronIcon className={`shrink-0 transition-transform ${isOpen ? "rotate-90" : ""}`} color="#A3A0AE" />
+                  <ChevronIcon className={`shrink-0 transition-transform ${isOpen ? "rotate-90" : ""}`} color="var(--color-faint)" />
                 </button>
                 {isOpen && <p className="px-4 pb-4 text-[14px] leading-[1.5] text-body">{a.a}</p>}
               </div>
@@ -138,7 +138,7 @@ export function TabBar() {
                 href={t.href}
                 aria-current={active ? "page" : undefined}
                 className={`flex h-[54px] flex-col items-center justify-center gap-[3px] rounded-full text-[11px] transition-colors ${
-                  active ? "bg-[rgba(85,33,245,0.12)] font-bold text-brand" : "font-semibold text-[#8A8796]"
+                  active ? "bg-[rgba(85,33,245,0.12)] font-bold text-brand" : "font-semibold text-muted"
                 }`}
               >
                 {t.href === "/" ? <HomeIcon filled={active} size={20} /> : <Icon size={22} />}
@@ -152,7 +152,7 @@ export function TabBar() {
           aria-label="Ask Buddy"
           className="glass flex h-[66px] w-[66px] shrink-0 items-center justify-center rounded-full"
         >
-          <SparkleIcon color="#5521F5" />
+          <SparkleIcon color="var(--color-brand)" />
         </button>
       </div>
     </div>
@@ -173,8 +173,8 @@ export function TabScreen({
   tone?: "gray" | "white";
 }) {
   return (
-    <div className={`min-h-[var(--app-h)] pb-[120px] ${tone === "white" ? "bg-white" : ""}`}>
-      <div className={`bg-white pb-1.5 pt-[calc(12px+var(--safe-top))] ${tone === "white" ? "" : "rounded-b-[28px]"}`}>
+    <div className={`min-h-[var(--app-h)] pb-[120px] ${tone === "white" ? "bg-card" : ""}`}>
+      <div className={`bg-card pb-1.5 pt-[calc(12px+var(--safe-top))] ${tone === "white" ? "" : "rounded-b-[28px]"}`}>
         <div className="flex items-center justify-between px-5 pt-1">
           <div className="flex items-center gap-2.5">
             <HeaderMenuButton />

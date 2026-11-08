@@ -18,7 +18,7 @@ function VisualBlock({ v }: { v: Visual }) {
   switch (v.type) {
     case "chat":
       return (
-        <div className="overflow-hidden rounded-[20px] bg-white">
+        <div className="overflow-hidden rounded-[20px] bg-card">
           <div className="flex items-center gap-3 border-b border-line px-4 py-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-full bg-bg text-[14px] font-extrabold text-muted">
               {v.contact.charAt(0)}
@@ -52,7 +52,7 @@ function VisualBlock({ v }: { v: Visual }) {
       );
     case "post":
       return (
-        <div className="rounded-[20px] bg-white p-4">
+        <div className="rounded-[20px] bg-card p-4">
           <div className="flex items-center gap-2.5">
             <div className="flex h-10 w-10 items-center justify-center rounded-full bg-[#FFE7C2] text-[16px]">🚀</div>
             <div className="min-w-0 flex-1">
@@ -69,7 +69,7 @@ function VisualBlock({ v }: { v: Visual }) {
       );
     case "rows":
       return (
-        <div className="rounded-[20px] bg-white px-4 py-3">
+        <div className="rounded-[20px] bg-card px-4 py-3">
           <div className="pb-1 text-[13px] font-bold text-muted">{v.title}</div>
           {v.rows.map((r, k) => (
             <div key={k} className={`flex items-start justify-between gap-4 py-2 ${k ? "border-t border-line" : ""}`}>
@@ -88,13 +88,13 @@ function VisualBlock({ v }: { v: Visual }) {
     case "phrase": {
       const form = v.words.every((w) => w === "");
       return (
-        <div className={`rounded-[20px] p-4 ${form ? "border-[1.5px] border-dashed border-down/50 bg-down-soft" : "bg-white"}`}>
+        <div className={`rounded-[20px] p-4 ${form ? "border-[1.5px] border-dashed border-down/50 bg-down-soft" : "bg-card"}`}>
           <div className={`pb-3 text-[13px] font-bold ${form ? "text-down" : "text-muted"}`}>{v.title}</div>
           <div className="grid grid-cols-3 gap-2">
             {v.words.map((w, k) => {
               const hidden = v.hidden?.includes(k);
               return (
-                <div key={k} className={`flex h-9 items-center gap-1.5 rounded-[10px] px-2 text-[13px] font-bold ${form ? "bg-white/70" : "bg-bg"}`}>
+                <div key={k} className={`flex h-9 items-center gap-1.5 rounded-[10px] px-2 text-[13px] font-bold ${form ? "bg-card/70" : "bg-bg"}`}>
                   <span className="text-[11px] text-faint">{k + 1}</span>
                   {form ? <span className="h-0.5 flex-1 rounded bg-track" /> : hidden ? <span className="tracking-widest text-faint">•••••</span> : w}
                 </div>
@@ -107,7 +107,7 @@ function VisualBlock({ v }: { v: Visual }) {
     }
     case "drop":
       return (
-        <div className="rounded-[20px] bg-white p-4">
+        <div className="rounded-[20px] bg-card p-4">
           <div className="flex items-baseline justify-between">
             <span className="text-[15px] font-extrabold">{v.coin}</span>
             <span className="text-[15px] font-extrabold text-down">{v.change}</span>

@@ -75,7 +75,7 @@ export default function Market() {
                 aria-selected={filter === f.id}
                 onClick={() => setFilter(f.id)}
                 className={`h-9 shrink-0 rounded-full px-4 text-[14px] font-bold transition-colors ${
-                  filter === f.id ? "bg-ink text-white" : "bg-bg text-ink"
+                  filter === f.id ? "bg-ink text-card" : "bg-bg text-ink"
                 }`}
               >
                 {f.label}
@@ -168,8 +168,8 @@ export default function Market() {
           onClick={() => openBuddy("volatile")}
           className="flex w-full items-center gap-3 rounded-[18px] bg-brand-tint px-4 py-3.5 text-left"
         >
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
-            <SparkleIcon size={20} color="#5521F5" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card">
+            <SparkleIcon size={20} color="var(--color-brand)" />
           </span>
           <span className="flex-1">
             <span className="block text-[15px] font-bold">Why do prices swing so much?</span>

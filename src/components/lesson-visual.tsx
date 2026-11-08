@@ -10,7 +10,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
         <div className={box}>
           <div className="grid grid-cols-3 gap-1.5">
             {["maple", "orbit", "candle", "river", "frost", "tiger", "velvet", "harbor", "pixel", "meadow", "lantern", "cobalt"].map((w, k) => (
-              <span key={w} className="flex h-8 items-center gap-1.5 rounded-[10px] bg-white px-2 text-[12px] font-bold">
+              <span key={w} className="flex h-8 items-center gap-1.5 rounded-[10px] bg-card px-2 text-[12px] font-bold">
                 <span className="text-[10px] text-faint">{k + 1}</span>
                 {w}
               </span>
@@ -35,9 +35,9 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
             ["Ethereum", false],
             ["Solana", false],
           ].map(([n, ok]) => (
-            <div key={n as string} className={`flex items-center justify-between rounded-[14px] bg-white px-4 py-3 text-[14px] font-bold ${ok ? "ring-2 ring-up" : "opacity-60"}`}>
+            <div key={n as string} className={`flex items-center justify-between rounded-[14px] bg-card px-4 py-3 text-[14px] font-bold ${ok ? "ring-2 ring-up" : "opacity-60"}`}>
               USDC on {n as string}
-              {ok ? <CheckIcon size={16} color="#0F7B4F" /> : <span className="text-[12px] text-down">may never arrive</span>}
+              {ok ? <CheckIcon size={16} color="var(--color-up)" /> : <span className="text-[12px] text-down">may never arrive</span>}
             </div>
           ))}
         </div>
@@ -53,7 +53,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
     case "receive":
       return (
         <div className={box}>
-          <div className="rounded-[16px] bg-white p-4">
+          <div className="rounded-[16px] bg-card p-4">
             <div className="text-[12px] font-bold text-muted">Send this to the payer</div>
             <div className="pt-1 font-mono text-[13px] font-bold">0x4c1e 88a0 … 9f2b</div>
             <div className="pt-1 text-[14px] font-extrabold text-brand">USDC on Base</div>
@@ -71,7 +71,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
       return (
         <div className={box}>
           {["Last chance!", "Only 30 minutes left", "Before it's too late"].map((t) => (
-            <span key={t} className="self-start rounded-full bg-white px-3.5 py-2 text-[14px] font-bold text-down">
+            <span key={t} className="self-start rounded-full bg-card px-3.5 py-2 text-[14px] font-bold text-down">
               {t}
             </span>
           ))}
@@ -80,7 +80,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
     case "dm":
       return (
         <div className={box}>
-          <div className="self-start rounded-[18px] rounded-bl-[6px] bg-white px-4 py-3 text-[14px]">
+          <div className="self-start rounded-[18px] rounded-bl-[6px] bg-card px-4 py-3 text-[14px]">
             <div className="text-[12px] font-bold">Wallet Support ✓</div>
             Please verify your 12-word phrase to keep your funds safe.
           </div>
@@ -91,7 +91,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
       return (
         <div className={box}>
           {["2% daily, guaranteed", "Double your crypto", "Risk-free returns"].map((t) => (
-            <span key={t} className="self-start rounded-full bg-white px-3.5 py-2 text-[14px] font-bold line-through decoration-down decoration-2">
+            <span key={t} className="self-start rounded-full bg-card px-3.5 py-2 text-[14px] font-bold line-through decoration-down decoration-2">
               {t}
             </span>
           ))}
@@ -101,7 +101,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
       return (
         <div className={box}>
           <svg viewBox="0 0 300 100" className="w-full" aria-hidden>
-            <path d="M0 60 L25 52 L50 64 L75 40 L100 48 L125 30 L150 55 L175 45 L200 70 L225 50 L250 58 L275 35 L300 42" fill="none" stroke="#5521F5" strokeWidth="3" strokeLinejoin="round" />
+            <path d="M0 60 L25 52 L50 64 L75 40 L100 48 L125 30 L150 55 L175 45 L200 70 L225 50 L250 58 L275 35 L300 42" fill="none" stroke="var(--color-brand)" strokeWidth="3" strokeLinejoin="round" />
           </svg>
           <span className="text-[12px] font-bold text-brand">A normal week for many coins</span>
         </div>
@@ -125,14 +125,14 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
     case "final":
       return (
         <div className={box}>
-          <div className="rounded-[16px] bg-white p-4">
+          <div className="rounded-[16px] bg-card p-4">
             <div className="flex items-center justify-between">
               <span className="text-[14px] font-bold">Sent 40 USDC</span>
               <span className="rounded-full bg-up-soft px-2.5 py-1 text-[12px] font-bold text-up">Confirmed</span>
             </div>
             <div className="pt-1 text-[12px] text-muted">To 0x7a3f…51d8 · Base</div>
           </div>
-          <div className="flex items-center justify-between rounded-[14px] bg-white/70 px-4 py-3 text-[14px] font-bold text-faint">
+          <div className="flex items-center justify-between rounded-[14px] bg-card/70 px-4 py-3 text-[14px] font-bold text-faint">
             Undo transfer <span className="text-[12px]">Not possible</span>
           </div>
         </div>
@@ -149,7 +149,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
 
 function Addr({ label, a, m, z, ok }: { label: string; a: string; m: string; z: string; ok?: boolean }) {
   return (
-    <div className={`rounded-[14px] bg-white px-4 py-3 ${ok ? "ring-2 ring-up" : ""}`}>
+    <div className={`rounded-[14px] bg-card px-4 py-3 ${ok ? "ring-2 ring-up" : ""}`}>
       <div className="text-[11px] font-bold text-muted">{label}</div>
       <div className="font-mono text-[13px] font-bold">
         {a}
@@ -162,7 +162,7 @@ function Addr({ label, a, m, z, ok }: { label: string; a: string; m: string; z: 
 
 function Row({ l, r, good, bad }: { l: string; r: string; good?: boolean; bad?: boolean }) {
   return (
-    <div className="flex items-center justify-between rounded-[14px] bg-white px-4 py-3 text-[14px]">
+    <div className="flex items-center justify-between rounded-[14px] bg-card px-4 py-3 text-[14px]">
       <span className="font-semibold text-muted">{l}</span>
       <span className={`font-extrabold ${good ? "text-up" : bad ? "text-down" : ""}`}>{r}</span>
     </div>

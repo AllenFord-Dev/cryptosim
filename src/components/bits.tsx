@@ -24,7 +24,7 @@ export function MissionIcon({ icon, size = 44 }: { icon: MissionDef["icon"]; siz
   }[icon];
   return (
     <div className="flex shrink-0 items-center justify-center rounded-[14px] bg-bg" style={{ width: size, height: size }}>
-      <I size={Math.round(size / 2)} color="#5521F5" />
+      <I size={Math.round(size / 2)} color="var(--color-brand)" />
     </div>
   );
 }
@@ -37,7 +37,7 @@ export function CoinRow({ id, sub, value, change, last }: { id: string; sub: str
   const stable = c.kind === "Stablecoin";
   const tone = stable || Math.abs(change) < 0.05 ? "text-muted" : change >= 0 ? "text-up" : "text-down";
   return (
-    <Link data-coach={coach} href={`/coin/${id}`} className={`flex items-center gap-3 py-2.5 ${last ? "" : "border-b border-line"}`}>
+    <Link data-coach={coach} href={`/coin/${id}`} className={`flex items-center gap-3 py-3 ${last ? "" : "border-b border-line"}`}>
       <CoinMark id={id} />
       <div className="min-w-0 flex-1">
         <div className="text-[15px] font-bold">{c.name}</div>
@@ -98,7 +98,7 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
               className={`option flex min-h-[56px] items-center justify-between px-4 py-3 text-[15px] font-bold ${cls}`}
             >
               {o.label}
-              {show && o.correct && <CheckIcon color="#0F7B4F" />}
+              {show && o.correct && <CheckIcon color="var(--color-up)" />}
             </button>
           );
         })}
@@ -106,7 +106,7 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
       {show && (
         <div className="anim-enter mt-4 rounded-[18px] bg-bg p-4">
           <div className="flex items-center gap-2 text-[13px] font-bold text-brand">
-            <SparkleIcon size={16} color="#5521F5" /> Buddy
+            <SparkleIcon size={16} color="var(--color-brand)" /> Buddy
           </div>
           <p className="pt-1 text-[14px] leading-[1.5] text-body">{q.why}</p>
           {picked !== null && (
@@ -217,7 +217,7 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
       {/* The welcome slides off to the left as the name screen pushes in. */}
       {!leaving && <div aria-hidden className="onb-leave fixed inset-0 z-[59] mx-auto max-w-[430px]" style={{ background: BRAND_GRADIENT }} />}
       <div
-        className={`${leaving ? "onb-leave" : "onb-enter"} fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-white pb-[calc(16px+var(--safe-bottom))] pt-[calc(8px+var(--safe-top))]`}
+        className={`${leaving ? "onb-leave" : "onb-enter"} fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-card pb-[calc(16px+var(--safe-bottom))] pt-[calc(8px+var(--safe-top))]`}
       >
         <div className="flex h-12 items-center justify-between px-2">
           <button onClick={() => setStep(0)} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full">
@@ -226,7 +226,7 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
               height="22"
               viewBox="0 0 24 24"
               fill="none"
-              stroke="#12111A"
+              stroke="var(--color-ink)"
               strokeWidth="2.4"
               strokeLinecap="round"
               strokeLinejoin="round"
@@ -261,7 +261,7 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
               maxLength={20}
               placeholder="First name"
               style={{ outline: "none" }}
-              className="mt-8 w-full border-b-2 border-track bg-transparent pb-2 text-[30px] font-bold tracking-[-0.02em] outline-none transition-colors placeholder:text-[#D4D1DE] focus:border-brand"
+              className="mt-8 w-full border-b-2 border-track bg-transparent pb-2 text-[30px] font-bold tracking-[-0.02em] outline-none transition-colors placeholder:text-faint focus:border-brand"
             />
           </div>
           <div className="mt-auto">
@@ -276,49 +276,36 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
 }
 
 // Home's one next-step card: habit progress plus the single action that builds the next habit.
-export function HabitCard() {
+// The one next step, shared by Home and Missions: the only card on either screen.
+export function NextStepCard() {
   const { state } = useApp();
-  const h = habits(state);
   const r = readiness(state);
   const next = upNext(state);
-
-  let kicker = `Safe habits · ${h.lockedIn} of ${h.total} locked in`;
   let title: string;
   let sub: string;
   let href: string;
   let cta = "Start";
-  if (next) {
-    title = next.target.title;
-    sub = `${next.target.label} · ${next.skill.name} · ${next.target.minutes} min`;
+  if (state.tour === "send") {
+    title = "Last step: pay a friend back";
+    sub = "Send safely · about 2 minutes";
+    href = "/missions/pay-back?starter=1";
+  } else if (next) {
+    title = next.target.label === "Practice" ? `Practice: ${next.target.title}` : next.target.title;
+    sub = next.step === "learn" ? "1 minute · then practice it" : `${next.skill.name} · ${next.target.minutes} minutes`;
     href = next.target.href;
-    cta = next.step === "learn" ? "Learn" : next.step === "prove" ? "Prove" : "Start";
   } else {
-    kicker = "Every skill proven";
-    title = state.readiness?.passed ? "Try a real test send" : "Readiness check";
-    sub = r.unlocked ? "See if you're ready for one small, real test" : "Lock in a few more habits first";
+    title = state.readiness?.passed ? "Try a real test send" : "Every core skill proven";
+    sub = state.readiness?.passed ? "One small send on a test network" : r.unlocked ? "See if you're ready for one small, real test" : "Lock in a few more habits first";
     href = "/ready";
+    cta = state.readiness?.passed ? "Start" : "Readiness check";
   }
-
   return (
-    <div className="flex flex-col gap-3 rounded-[20px] bg-white p-4">
-      <Link href="/skills" className="flex items-baseline justify-between">
-        <span className="text-[12px] font-bold text-brand">{kicker}</span>
-        <span className="text-[13px] font-bold text-muted">See all</span>
+    <div className="rounded-[22px] bg-brand-tint p-[18px]">
+      <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">{title}</div>
+      <div className="pt-1 text-[14.5px] text-body">{sub}</div>
+      <Link href={href} className="btn btn-brand mt-4 !h-12">
+        {cta}
       </Link>
-      <div className="flex gap-1.5" role="img" aria-label={`${h.lockedIn} of ${h.total} safe habits locked in`}>
-        {h.list.map((x, i) => (
-          <span key={x.id} className={`h-2 flex-1 rounded-full ${i < h.lockedIn ? "bg-brand" : "bg-[#E2E0EA]"}`} />
-        ))}
-      </div>
-      <div className="flex items-center gap-3 pt-0.5">
-        <div className="flex min-w-0 flex-1 flex-col gap-0.5">
-          <span className="text-[16px] font-extrabold leading-tight">{title}</span>
-          <span className="text-[13px] text-muted">{sub}</span>
-        </div>
-        <Link href={href} className="flex h-10 shrink-0 items-center rounded-full bg-brand px-4 text-[14px] font-bold text-white">
-          {cta}
-        </Link>
-      </div>
     </div>
   );
 }

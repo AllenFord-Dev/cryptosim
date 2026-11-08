@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { NextStepCard } from "@/components/bits";
 import { TabScreen } from "@/components/shell";
 import { readiness, skillStatus, upNext } from "@/lib/progress";
 import { SKILLS } from "@/lib/skills";
@@ -33,27 +34,7 @@ export default function Missions() {
       }
     >
       <div className="px-5 pt-5">
-        {next ? (
-          <div className="rounded-[22px] bg-brand-tint p-[18px]">
-            <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">
-              {next.target.label === "Practice" ? `Practice: ${next.target.title}` : next.target.title}
-            </div>
-            <div className="pt-1 text-[14.5px] text-body">
-              {next.step === "learn" ? "1 minute · then practice it" : `${next.skill.name} · ${next.target.minutes} minutes`}
-            </div>
-            <Link href={next.target.href} className="btn btn-brand mt-4 !h-12">
-              Start
-            </Link>
-          </div>
-        ) : (
-          <div className="rounded-[22px] bg-brand-tint p-[18px]">
-            <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">Every core skill proven</div>
-            <div className="pt-1 text-[14.5px] text-body">Next: see if you&apos;re ready for one small, real test.</div>
-            <Link href="/ready" className="btn btn-brand mt-4 !h-12">
-              Readiness check
-            </Link>
-          </div>
-        )}
+        <NextStepCard />
       </div>
 
       <section aria-labelledby="path" className="px-5 pt-7">
@@ -68,7 +49,7 @@ export default function Missions() {
               <Link key={s.skill.id} href={`/skills/${s.skill.id}`} className="flex items-center gap-3.5 border-b border-line py-3.5 active:bg-bg">
                 <span
                   className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-[14px] font-extrabold ${
-                    s.proven ? "bg-ink text-white" : isNext ? "border-[1.5px] border-brand text-brand" : "border-[1.5px] border-[#DDD9E6] text-muted"
+                    s.proven ? "bg-ink text-card" : isNext ? "border-[1.5px] border-brand text-brand" : "border-[1.5px] border-track text-muted"
                   }`}
                 >
                   {s.proven ? "✓" : idx + 1}
@@ -77,7 +58,7 @@ export default function Missions() {
                   <span className="block text-[16px] font-bold leading-tight">{s.skill.name}</span>
                   <span className="mt-2 flex w-[84px] gap-[3px]" role="img" aria-label={`${s.skill.name}: ${s.done} of 3 steps done`}>
                     {[0, 1, 2].map((k) => (
-                      <span key={k} className={`h-1 flex-1 rounded-full ${k < s.done ? (s.proven ? "bg-ink" : "bg-brand") : "bg-[#E8E6EF]"}`} />
+                      <span key={k} className={`h-1 flex-1 rounded-full ${k < s.done ? (s.proven ? "bg-ink" : "bg-brand") : "bg-track"}`} />
                     ))}
                   </span>
                 </span>
@@ -89,7 +70,7 @@ export default function Missions() {
             );
           })}
           <Link href="/ready" className="flex items-center gap-3.5 border-b border-line py-3.5 active:bg-bg">
-            <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-[#DDD9E6] text-[13px] text-muted">
+            <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-track text-[13px] text-muted">
               ★
             </span>
             <span className="flex-1 text-[16px] font-bold">Readiness check</span>

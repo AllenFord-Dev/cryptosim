@@ -23,7 +23,10 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#ffffff",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#15141c" },
+  ],
   viewportFit: "cover",
 };
 
@@ -31,6 +34,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
+        {/* Before first paint: pick the theme (saved choice, else the phone's setting) so nothing flashes. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `try{var t=localStorage.getItem("cs-theme")||"auto",m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(){document.documentElement.dataset.theme=(t==="dark"||(t==="auto"&&m.matches))?"dark":"light"};a();m.addEventListener&&m.addEventListener("change",function(){t=localStorage.getItem("cs-theme")||"auto";a()})}catch(e){}`,
+          }}
+        />
         {/* Before first paint: returning users get the launch animation once per session; otherwise skip the cover. */}
         <script
           dangerouslySetInnerHTML={{

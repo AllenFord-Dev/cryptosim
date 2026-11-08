@@ -34,11 +34,11 @@ export default function Learn() {
   const st = skillStatus(state, skill);
 
   return (
-    <div className="flex min-h-[var(--app-h)] flex-col bg-white">
+    <div className="flex min-h-[var(--app-h)] flex-col bg-card">
       <SubHeader back={`/skills/${skill.id}`} title={`Learn · ${skill.short}`} right={<span className="pr-2 text-[13px] font-bold text-muted">{i + 1}/{total}</span>} />
       <div className="flex gap-1.5 px-5" aria-hidden>
         {Array.from({ length: total }, (_, k) => (
-          <span key={k} className={`h-1.5 flex-1 rounded-full ${k <= i ? "bg-brand" : "bg-[#E2E0EA]"}`} />
+          <span key={k} className={`h-1.5 flex-1 rounded-full ${k <= i ? "bg-brand" : "bg-track"}`} />
         ))}
       </div>
 
@@ -66,7 +66,7 @@ export default function Learn() {
           {picked !== null && (
             <div className="anim-enter mt-4 rounded-[18px] bg-bg p-4">
               <div className={`flex items-center gap-2 text-[13px] font-bold ${right ? "text-up" : "text-down"}`}>
-                <SparkleIcon size={16} color={right ? "#0F7B4F" : "#C4320A"} /> {right ? "Right" : "Not quite, try again"}
+                <SparkleIcon size={16} color={right ? "var(--color-up)" : "#C4320A"} /> {right ? "Right" : "Not quite, try again"}
               </div>
               <p className="pt-1 text-[14px] leading-[1.5] text-body">{check.why}</p>
             </div>
@@ -74,7 +74,7 @@ export default function Learn() {
         </div>
       )}
 
-      <div className="sticky bottom-0 flex gap-3 bg-white px-5 pb-[calc(16px+var(--safe-bottom))] pt-3">
+      <div className="sticky bottom-0 flex gap-3 bg-card px-5 pb-[calc(16px+var(--safe-bottom))] pt-3">
         {i > 0 && !right && (
           <button
             onClick={() => {

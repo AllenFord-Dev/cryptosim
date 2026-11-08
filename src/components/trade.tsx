@@ -73,7 +73,7 @@ export function TradeSheet({
         </div>
         <div className="mt-5 rounded-[18px] bg-bg p-4">
           <div className="flex items-center gap-2 text-[13px] font-bold text-brand">
-            <SparkleIcon size={16} color="#5521F5" /> Buddy
+            <SparkleIcon size={16} color="var(--color-brand)" /> Buddy
           </div>
           <p className="pt-1 text-[14px] leading-[1.5] text-body">
             {done.panic
@@ -84,7 +84,7 @@ export function TradeSheet({
           </p>
         </div>
         {state.tour === "send" ? (
-          <div className="mt-4 flex flex-col gap-3 rounded-[18px] bg-ink p-4 text-white">
+          <div className="mt-4 flex flex-col gap-3 rounded-[18px] bg-[#12111A] p-4 text-white">
             <div className="text-[12px] font-bold text-white/60">One more, about 2 minutes</div>
             <div className="text-[18px] font-bold leading-tight">Pay a friend back without falling for a look-alike address.</div>
             <button
@@ -92,7 +92,7 @@ export function TradeSheet({
                 onClose();
                 router.push("/missions/pay-back?starter=1");
               }}
-              className="btn bg-white text-ink"
+              className="btn bg-white text-[#12111A]"
             >
               Continue
             </button>
@@ -127,7 +127,7 @@ export function TradeSheet({
       <label className="block pt-5">
         <span className="text-[13px] font-bold text-muted">Amount in dollars</span>
         <div
-          className={`mt-2 flex h-[72px] items-center rounded-[18px] border-[1.5px] bg-white px-4 ${tooMuch ? "border-down" : "border-track focus-within:border-brand"}`}
+          className={`mt-2 flex h-[72px] items-center rounded-[18px] border-[1.5px] bg-card px-4 ${tooMuch ? "border-down" : "border-track focus-within:border-brand"}`}
         >
           <span className="text-[34px] font-extrabold text-faint">$</span>
           <input
@@ -179,7 +179,7 @@ export function TradeSheet({
           </span>
           <span className="flex items-center gap-1.5">
             <span className="tabular text-[14px] font-bold">{usd(q.fee + q.spread)}</span>
-            <ChevronIcon className={`transition-transform ${feesOpen ? "rotate-90" : ""}`} color="#A3A0AE" />
+            <ChevronIcon className={`transition-transform ${feesOpen ? "rotate-90" : ""}`} color="var(--color-faint)" />
           </span>
         </button>
         {feesOpen && (

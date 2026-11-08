@@ -96,7 +96,7 @@ export default function Ready() {
             })}
           </div>
           {picked !== null && (
-            <div className="anim-enter rounded-[18px] bg-white p-4">
+            <div className="anim-enter rounded-[18px] bg-card p-4">
               <div className={`text-[13px] font-bold ${q.options[picked].correct ? "text-up" : "text-down"}`}>
                 {q.options[picked].correct ? "Right" : "Not quite"}
               </div>
@@ -135,9 +135,9 @@ export default function Ready() {
     <div className="min-h-[var(--app-h)] pb-10">
       <SubHeader back="/skills" />
       <div className="flex flex-col gap-3 px-4">
-        <div className="rounded-[28px] bg-white px-5 pb-5 pt-6">
+        <div className="rounded-[28px] bg-card px-5 pb-5 pt-6">
           <div className={`flex h-14 w-14 items-center justify-center rounded-[18px] ${graduated ? "bg-up" : "bg-brand-soft"}`}>
-            {graduated ? <CheckIcon size={26} color="#fff" /> : <ShieldIcon size={28} color="#5521F5" />}
+            {graduated ? <CheckIcon size={26} color="#fff" /> : <ShieldIcon size={28} color="var(--color-brand)" />}
           </div>
           <h1 className="pt-4 text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em]">
             {graduated ? "You did a real send" : passed ? "Ready for one small, real test" : "Ready for a real test?"}
@@ -160,11 +160,11 @@ export default function Ready() {
         </div>
 
         {!passed && (
-          <div className="rounded-[20px] bg-white p-4">
+          <div className="rounded-[20px] bg-card p-4">
             <div className="pb-2 text-[16px] font-extrabold">Before the check</div>
             {r.reqs.map((q, k) => (
               <div key={q.label} className={`flex items-center gap-3 py-2.5 ${k ? "border-t border-line" : ""}`}>
-                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${q.done ? "bg-up" : "border-[1.5px] border-dashed border-[#C9C6D4]"}`}>
+                <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${q.done ? "bg-up" : "border-[1.5px] border-dashed border-track"}`}>
                   {q.done && <CheckIcon size={13} color="#fff" />}
                 </span>
                 <span className="flex-1 text-[14px] font-bold">{q.label}</span>
@@ -192,7 +192,7 @@ export default function Ready() {
         )}
 
         {passed && (
-          <div className="rounded-[20px] bg-white p-4">
+          <div className="rounded-[20px] bg-card p-4">
             <div className="flex items-center justify-between pb-1">
               <span className="text-[16px] font-extrabold">Your first real send</span>
               <Chip tone="brand">Test network</Chip>
@@ -208,7 +208,7 @@ export default function Ready() {
                     onClick={() => dispatch({ type: "graduation-step", step: g.id, done: !done })}
                     aria-pressed={done}
                     aria-label={`Mark "${g.title}" ${done ? "not done" : "done"}`}
-                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${done ? "bg-up" : "border-[1.5px] border-[#C9C6D4]"}`}
+                    className={`mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full ${done ? "bg-up" : "border-[1.5px] border-track"}`}
                   >
                     {done && <CheckIcon size={14} color="#fff" />}
                   </button>
@@ -259,9 +259,9 @@ export default function Ready() {
         )}
 
         {graduated && (
-          <div className="rounded-[20px] bg-white p-4">
+          <div className="rounded-[20px] bg-card p-4">
             <div className="flex items-center gap-2 text-[13px] font-bold text-brand">
-              <SparkleIcon size={16} color="#5521F5" /> Buddy
+              <SparkleIcon size={16} color="var(--color-brand)" /> Buddy
             </div>
             <p className="pt-1 text-[14px] leading-[1.5] text-body">
               Before real money: start small, keep sending tests to new contacts, and come back here whenever something feels off. Your habits

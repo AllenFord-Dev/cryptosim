@@ -36,7 +36,7 @@ function path(values: number[], w: number, h: number, pad = 2) {
 export function Spark({ values, w = 52, h = 22 }: { values: number[]; w?: number; h?: number }) {
   const flat = values.length < 2 || Math.max(...values) - Math.min(...values) < values[0] * 0.002;
   const up = values[values.length - 1] >= values[0];
-  const color = flat ? "#A3A0AE" : up ? "var(--color-up)" : "var(--color-down)";
+  const color = flat ? "var(--color-faint)" : up ? "var(--color-up)" : "var(--color-down)";
   return (
     <svg width={w} height={h} viewBox={`0 0 ${w} ${h}`} aria-hidden className="shrink-0">
       <path d={flat ? `M0 ${h / 2} L${w} ${h / 2}` : path(values, w, h)} fill="none" stroke={color} strokeWidth={1.8} />
@@ -58,7 +58,7 @@ function curvePoints(values: number[], w: number, h: number, padTop: number, pad
   return sm.map((v, i) => [(i / (n - 1)) * w, padTop + (1 - (v - min) / span) * (h - padTop - padBottom)] as const);
 }
 
-export function AreaChart({ values, height = 112, color = "#5521F5" }: { values: number[]; height?: number; color?: string }) {
+export function AreaChart({ values, height = 112, color = "var(--color-brand)" }: { values: number[]; height?: number; color?: string }) {
   const id = useId().replace(/:/g, "");
   const w = 390;
   if (values.length >= 2) {
@@ -82,7 +82,7 @@ export function AreaChart({ values, height = 112, color = "#5521F5" }: { values:
               <stop offset="1" stopColor={color} stopOpacity={0} />
             </linearGradient>
           </defs>
-          <path d={`M0 ${base} L${w} ${base}`} stroke="#C9C6D4" strokeWidth={1.2} strokeDasharray="1 5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
+          <path d={`M0 ${base} L${w} ${base}`} stroke="var(--color-faint)" strokeWidth={1.2} strokeDasharray="1 5" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
           <path d={`${d} L${ex} ${height} L0 ${height} Z`} fill={`url(#${id})`} />
           <path d={d} fill="none" stroke={color} strokeWidth={2.2} strokeLinejoin="round" strokeLinecap="round" vectorEffect="non-scaling-stroke" />
         </svg>
@@ -99,7 +99,7 @@ export function AreaChart({ values, height = 112, color = "#5521F5" }: { values:
   if (!d) {
     return (
       <svg width="100%" height={height} viewBox={`0 0 ${w} ${height}`} preserveAspectRatio="none" aria-hidden>
-        <path d={`M0 ${height - 20} L${w} ${height - 20}`} stroke="#DCD9E5" strokeWidth={2} strokeDasharray="4 6" />
+        <path d={`M0 ${height - 20} L${w} ${height - 20}`} stroke="var(--color-track)" strokeWidth={2} strokeDasharray="4 6" />
       </svg>
     );
   }
@@ -154,7 +154,7 @@ export function Sheet({
           role="dialog"
           aria-modal="true"
           aria-label={label ?? (typeof title === "string" ? title : undefined)}
-          className="anim-sheet max-h-[calc(var(--app-h)*0.9)] overflow-y-auto rounded-t-[28px] bg-white px-5 pb-[calc(24px+var(--safe-bottom))] pt-3 outline-none"
+          className="anim-sheet max-h-[calc(var(--app-h)*0.9)] overflow-y-auto rounded-t-[28px] bg-card px-5 pb-[calc(24px+var(--safe-bottom))] pt-3 outline-none"
         >
           <div className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-track" />
           {title !== undefined && (
@@ -179,7 +179,7 @@ export function Sheet({
 export function SubHeader({ title, back = "/", right }: { title?: string; back?: string; right?: React.ReactNode }) {
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between bg-bg/90 px-3 pb-2 pt-[calc(10px+var(--safe-top))] backdrop-blur-md">
-      <Link href={back} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-white">
+      <Link href={back} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-card">
         <BackIcon />
       </Link>
       {title && <div className="text-[16px] font-extrabold">{title}</div>}

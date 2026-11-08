@@ -44,9 +44,9 @@ export default function SkillPage() {
     <div className="min-h-[var(--app-h)] pb-10">
       <SubHeader back="/missions" />
       <div className="flex flex-col gap-3 px-4">
-        <div className="rounded-[28px] bg-white px-5 pb-5 pt-5">
+        <div className="rounded-[28px] bg-card px-5 pb-5 pt-5">
           <div className="flex items-center gap-3">
-            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-[18px] font-extrabold ${st.proven ? "bg-ink text-white" : "bg-brand text-white"}`}>
+            <span className={`flex h-12 w-12 items-center justify-center rounded-full text-[18px] font-extrabold ${st.proven ? "bg-ink text-card" : "bg-brand text-white"}`}>
               {st.proven ? <ShieldIcon size={22} color="#fff" /> : n}
             </span>
             <span className="text-[13px] font-bold text-brand">Skill {n} of {SKILLS.length}</span>
@@ -56,7 +56,7 @@ export default function SkillPage() {
           <div className="mt-4 rounded-[16px] bg-brand-tint px-4 py-3 text-[14px] font-semibold leading-[1.45] text-body">{skill.why}</div>
         </div>
 
-        <div className="rounded-[24px] bg-white px-4 py-1">
+        <div className="rounded-[24px] bg-card px-4 py-1">
           <StepRow
             n="1"
             title="Learn"
@@ -95,7 +95,7 @@ export default function SkillPage() {
         </div>
 
         {(h.length > 0 || mistakes > 0) && (
-          <div className="rounded-[24px] bg-white p-4">
+          <div className="rounded-[24px] bg-card p-4">
             <div className="text-[16px] font-extrabold">Your record</div>
             {h.map((x) => (
               <div key={x.id} className="flex items-center justify-between gap-3 border-b border-line py-3 last:border-0">
@@ -117,8 +117,8 @@ export default function SkillPage() {
         )}
 
         <button onClick={() => openBuddy(BUDDY_TOPIC[skill.id])} className="flex items-center gap-3 rounded-[20px] bg-brand-tint px-4 py-3.5 text-left">
-          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white">
-            <SparkleIcon size={20} color="#5521F5" />
+          <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-card">
+            <SparkleIcon size={20} color="var(--color-brand)" />
           </span>
           <span className="flex-1">
             <span className="block text-[15px] font-bold">Questions about this?</span>
@@ -160,7 +160,7 @@ function StepRow({
           </span>
         ) : locked ? (
           <span className="flex h-8 w-8 items-center justify-center rounded-full bg-bg">
-            <LockIcon size={15} color="#A3A0AE" />
+            <LockIcon size={15} color="var(--color-faint)" />
           </span>
         ) : thumb ? (
           thumb
@@ -175,7 +175,7 @@ function StepRow({
       {current && !locked ? (
         <span className="rounded-full bg-brand px-3.5 py-1.5 text-[13px] font-bold text-white">Start</span>
       ) : (
-        !locked && <ChevronIcon color="#C9C6D4" />
+        !locked && <ChevronIcon color="var(--color-faint)" />
       )}
     </>
   );

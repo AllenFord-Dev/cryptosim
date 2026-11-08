@@ -107,7 +107,7 @@ function Dots({ recent }: { recent: boolean[] }) {
         <span
           key={i}
           className={`flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-black ${
-            v === undefined ? "border-[1.5px] border-[#E2E0EA]" : v ? "bg-good text-white" : "bg-bad text-white"
+            v === undefined ? "border-[1.5px] border-track" : v ? "bg-good text-white" : "bg-bad text-white"
           }`}
         >
           {v === undefined ? "" : v ? "✓" : "✕"}
