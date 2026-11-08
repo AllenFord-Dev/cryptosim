@@ -1,6 +1,9 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { planLabel } from "@/components/plan-setup";
+import { marketProgress } from "@/lib/market-practice";
 import { NextStepCard } from "@/components/bits";
 import { TabScreen } from "@/components/shell";
 import { readiness, skillStatus, upNext } from "@/lib/progress";
@@ -14,6 +17,11 @@ export default function Missions() {
   const r = readiness(state);
   const statuses = SKILLS.map((s) => ({ skill: s, ...skillStatus(state, s) }));
   const proven = statuses.filter((s) => s.proven).length;
+  const [tab, setTab] = useState<"safety" | "market">("safety");
+  useEffect(() => {
+    if (new URLSearchParams(window.location.search).get("tab") === "market") setTab("market");
+  }, []);
+  const mp = marketProgress(state);
   const readyLabel = state.readiness?.passed
     ? "Passed"
     : r.unlocked
@@ -25,14 +33,78 @@ export default function Missions() {
       title="Missions"
       tone="white"
       hero={
-        <div className="px-5 pb-1 pt-4">
-          <div className="tabular text-[40px] font-extrabold leading-none tracking-[-0.04em]">
-            {proven} of {SKILLS.length}
+        <div className="px-5 pb-1 pt-3">
+          <div role="tablist" aria-label="Mission type" className="inline-grid grid-cols-2 gap-1 rounded-full bg-bg p-1">
+            {(["safety", "market"] as const).map((t) => (
+              <button
+                key={t}
+                role="tab"
+                aria-selected={tab === t}
+                onClick={() => setTab(t)}
+                className={`min-h-[36px] rounded-full px-4 text-[14px] font-bold ${tab === t ? "bg-card text-ink shadow-[0_1px_4px_rgba(0,0,0,0.12)]" : "text-muted"}`}
+              >
+                {t === "safety" ? "Safety" : "Market practice"}
+              </button>
+            ))}
           </div>
-          <div className="pt-1.5 text-[16px] font-semibold text-muted">skills proven</div>
+          <div className="tabular pt-5 text-[40px] font-extrabold leading-none tracking-[-0.04em]">
+            {tab === "safety" ? `${proven} of ${SKILLS.length}` : `${mp.done} of ${mp.total}`}
+          </div>
+          <div className="pt-1.5 text-[16px] font-semibold text-muted">
+            {tab === "safety" ? "skills proven" : state.plan ? `done · for your ${planLabel(state.plan)} plan` : "done"}
+          </div>
         </div>
       }
     >
+      {tab === "market" ? (
+        <>
+          <div className="px-5 pt-5">
+            {mp.next ? (
+              <div className="rounded-[22px] bg-brand-tint p-[18px]">
+                <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">{mp.next.title}</div>
+                <div className="pt-1 text-[14.5px] text-body">{mp.next.sub}</div>
+                <Link href={mp.next.href} className="btn btn-brand mt-4 !h-12">
+                  Start
+                </Link>
+              </div>
+            ) : (
+              <div className="rounded-[22px] bg-brand-tint p-[18px]">
+                <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">Market practice done</div>
+                <div className="pt-1 text-[14.5px] text-body">The market is yours now. A real dip still counts when it comes.</div>
+              </div>
+            )}
+          </div>
+          <section aria-label="Market practice" className="px-5 pt-7">
+            <div className="border-t border-line">
+              {mp.steps.map((st) => {
+                const done = !!state.market?.[st.id];
+                const isNext = mp.next?.id === st.id;
+                const row = (
+                  <>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[16px] font-bold">{st.title}</span>
+                      {st.live && !done && <span className="block pt-0.5 text-[13px] text-muted">{st.sub}</span>}
+                    </span>
+                    <span className={`shrink-0 text-[14px] font-bold ${done ? "text-good-ink" : isNext ? "text-brand" : "text-muted"}`}>
+                      {done ? "✓ Done" : st.live ? "Waiting" : isNext ? "Start ›" : "›"}
+                    </span>
+                  </>
+                );
+                return st.live ? (
+                  <div key={st.id} className="flex min-h-[58px] items-center gap-3 border-b border-line py-3">
+                    {row}
+                  </div>
+                ) : (
+                  <Link key={st.id} href={st.href} className="flex min-h-[58px] items-center gap-3 border-b border-line py-3 active:bg-bg">
+                    {row}
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        </>
+      ) : (
+        <>
       <div className="px-5 pt-5">
         <NextStepCard />
       </div>
@@ -78,6 +150,8 @@ export default function Missions() {
           </Link>
         </div>
       </section>
+        </>
+      )}
     </TabScreen>
   );
 }

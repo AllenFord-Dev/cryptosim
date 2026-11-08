@@ -8,6 +8,7 @@ import { useApp } from "@/lib/store";
 import { BarsIcon, ChevronIcon, FlagIcon, HomeIcon, MarketIcon, SparkleIcon } from "./icons";
 import { Sheet } from "./ui";
 import { DailySheet, Onboarding, Splash } from "./bits";
+import { RecurringRunner } from "./recurring";
 import { MenuDrawer, MenuIcon, ResetSheet, TradeHistorySheet } from "./menu";
 
 type UI = { openBuddy: (topic?: string) => void; openMenu: () => void; openHistory: () => void; openDaily: () => void; openReset: () => void };
@@ -45,6 +46,7 @@ export function UIProvider({ children }: { children: React.ReactNode }) {
       <ResetSheet open={panel === "reset"} onClose={shut} />
       {panel === "intro" && <Onboarding onDone={shut} />}
       <Splash />
+      <RecurringRunner />
     </UICtx.Provider>
   );
 }

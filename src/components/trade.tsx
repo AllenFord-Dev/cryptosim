@@ -5,7 +5,8 @@ import { useRouter } from "next/navigation";
 import { Coach } from "./coach";
 import { useMemo, useState } from "react";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
-import { FEE_RATE, SPREAD_RATE, Trade, useApp } from "@/lib/store";
+import { FEE_RATE, SPREAD_RATE, Trade, TradeReason, useApp } from "@/lib/store";
+import { usePrices } from "@/lib/prices";
 import { CheckIcon, ChevronIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet } from "./ui";
 
@@ -29,6 +30,12 @@ export function TradeSheet({
   const [amount, setAmount] = useState(touring && side === "buy" ? "20" : "");
   const [feesOpen, setFeesOpen] = useState(false);
   const [done, setDone] = useState<Trade | null>(null);
+  // Every buy (except the guided first trade and stablecoins) and every sell starts with "why".
+  const stableCoin = coin.kind === "Stablecoin";
+  const [reason, setReason] = useState<TradeReason | null>(null);
+  const [okLoss, setOkLoss] = useState<number | null>(null);
+  const [asked, setAsked] = useState(touring || (side === "buy" && stableCoin));
+  const { quotes } = usePrices();
   const usdAmt = Math.min(parseFloat(amount) || 0, maxUsd + 0.004);
 
   const q = useMemo(() => {
@@ -48,9 +55,16 @@ export function TradeSheet({
   const valid = usdAmt >= 1 && !tooMuch && !(touring && !feesOpen);
   const chips = side === "buy" ? [25, 50, 100] : [];
 
+  // Keep it small: how much of the practice portfolio this coin would be after the buy.
+  const total = state.cash + Object.entries(state.holdings).reduce((t, [id, x]) => t + x.qty * (quotes[id]?.price ?? x.lastBuyPrice), 0);
+  const after = (h ? h.qty * price : 0) + (side === "buy" ? usdAmt : 0);
+  const share = total > 0 ? after / total : 0;
+  const drop = usdAmt * 0.2;
+
   const confirm = () => {
     if (touring) dispatch({ type: "tour", step: "send" });
-    dispatch({ type: "trade", coin: coinId, side, usd: usdAmt, price, feeChecked: feesOpen });
+    dispatch({ type: "trade", coin: coinId, side, usd: usdAmt, price, feeChecked: feesOpen, reason: reason ?? undefined, okLoss: okLoss ?? undefined });
+    if (side === "buy" && !stableCoin && !touring && share <= 0.25) dispatch({ type: "market", step: "small" });
     const now = Date.now();
     const panic = side === "sell" && !!h && now - h.lastBuyAt < 15 * 60 * 1000 && price < h.lastBuyPrice * 0.995;
     setDone({ id: `${now}`, coin: coinId, side, usd: usdAmt, qty: q.qty, price, fee: q.fee, feeChecked: feesOpen, panic, at: now });
@@ -111,6 +125,71 @@ export function TradeSheet({
     );
   }
 
+  if (!asked) {
+    const opts: { id: TradeReason; label: string; flag?: boolean }[] =
+      side === "buy"
+        ? [
+            { id: "long", label: "Holding it long-term" },
+            { id: "curious", label: "Curious, trying it out" },
+            { id: "hype", label: "Saw it hyped online", flag: true },
+          ]
+        : [
+            { id: "profit", label: "Taking some profit" },
+            { id: "changed", label: "My plan changed" },
+            { id: "panic", label: "It's dropping, I want out", flag: true },
+          ];
+    return (
+      <Sheet open onClose={onClose} title={side === "buy" ? "Before you buy" : "Before you sell"}>
+        <div role="radiogroup" aria-label="Why" className="border-t border-line">
+          {opts.map((o) => (
+            <button
+              key={o.id}
+              role="radio"
+              aria-checked={reason === o.id}
+              onClick={() => setReason(o.id)}
+              className="flex min-h-[54px] w-full items-center gap-3 border-b border-line py-3 text-left text-[16px] font-bold"
+            >
+              <span className={`h-[22px] w-[22px] shrink-0 rounded-full ${reason === o.id ? "border-[7px] border-brand" : "border-2 border-track"}`} />
+              <span className="flex-1">{o.label}</span>
+              {o.flag && <span className="text-[13px] font-bold text-bad-ink">Red flag</span>}
+            </button>
+          ))}
+        </div>
+        {side === "buy" && (
+          <>
+            <div className="pt-5 text-[14px] font-bold text-muted" id="okloss">
+              How much could you lose and be OK?
+            </div>
+            <div role="radiogroup" aria-labelledby="okloss" className="grid grid-cols-4 gap-2 pt-2">
+              {[10, 25, 50, 100].map((v) => (
+                <button
+                  key={v}
+                  role="radio"
+                  aria-checked={okLoss === v}
+                  onClick={() => setOkLoss(v)}
+                  className={`min-h-[42px] rounded-full text-[15px] font-bold ${okLoss === v ? "bg-ink text-card" : "bg-bg"}`}
+                >
+                  ${v}
+                </button>
+              ))}
+            </div>
+            <p className="pt-3 text-[14px] leading-[1.45] text-muted">Coins like {coin.name} can drop 20% in a week. Buy only what you&apos;d be OK seeing fall.</p>
+          </>
+        )}
+        {reason && (reason === "hype" || reason === "panic") && (
+          <p className="pt-3 text-[14px] font-semibold leading-[1.45] text-bad-ink">
+            {reason === "hype"
+              ? "Hype is how pump-and-dumps find buyers. You can still go ahead, but it counts against your plan habit."
+              : "Selling because it's dropping usually locks in the loss. You can still go ahead, but it counts against your calm habit."}
+          </p>
+        )}
+        <button disabled={!reason || (side === "buy" && !okLoss)} onClick={() => setAsked(true)} className="btn btn-brand mt-5">
+          Continue to amount
+        </button>
+      </Sheet>
+    );
+  }
+
   return (
     <Sheet open onClose={onClose} title={`${side === "buy" ? "Buy" : "Sell"} ${coin.name}`}>
       <div className="flex items-center gap-3 rounded-[18px] bg-bg px-4 py-3">
@@ -137,11 +216,22 @@ export function TradeSheet({
             onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1"))}
             placeholder="0"
             aria-invalid={tooMuch}
+            style={{ outline: "none" }}
             className="tabular w-full bg-transparent pl-1 text-[34px] font-extrabold tracking-[-0.02em] outline-none placeholder:text-track"
           />
         </div>
       </label>
       {tooMuch && <p className="pt-2 text-[13px] font-bold text-down">That&apos;s more than you have. Max is {usd(maxUsd)}.</p>}
+      {side === "buy" && !stableCoin && !touring && usdAmt >= 1 && !tooMuch && (
+        <div className="pt-2 text-[13.5px] font-semibold leading-[1.45]">
+          {okLoss !== null && (
+            <p className={drop > okLoss ? "text-bad-ink" : "text-muted"}>
+              A 20% drop would be −{usd(drop)}. You said you could lose ${okLoss} and be OK.
+            </p>
+          )}
+          {share > 0.25 && <p className="text-bad-ink">That puts {Math.round(share * 100)}% of your practice money in {coin.name}. Keeping one coin under 25% is safer.</p>}
+        </div>
+      )}
       <div className="flex gap-2 pt-3">
         {chips.map((c) => (
           <button

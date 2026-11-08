@@ -12,10 +12,10 @@ function apply(choice: ThemeChoice) {
 }
 
 export function useTheme() {
-  const [choice, setChoice] = useState<ThemeChoice>("auto");
+  const [choice, setChoice] = useState<ThemeChoice>("dark");
   useEffect(() => {
     try {
-      setChoice((localStorage.getItem(KEY) as ThemeChoice) || "auto");
+      setChoice((localStorage.getItem(KEY) as ThemeChoice) || "dark");
     } catch {}
   }, []);
   const set = (c: ThemeChoice) => {

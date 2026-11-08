@@ -31,7 +31,16 @@ export type Trade = {
   feeChecked: boolean;
   panic: boolean;
   at: number;
+  reason?: TradeReason;
+  okLoss?: number;
+  auto?: boolean;
 };
+
+// Why a trade happened. "hype" (buy) and "panic" (sell) are the red flags.
+export type TradeReason = "long" | "curious" | "hype" | "profit" | "changed" | "panic";
+export type Plan = { coin: string | null; amount: number };
+export type Recurring = { coin: string; amount: number; every: "day" | "week" | "month"; next: number; runs: number };
+export type MarketStep = "planned" | "small" | "recurring" | "parked" | "reasoned" | "dip";
 
 export type Mistake = { mission: string; title: string; why: string; at: number };
 
@@ -60,6 +69,11 @@ export type State = {
   log: HabitEvent[];
   lessons: Record<string, boolean>;
   proven: Record<string, boolean>;
+  planAsked: boolean;
+  plan: Plan | null;
+  market: Partial<Record<MarketStep, boolean>>;
+  recurring: Recurring | null;
+  moments: Record<string, number>;
 };
 
 const initialSkills = SKILLS.reduce((acc, s) => ({ ...acc, [s.id]: 0 }), {} as Record<SkillId, number>);
@@ -83,6 +97,11 @@ export const initialState: State = {
   starterDone: false,
   tour: null,
   log: [],
+  planAsked: false,
+  plan: null,
+  market: {},
+  recurring: null,
+  moments: {},
   lessons: {},
   proven: {},
 };
@@ -102,7 +121,11 @@ export type MissionResult = {
 type Action =
   | { type: "load"; state: State }
   | { type: "onboard"; name: string }
-  | { type: "trade"; coin: string; side: "buy" | "sell"; usd: number; price: number; feeChecked: boolean }
+  | { type: "trade"; coin: string; side: "buy" | "sell"; usd: number; price: number; feeChecked: boolean; reason?: TradeReason; okLoss?: number; auto?: boolean }
+  | { type: "plan"; plan: Plan | null }
+  | { type: "market"; step: MarketStep }
+  | { type: "recurring"; recurring: Recurring | null }
+  | { type: "moment"; coin: string; at: number; held: boolean }
   | MissionResult
   | { type: "mistake"; mistake: Mistake }
   | { type: "daily"; date: string; correct: boolean }
@@ -132,7 +155,7 @@ function reducer(state: State, action: Action): State {
     case "onboard":
       return { ...state, name: action.name.trim().slice(0, 20), onboarded: true, tour: state.starterDone || state.onboarded ? state.tour : "intro" };
     case "trade": {
-      const { coin, side, usd, price, feeChecked } = action;
+      const { coin, side, usd, price, feeChecked, reason, okLoss, auto } = action;
       const now = Date.now();
       const holdings = { ...state.holdings };
       const h = holdings[coin] ?? { qty: 0, cost: 0, lastBuyAt: 0, lastBuyPrice: 0 };
@@ -154,14 +177,19 @@ function reducer(state: State, action: Action): State {
         const share = h.qty > 0 ? qty / h.qty : 1;
         const remainingQty = h.qty - qty;
         // Panic sell: selling at a loss within 15 minutes of buying.
-        panic = now - h.lastBuyAt < 15 * 60 * 1000 && price < h.lastBuyPrice * 0.995;
+        panic = (now - h.lastBuyAt < 15 * 60 * 1000 && price < h.lastBuyPrice * 0.995) || reason === "panic";
         if (remainingQty * price < 0.01) delete holdings[coin];
         else holdings[coin] = { ...h, qty: remainingQty, cost: h.cost * (1 - share) };
       }
-      const trade: Trade = { id: `${now}`, coin, side, usd, qty, price, fee, feeChecked, panic, at: now };
+      const trade: Trade = { id: `${now}`, coin, side, usd, qty, price, fee, feeChecked, panic, at: now, reason, okLoss, auto };
       const coinName = COIN_NAMES[coin] ?? coin;
-      const events: HabitEvent[] = [{ habit: "fees", ok: feeChecked, label: `${coinName} ${side}`, at: now }];
+      const events: HabitEvent[] = auto ? [] : [{ habit: "fees", ok: feeChecked, label: `${coinName} ${side}`, at: now }];
       if (side === "sell") events.push({ habit: "calm", ok: !panic, label: `${coinName} sell`, at: now });
+      if (side === "buy" && reason) events.push({ habit: "plan", ok: reason !== "hype", label: `${coinName} buy`, at: now });
+      const market = { ...state.market };
+      if (side === "buy" && reason && reason !== "hype") market.planned = true;
+      if (side === "buy" && coin === "usd-coin") market.parked = true;
+      if (side === "sell" && reason && reason !== "panic") market.reasoned = true;
       const tradingDelta = feeChecked ? 6 : 1;
       return {
         ...state,
@@ -169,6 +197,7 @@ function reducer(state: State, action: Action): State {
         holdings,
         trades: [trade, ...state.trades].slice(0, 200),
         log: [...events, ...(state.log ?? [])].slice(0, 60),
+        market,
         skills: { ...state.skills, trading: clamp(state.skills.trading + tradingDelta - (panic ? 6 : 0)) },
       };
     }
@@ -176,6 +205,22 @@ function reducer(state: State, action: Action): State {
       return { ...state, lessons: { ...state.lessons, [action.skill]: true } };
     case "starter":
       return { ...state, starterDone: true, tour: null };
+    case "plan":
+      return { ...state, planAsked: true, plan: action.plan };
+    case "market":
+      return state.market?.[action.step] ? state : { ...state, market: { ...state.market, [action.step]: true } };
+    case "recurring":
+      return { ...state, recurring: action.recurring, market: action.recurring ? { ...state.market, recurring: true } : state.market };
+    case "moment": {
+      const name = COIN_NAMES[action.coin] ?? action.coin;
+      const ev: HabitEvent = { habit: "calm", ok: action.held, label: `${name} dip`, at: Date.now() };
+      return {
+        ...state,
+        moments: { ...state.moments, [action.coin]: action.at },
+        market: action.held ? { ...state.market, dip: true } : state.market,
+        log: [ev, ...(state.log ?? [])].slice(0, 60),
+      };
+    }
     case "tour":
       return { ...state, tour: action.step };
     case "mistake":
@@ -196,8 +241,7 @@ function reducer(state: State, action: Action): State {
       if (action.id === "pay-back") events.push({ habit: "addresses", ok: clean, label: title, at: now });
       return {
         ...state,
-        cash: Math.max(0, state.cash + action.reward - action.loss),
-        earned: state.earned + action.reward,
+        // Practice money only moves with trades and the market; mission results are shown, not paid.
         lost: state.lost + action.loss,
         skills,
         missions: {
@@ -216,11 +260,8 @@ function reducer(state: State, action: Action): State {
     }
     case "daily": {
       if (state.daily.last === action.date) return state;
-      const reward = action.correct ? DAILY_REWARD : 0;
       return {
         ...state,
-        cash: state.cash + reward,
-        earned: state.earned + reward,
         skills: { ...state.skills, scams: clamp(state.skills.scams + (action.correct ? 3 : 1)) },
         daily: {
           last: action.date,
@@ -280,7 +321,7 @@ export function useApp() {
   return ctx;
 }
 
-export type HabitId = "fees" | "hype" | "calm" | "addresses" | "phrase";
+export type HabitId = "fees" | "plan" | "hype" | "calm" | "addresses" | "phrase";
 export type HabitStatus = "locked-in" | "practicing" | "not-yet";
 
 export type Habit = {
@@ -305,6 +346,8 @@ export function habits(state: State) {
     total === 0 ? "not-yet" : total < min ? "practicing" : good / total >= 0.8 ? "locked-in" : "practicing";
   const checked = trades.filter((t) => t.feeChecked).length;
   const calm = sells.filter((t) => !t.panic).length;
+  const calmEv = (state.log ?? []).filter((e) => e.habit === "calm").map((e) => e.ok);
+  const planned = (state.log ?? []).filter((e) => e.habit === "plan").map((e) => e.ok);
   const recentOf = (id: HabitId) => (state.log ?? []).filter((e) => e.habit === id).slice(0, 5).map((e) => e.ok);
 
   const list: Habit[] = [
@@ -318,6 +361,17 @@ export function habits(state: State) {
       action: "Make a trade",
       href: "/market",
       recent: trades.slice(0, 5).map((t) => t.feeChecked),
+    },
+    {
+      id: "plan",
+      name: "Trade with a plan",
+      detail: "Know why you're buying, and how much you could lose and be OK, before you buy.",
+      status: rate(planned.filter(Boolean).length, planned.length, 2),
+      progress: planned.length ? `${planned.filter(Boolean).length} of ${planned.length} buys planned` : "No planned buys yet",
+      how: "Make 2+ buys with a reason that isn't hype.",
+      action: "Make a trade",
+      href: "/market",
+      recent: planned.slice(0, 5),
     },
     {
       id: "hype",
@@ -334,12 +388,12 @@ export function habits(state: State) {
       id: "calm",
       name: "Don't panic-sell",
       detail: "Avoid selling at a loss right after you bought.",
-      status: rate(calm, sells.length, 2),
-      progress: sells.length ? `${calm} of ${sells.length} sells calm` : "No sells yet",
-      how: "Make 2+ sells without dumping a coin minutes after buying it.",
+      status: calmEv.length ? rate(calmEv.filter(Boolean).length, calmEv.length, 2) : rate(calm, sells.length, 2),
+      progress: calmEv.length ? `${calmEv.filter(Boolean).length} of ${calmEv.length} calm` : sells.length ? `${calm} of ${sells.length} sells calm` : "No sells or dips yet",
+      how: "Sell with a reason, and hold through real dips instead of dumping.",
       action: "Sell a coin",
       href: "/market",
-      recent: sells.slice(0, 5).map((t) => !t.panic),
+      recent: recentOf("calm"),
     },
     {
       id: "addresses",

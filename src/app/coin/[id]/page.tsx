@@ -6,6 +6,7 @@ import { PriceSource } from "@/components/bits";
 import { SparkleIcon } from "@/components/icons";
 import { useUI } from "@/components/shell";
 import { TradeSheet } from "@/components/trade";
+import { RecurringSheet, recurringLabel } from "@/components/recurring";
 import { Coach } from "@/components/coach";
 import { AreaChart, CoinMark, RangeTabs, SubHeader } from "@/components/ui";
 import { coinById, pct, qtyFmt, usd } from "@/lib/coins";
@@ -24,6 +25,15 @@ export default function CoinPage() {
   const { quotes } = usePrices();
   const { openBuddy } = useUI();
   const [trade, setTrade] = useState<"buy" | "sell" | null>(null);
+  const [recurring, setRecurring] = useState(false);
+  // Deep links from Market practice: ?buy=1, ?sell=1, ?recurring=1
+  useEffect(() => {
+    const q = new URLSearchParams(window.location.search);
+    if (q.get("buy")) setTrade("buy");
+    else if (q.get("sell") && state.holdings[id]) setTrade("sell");
+    else if (q.get("recurring")) setRecurring(true);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [id]);
   const [range, setRange] = useState<RangeKey>("1M");
   const history = useHistory(RANGES.find((r) => r.key === range)!.days, coin ? [coin.id] : []);
 
@@ -86,6 +96,17 @@ export default function CoinPage() {
         </section>
       )}
 
+      {!stable && (
+        <div className="px-5 pt-6">
+          <button onClick={() => setRecurring(true)} className="flex min-h-[54px] w-full items-center justify-between gap-4 border-y border-line py-3 text-left text-[16px]">
+            <span className="font-semibold text-muted">Recurring buy</span>
+            <span className="font-bold text-brand">
+              {state.recurring?.coin === coin.id ? `${recurringLabel(state.recurring)} ›` : "Set up ›"}
+            </span>
+          </button>
+        </div>
+      )}
+
       <section aria-labelledby="about" className="px-5 pt-7">
         <h2 id="about" className="text-[18px] font-extrabold tracking-[-0.015em]">
           About {coin.name}
@@ -120,6 +141,7 @@ export default function CoinPage() {
       {state.tour === "buy" && !trade && (
         <Coach target="buy" radius={999} step={2} total={3} title="Tap Buy" body="You&apos;ll pick an amount next. Nothing real is bought." />
       )}
+      {recurring && <RecurringSheet coinId={coin.id} onClose={() => setRecurring(false)} />}
       {q && trade && <TradeSheet coinId={coin.id} side={trade} price={q.price} onClose={() => setTrade(null)} />}
     </div>
   );

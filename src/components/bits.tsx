@@ -7,7 +7,7 @@ import { dailyFor } from "@/lib/daily";
 import { MissionDef } from "@/lib/missions";
 import { usePrices } from "@/lib/prices";
 import { readiness, upNext } from "@/lib/progress";
-import { DAILY_REWARD, STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
+import { STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
 import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MarketIcon, MegaphoneIcon, SendIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet, Spark } from "./ui";
 import { LogoMark, Wordmark } from "./logo";
@@ -81,7 +81,7 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
   const show = picked !== null || doneToday;
   return (
     <Sheet open={open} onClose={onClose} title="Daily scam check">
-      <p className="text-[13px] font-bold text-brand">One question a day · earn ${DAILY_REWARD} practice money</p>
+      <p className="text-[13px] font-bold text-brand">One question a day</p>
       <p className="pt-2 text-[18px] font-extrabold leading-[1.3] tracking-[-0.01em]">{q.q}</p>
       <div className="flex flex-col gap-2.5 pt-4">
         {q.options.map((o, i) => {
@@ -111,7 +111,7 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
           <p className="pt-1 text-[14px] leading-[1.5] text-body">{q.why}</p>
           {picked !== null && (
             <p className="pt-2 text-[13px] font-bold text-muted">
-              {q.options[picked].correct ? `+$${DAILY_REWARD} practice money added.` : "No reward this time. Come back tomorrow for a new one."}
+              {q.options[picked].correct ? "Right. Come back tomorrow for a new one." : "Not this time. Come back tomorrow for a new one."}
             </p>
           )}
           {picked === null && doneToday && (

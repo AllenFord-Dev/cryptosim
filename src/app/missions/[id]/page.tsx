@@ -59,8 +59,7 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
     ["Skill", skill.name],
     ["Time", `About ${mission.minutes} minutes`],
     [prove ? "Rules" : "Each run", prove ? "One try per step" : "New names and details"],
-    ["Clean run", <span key="r" className="text-up">+${mission.reward}</span>],
-    ["If you slip", mission.loss ? <span key="l" className="text-down">−${mission.loss}</span> : "Lesson only"],
+    ["A slip in real life", mission.loss ? <span key="l" className="text-down">Up to −${mission.loss}</span> : "No money lost"],
   ];
   if (rec) rows.push(["Played", `${rec.done} time${rec.done === 1 ? "" : "s"}`]);
 
@@ -272,7 +271,6 @@ function Done({ mission, result, starter, onReplay }: { mission: MissionDef; res
   const proven = result.prove && clean;
   const nextHref = st.step === "prove" ? `/missions/${skill.prove}?mode=prove` : `/skills/${skill.id}`;
   const title = proven ? "Skill proven" : result.prove ? "Not proven yet" : clean ? "Clean run" : `${result.mistakes} mistake${result.mistakes === 1 ? "" : "s"}`;
-  const money = result.reward - result.loss;
   const skillState = proven || st.proven ? "Proven" : st.practiced ? "Practiced" : "Practice again for a clean run";
 
   return (
@@ -309,10 +307,8 @@ function Done({ mission, result, starter, onReplay }: { mission: MissionDef; res
             </div>
           ))}
           <div className="flex min-h-[54px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
-            <span className="font-semibold text-muted">Practice money</span>
-            <span className={`tabular font-extrabold ${money > 0 ? "text-up" : money < 0 ? "text-down" : "text-ink"}`}>
-              {money > 0 ? `+$${money}` : money < 0 ? `−$${-money}` : "$0"}
-            </span>
+            <span className="font-semibold text-muted">If this were real</span>
+            <span className={`tabular font-extrabold ${result.loss > 0 ? "text-down" : "text-ink"}`}>{result.loss > 0 ? `−$${result.loss} lost` : "Nothing lost"}</span>
           </div>
           <div className="flex min-h-[54px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
             <span className="shrink-0 font-semibold text-muted">{skill.name}</span>

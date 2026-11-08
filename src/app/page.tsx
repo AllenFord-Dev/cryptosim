@@ -8,6 +8,10 @@ import { HeaderButton, TabScreen, useUI } from "@/components/shell";
 import { AreaChart, RangeTabs } from "@/components/ui";
 import { Coach } from "@/components/coach";
 import { TourIntro } from "@/components/tour-intro";
+import { PlanSetup, planLabel } from "@/components/plan-setup";
+import { activeMoment } from "@/lib/moments";
+import { coinById } from "@/lib/coins";
+import { CoinMark } from "@/components/ui";
 import { COINS, usd } from "@/lib/coins";
 import { portfolio } from "@/lib/portfolio";
 import { RANGES, RangeKey, useHistory, usePrices } from "@/lib/prices";
@@ -17,6 +21,8 @@ export default function Home() {
   const { state, ready, dispatch } = useApp();
   const { quotes } = usePrices();
   const [range, setRange] = useState<RangeKey>("1M");
+  const [editPlan, setEditPlan] = useState(false);
+  const moment = state.starterDone ? activeMoment(state, quotes) : null;
   const history = useHistory(RANGES.find((r) => r.key === range)!.days, Object.keys(state.holdings));
   const { openDaily } = useUI();
   const p = portfolio(state, quotes, history);
@@ -55,6 +61,18 @@ export default function Home() {
               </div>
               <div className="text-[12px] font-medium text-muted">Results reflect the market, not skill</div>
             </div>
+            {state.plan && (
+              <button
+                onClick={() => setEditPlan(true)}
+                className="mx-5 mt-3.5 flex w-[calc(100%-40px)] items-center gap-2.5 rounded-[16px] border-[1.5px] border-line px-3.5 py-2.5 text-left text-[15px]"
+              >
+                {state.plan.coin && <CoinMark id={state.plan.coin} size={28} />}
+                <span className="flex-1">
+                  Practicing for <b className="font-extrabold">{planLabel(state.plan)}</b>
+                </span>
+                <span className="text-[14px] font-bold text-brand">Edit</span>
+              </button>
+            )}
             <div className="pt-3.5">
               {p.positions.length > 0 ? (
                 <AreaChart values={series} height={168} />
@@ -76,7 +94,19 @@ export default function Home() {
         }
       >
         <div className="px-5 pt-2">
-          <NextStepCard />
+          {moment ? (
+            <div className="rounded-[22px] bg-bg p-[18px]">
+              <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">
+                {coinById(moment.coin)?.name} fell {Math.abs(moment.change * 100).toFixed(0)}% since you bought
+              </div>
+              <div className="pt-1 text-[14.5px] text-body">Most first-timers sell here. What do you do?</div>
+              <Link href={`/moment/${moment.coin}`} className="btn btn-brand mt-4 !h-12">
+                Decide
+              </Link>
+            </div>
+          ) : (
+            <NextStepCard />
+          )}
         </div>
 
         <section aria-labelledby="coins" className="px-5 pt-7">
@@ -105,6 +135,7 @@ export default function Home() {
         <div className="px-5 pt-4">
           <PriceSource />
         </div>
+        {(editPlan || (ready && state.starterDone && !state.planAsked && !state.tour)) && <PlanSetup onDone={() => setEditPlan(false)} />}
         {state.tour === "intro" && <TourIntro onStart={() => dispatch({ type: "tour", step: "coin" })} />}
         {state.tour === "coin" && (
           <Coach

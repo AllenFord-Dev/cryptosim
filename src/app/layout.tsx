@@ -37,7 +37,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* Before first paint: pick the theme (saved choice, else the phone's setting) so nothing flashes. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("cs-theme")||"auto",m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(){document.documentElement.dataset.theme=(t==="dark"||(t==="auto"&&m.matches))?"dark":"light"};a();m.addEventListener&&m.addEventListener("change",function(){t=localStorage.getItem("cs-theme")||"auto";a()})}catch(e){}`,
+            __html: `try{var t=localStorage.getItem("cs-theme")||"dark",m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(){document.documentElement.dataset.theme=(t==="dark"||(t==="auto"&&m.matches))?"dark":"light"};a();m.addEventListener&&m.addEventListener("change",function(){t=localStorage.getItem("cs-theme")||"dark";a()})}catch(e){}`,
           }}
         />
         {/* Before first paint: returning users get the launch animation once per session; otherwise skip the cover. */}
