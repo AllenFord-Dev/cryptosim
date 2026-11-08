@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useId, useRef } from "react";
 import { coinById } from "@/lib/coins";
+import { usePresence } from "@/lib/presence";
 import { BackIcon, CloseIcon } from "./icons";
 
 export function CoinMark({ id, size = 36 }: { id: string; size?: number }) {
@@ -143,9 +144,11 @@ export function Sheet({
       document.body.style.overflow = prev;
     };
   }, [open, onClose]);
-  if (!open) return null;
+  const shown = usePresence(open, { title, children });
+  if (!shown.mounted) return null;
+  ({ title, children } = shown.content);
   return (
-    <div className="fixed inset-0 z-50">
+    <div className={`fixed inset-0 z-50 ${shown.closing ? "is-closing pointer-events-none" : ""}`}>
       <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.42)]" onClick={onClose} />
       <div className="absolute inset-x-0 bottom-0 mx-auto w-full max-w-[430px]">
         <div
@@ -179,7 +182,7 @@ export function Sheet({
 export function SubHeader({ title, back = "/", right }: { title?: string; back?: string; right?: React.ReactNode }) {
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between bg-bg/90 px-3 pb-2 pt-[calc(10px+var(--safe-top))] backdrop-blur-md">
-      <Link href={back} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full bg-card">
+      <Link href={back} aria-label="Back" data-nav="back" className="flex h-11 w-11 items-center justify-center rounded-full bg-card">
         <BackIcon />
       </Link>
       {title && <div className="text-[16px] font-extrabold">{title}</div>}

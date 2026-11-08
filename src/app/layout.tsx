@@ -12,6 +12,7 @@ import { PricesProvider } from "@/lib/prices";
 import { UIProvider } from "@/components/shell";
 import { DesktopAside } from "@/components/aside";
 import { Device } from "@/components/device";
+import { NavMotion } from "@/components/nav-motion";
 
 export const metadata: Metadata = {
   title: "CryptoSim · Practice crypto safely",
@@ -50,6 +51,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AppProvider>
           <PricesProvider>
+            <NavMotion />
             <DesktopAside />
             <Device>
               <UIProvider>

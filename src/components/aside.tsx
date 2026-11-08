@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { go } from "@/lib/nav";
 import { useApp } from "@/lib/store";
 import { Wordmark } from "./logo";
 
@@ -33,7 +33,6 @@ export function DesktopAside() {
 // Lets a reviewer see the app the way a brand-new user does: welcome screen, then the guided first trade.
 function RestartButton() {
   const { dispatch } = useApp();
-  const router = useRouter();
   const [armed, setArmed] = useState(false);
   useEffect(() => {
     if (!armed) return;
@@ -46,7 +45,7 @@ function RestartButton() {
         if (!armed) return setArmed(true);
         setArmed(false);
         dispatch({ type: "restart" });
-        router.push("/");
+        go("/", "fade");
       }}
       className="mt-5 inline-flex min-h-[40px] items-center gap-2 self-start rounded-full border border-line bg-card px-4 text-[14px] font-bold text-ink hover:border-brand"
     >

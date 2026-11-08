@@ -1,12 +1,13 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { habits, useApp } from "@/lib/store";
 import { BoltIcon, ChevronIcon, CloseIcon, ExternalIcon, HistoryIcon, InfoIcon, ShieldIcon, SparkleIcon } from "./icons";
 import { Sheet } from "./ui";
+import { usePresence } from "@/lib/presence";
+import { go as navigate } from "@/lib/nav";
 import { ThemeChoice, useTheme } from "@/lib/theme";
 
 export const PROJECT_URL = "https://github.com/AllenFord-Dev/cryptosim";
@@ -45,7 +46,8 @@ export function MenuDrawer({
     return () => window.removeEventListener("keydown", onKey);
   }, [open, onClose, state.name]);
 
-  if (!open) return null;
+  const shown = usePresence(open, null);
+  if (!shown.mounted) return null;
   const go = (fn: () => void) => () => {
     onClose();
     fn();
@@ -53,7 +55,7 @@ export function MenuDrawer({
   const initial = (state.name || "You").charAt(0).toUpperCase();
 
   return (
-    <div className="fixed inset-0 z-50 mx-auto max-w-[430px] overflow-hidden">
+    <div className={`fixed inset-0 z-50 mx-auto max-w-[430px] overflow-hidden ${shown.closing ? "is-closing pointer-events-none" : ""}`}>
       <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.42)]" onClick={onClose} />
       <div
         ref={panel}
@@ -226,7 +228,6 @@ export function TradeHistorySheet({ open, onClose }: { open: boolean; onClose: (
 
 export function ResetSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { dispatch } = useApp();
-  const router = useRouter();
   return (
     <Sheet open={open} onClose={onClose} title="Start over?">
       <p className="text-[15px] leading-[1.5] text-body">
@@ -237,7 +238,7 @@ export function ResetSheet({ open, onClose }: { open: boolean; onClose: () => vo
           onClick={() => {
             dispatch({ type: "restart" });
             onClose();
-            router.push("/");
+            navigate("/", "fade");
           }}
           className="btn bg-down text-white"
         >

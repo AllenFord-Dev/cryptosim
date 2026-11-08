@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { go } from "@/lib/nav";
 import { Coach } from "./coach";
 import { useMemo, useState } from "react";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
@@ -22,7 +22,6 @@ export function TradeSheet({
   onClose: () => void;
 }) {
   const { state, dispatch } = useApp();
-  const router = useRouter();
   const coin = coinById(coinId)!;
   const h = state.holdings[coinId];
   const maxUsd = side === "buy" ? state.cash : h ? h.qty * price * (1 - SPREAD_RATE) : 0;
@@ -104,7 +103,7 @@ export function TradeSheet({
             <button
               onClick={() => {
                 onClose();
-                router.push("/missions/pay-back?starter=1");
+                go("/missions/pay-back?starter=1");
               }}
               className="btn bg-white text-[#12111A]"
             >

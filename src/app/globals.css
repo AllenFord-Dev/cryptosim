@@ -118,7 +118,7 @@ body {
   width: 100%;
   transition: transform 0.08s ease, opacity 0.15s ease, background 0.15s ease;
 }
-.btn:active { transform: scale(0.98); }
+.btn:active { transform: scale(0.97); opacity: 0.88; }
 .btn:disabled { opacity: 0.4; pointer-events: none; }
 .btn-brand { background: var(--color-brand); color: #fff; }
 .btn-brand:hover { background: var(--color-brand-dark); }
@@ -221,10 +221,65 @@ html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0,
 .logo-spark { transform-box: fill-box; transform-origin: center; animation: sparkPop 0.45s ease-out 0.55s both; }
 .logo-word-clip { display: block; overflow: hidden; padding: 0.12em 0.05em 0.18em 0; }
 .logo-word { animation: wordOut 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.95s both; }
-@media (prefers-reduced-motion: reduce) { .logo-coin, .logo-spark, .logo-word, .logo-lock, .splash-leave, @keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
-html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
-.splash-leave .logo-lock-wrap { animation: none !important; } }
+@media (prefers-reduced-motion: reduce) { .logo-coin, .logo-spark, .logo-word, .logo-lock, .splash-leave .logo-lock-wrap, html[data-handoff] .handoff-in { animation: none !important; } }
 
 @keyframes coachPulse { 0%, 100% { box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(85, 33, 245, 0.9); } 50% { box-shadow: 0 0 0 3px #fff, 0 0 0 11px rgba(85, 33, 245, 0.35); } }
 .coach-ring { animation: coachPulse 1.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) { .coach-ring { animation: none; box-shadow: 0 0 0 3px #fff, 0 0 0 6px #5521F5; } }
+
+/* Press feedback: anything tappable dims while pressed (buttons and rows with their own press style keep it). */
+a, button { -webkit-tap-highlight-color: transparent; }
+button:not(:disabled), [role="button"], label:has(input[type="radio"]) { cursor: pointer; }
+:where(a, button):not(.btn):not([class*="active:"]):not(:disabled) { transition: opacity 0.18s ease; }
+:where(a, button):not(.btn):not([class*="active:"]):not(:disabled):active { opacity: 0.55; transition: none; }
+[class*="active:bg-bg"] { transition: background-color 0.18s ease; }
+[class*="active:bg-bg"]:active { transition: none; }
+
+/* Sheets and the menu animate closed instead of vanishing. */
+@keyframes sheetDown { from { transform: none; } to { transform: translateY(100%); } }
+@keyframes dimOut { from { opacity: 1; } to { opacity: 0; } }
+@keyframes drawerOut { from { transform: none; } to { transform: translateX(-100%); } }
+.is-closing .anim-sheet { animation: sheetDown 0.26s cubic-bezier(0.4, 0, 1, 1) both; }
+.is-closing .anim-dim { animation: dimOut 0.26s ease both; }
+.is-closing .anim-drawer { animation: drawerOut 0.26s cubic-bezier(0.4, 0, 1, 1) both; }
+html[data-nav] .is-closing { display: none; }
+
+/* Page transitions (see lib/nav.ts). Pushing deeper slides the new screen in from the right over the
+   old one; back slides the top screen off to the right; tabs crossfade. On a phone the whole page moves;
+   on a laptop only the screen inside the phone frame does. */
+@keyframes navInRight { from { transform: translateX(100%); } }
+@keyframes navOutLeft { to { transform: translateX(-28%); filter: brightness(0.86); } }
+@keyframes navInLeft { from { transform: translateX(-28%); filter: brightness(0.86); } }
+@keyframes navOutRight { to { transform: translateX(100%); } }
+@keyframes navFadeIn { from { opacity: 0; } }
+@keyframes navFadeOut { to { opacity: 0; } }
+::view-transition-old(*), ::view-transition-new(*) { mix-blend-mode: normal; }
+html[data-nav="push"]::view-transition-old(root) { animation: navOutLeft 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; }
+html[data-nav="push"]::view-transition-new(root) { animation: navInRight 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.18); }
+html[data-nav="back"]::view-transition-old(root) { animation: navOutRight 0.36s cubic-bezier(0.32, 0.72, 0, 1) both; z-index: 1; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.18); }
+html[data-nav="back"]::view-transition-new(root) { animation: navInLeft 0.36s cubic-bezier(0.32, 0.72, 0, 1) both; }
+html[data-nav="fade"]::view-transition-old(root) { animation: navFadeOut 0.16s ease both; }
+html[data-nav="fade"]::view-transition-new(root) { animation: navFadeIn 0.16s ease both; }
+@media (min-width: 1024px) and (min-height: 660px) and (hover: hover) {
+  .app-scroll { view-transition-name: page; }
+  .device-status { view-transition-name: device-status; }
+  .device-island { view-transition-name: device-island; }
+  .device-home { view-transition-name: device-home; }
+  ::view-transition-group(device-status), ::view-transition-group(device-island), ::view-transition-group(device-home) { z-index: 5; animation: none; }
+  ::view-transition-old(device-status), ::view-transition-new(device-status), ::view-transition-old(device-island), ::view-transition-new(device-island),
+  ::view-transition-old(device-home), ::view-transition-new(device-home) { animation: none; }
+  ::view-transition-old(device-status) { display: none; }
+  html[data-nav]::view-transition-old(root), html[data-nav]::view-transition-new(root) { animation: none; box-shadow: none; }
+  ::view-transition-image-pair(page) { overflow: hidden; border-radius: 55px; }
+  html[data-nav="push"]::view-transition-old(page) { animation: navOutLeft 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; }
+  html[data-nav="push"]::view-transition-new(page) { animation: navInRight 0.4s cubic-bezier(0.32, 0.72, 0, 1) both; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.18); }
+  html[data-nav="back"]::view-transition-old(page) { animation: navOutRight 0.36s cubic-bezier(0.32, 0.72, 0, 1) both; z-index: 1; box-shadow: -10px 0 30px rgba(0, 0, 0, 0.18); }
+  html[data-nav="back"]::view-transition-new(page) { animation: navInLeft 0.36s cubic-bezier(0.32, 0.72, 0, 1) both; }
+  html[data-nav="fade"]::view-transition-old(page) { animation: navFadeOut 0.16s ease both; }
+  html[data-nav="fade"]::view-transition-new(page) { animation: navFadeIn 0.16s ease both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .is-closing .anim-sheet, .is-closing .anim-dim, .is-closing .anim-drawer { animation: none !important; }
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
+}
+html[data-theme="dark"] .anim-dim { background: rgba(0, 0, 0, 0.6); }

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { go } from "@/lib/nav";
 import { useState } from "react";
 import { LessonVisual } from "@/components/lesson-visual";
 import { SubHeader } from "@/components/ui";
@@ -13,7 +14,6 @@ export default function Learn() {
   const { skill: id } = useParams<{ skill: string }>();
   const skill = skillById(id);
   const { state, dispatch } = useApp();
-  const router = useRouter();
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<number | null>(null);
 
@@ -97,7 +97,7 @@ export default function Learn() {
           <button
             onClick={() => {
               dispatch({ type: "lesson", skill: skill.id });
-              router.push(`/missions/${st.nextPractice}`);
+              go(`/missions/${st.nextPractice}`);
             }}
             className="btn btn-brand flex-1 gap-2"
           >

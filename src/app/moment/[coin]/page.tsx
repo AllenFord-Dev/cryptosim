@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
+import { go } from "@/lib/nav";
 import { useState } from "react";
 import { SparkleIcon } from "@/components/icons";
 import { AreaChart } from "@/components/ui";
@@ -18,7 +19,6 @@ export default function MomentPage() {
   const coin = coinById(id);
   const { state, dispatch } = useApp();
   const { quotes } = usePrices();
-  const router = useRouter();
   const history = useHistory(7, coin ? [coin.id] : []);
   const [held, setHeld] = useState<boolean | null>(null);
   const m = activeMoment(state, quotes);
@@ -49,7 +49,7 @@ export default function MomentPage() {
   const decide = (hold: boolean) => {
     dispatch({ type: "moment", coin: id, at: h.lastBuyAt, held: hold });
     if (hold) setHeld(true);
-    else router.push(`/coin/${id}?sell=1`);
+    else go(`/coin/${id}?sell=1`);
   };
 
   return (
