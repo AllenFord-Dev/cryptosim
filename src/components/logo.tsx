@@ -36,8 +36,8 @@ export function LogoMark({ size = 32, tone = "brand", animate = false }: { size?
 }
 
 export function Wordmark({ size = 22, tone = "brand", animate = false }: { size?: number; tone?: Tone; animate?: boolean }) {
-  const crypto = tone === "light" ? "#FFFFFF" : "#12111A";
-  const sim = tone === "light" ? "#C9B8FF" : "#5521F5";
+  const crypto = tone === "light" ? "#FFFFFF" : "var(--color-ink)";
+  const sim = tone === "light" ? "#C9B8FF" : "var(--color-brand)";
   return (
     <span className={`flex items-center ${animate ? "logo-lock" : ""}`} style={{ gap: animate ? 0 : size * 0.32 }}>
       <LogoMark size={size * 1.45} tone={tone} animate={animate} />
