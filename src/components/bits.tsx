@@ -7,7 +7,7 @@ import { dailyFor } from "@/lib/daily";
 import { MissionDef } from "@/lib/missions";
 import { usePrices } from "@/lib/prices";
 import { nextOverall, readiness, upNext } from "@/lib/progress";
-import { STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
+import { todayKey, useApp } from "@/lib/store";
 import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MarketIcon, MegaphoneIcon, SendIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet, Spark } from "./ui";
 import { LogoMark, Wordmark } from "./logo";

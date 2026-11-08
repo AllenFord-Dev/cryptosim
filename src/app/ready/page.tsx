@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CheckIcon, ExternalIcon, ShieldIcon, SparkleIcon } from "@/components/icons";
-import { Chip, SubHeader } from "@/components/ui";
+import { CheckIcon, ExternalIcon, SparkleIcon } from "@/components/icons";
+import { SubHeader } from "@/components/ui";
 import { readiness } from "@/lib/progress";
 import { planLabel } from "@/components/plan-setup";
 import { useApp } from "@/lib/store";

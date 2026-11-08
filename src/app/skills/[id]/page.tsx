@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { MissionThumb } from "@/components/covers";
-import { CheckIcon, ChevronIcon, LockIcon, ShieldIcon, SparkleIcon } from "@/components/icons";
+import { SparkleIcon } from "@/components/icons";
 import { useUI } from "@/components/shell";
 import { SubHeader } from "@/components/ui";
 import { missionById } from "@/lib/missions";

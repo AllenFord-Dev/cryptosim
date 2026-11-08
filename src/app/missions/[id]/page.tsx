@@ -3,11 +3,10 @@
 import Link from "next/link";
 import { useParams, useSearchParams } from "next/navigation";
 import { Suspense, useMemo, useState } from "react";
-import { MissionCover } from "@/components/covers";
-import { CheckIcon, LockIcon, ShieldIcon, SparkleIcon, WalletIcon } from "@/components/icons";
+import { SparkleIcon } from "@/components/icons";
 import { Visuals } from "@/components/visuals";
 import { WalletMission } from "@/components/wallet-mission";
-import { Chip, Sheet, SubHeader } from "@/components/ui";
+import { Sheet, SubHeader } from "@/components/ui";
 import { MissionDef, Option, missionById, seeded } from "@/lib/missions";
 import { skillStatus } from "@/lib/progress";
 import { SkillId, skillById } from "@/lib/skills";
@@ -93,14 +92,6 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
   );
 }
 
-function Rule({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="flex items-start gap-2.5 text-[14px] leading-[1.45] text-body">
-      <span className="mt-[7px] h-1.5 w-1.5 shrink-0 rounded-full bg-brand" />
-      {children}
-    </div>
-  );
-}
 
 // Records the result of a finished mission (shared by the quiz-style and wallet-style missions).
 function useFinish(mission: MissionDef, prove: boolean, starter: boolean | undefined, onDone: (r: Result) => void) {

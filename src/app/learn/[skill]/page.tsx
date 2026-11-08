@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { useState } from "react";
-import { CheckIcon, SparkleIcon } from "@/components/icons";
 import { LessonVisual } from "@/components/lesson-visual";
 import { SubHeader } from "@/components/ui";
 import { skillStatus } from "@/lib/progress";
