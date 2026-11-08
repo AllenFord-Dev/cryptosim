@@ -31,8 +31,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Returning in the same session: hide the launch screen before first paint so nothing flashes. */}
-        <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("cs-splash")==="1")document.documentElement.dataset.nosplash="1"}catch(e){}` }} />
+        {/* Already set up: skip the purple launch cover before first paint. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{var s=JSON.parse(localStorage.getItem("cryptosim-v2")||"null");if(s&&s.onboarded)document.documentElement.dataset.nosplash="1"}catch(e){}` }} />
       </head>
       <body>
         <AppProvider>

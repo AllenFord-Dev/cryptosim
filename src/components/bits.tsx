@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useLayoutEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { COINS, usd, pct, qtyFmt } from "@/lib/coins";
 import { dailyFor } from "@/lib/daily";
 import { MissionDef } from "@/lib/missions";
@@ -10,7 +10,7 @@ import { readiness, upNext } from "@/lib/progress";
 import { DAILY_REWARD, STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
 import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MarketIcon, MegaphoneIcon, SendIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet, Spark } from "./ui";
-import { Wordmark } from "./logo";
+import { LogoMark, Wordmark } from "./logo";
 export { Wordmark };
 
 export function MissionIcon({ icon, size = 44 }: { icon: MissionDef["icon"]; size?: number }) {
@@ -130,57 +130,12 @@ export const BRAND_GRADIENT =
   "radial-gradient(120% 70% at 85% 0%, rgba(160,130,255,0.55) 0%, rgba(160,130,255,0) 60%), linear-gradient(165deg, #6A3BFF 0%, #5521F5 38%, #3412B8 72%, #1D0868 100%)";
 
 // Brief launch screen, once per visit.
+// A plain purple launch screen, drawn on the server so nothing flashes while saved progress loads.
+// First-timers go straight into the animated welcome; returning users skip it (see the script in layout).
 export function Splash() {
-  // Rendered on the server as a plain purple launch screen, so the page underneath never flashes.
-  const [phase, setPhase] = useState<"boot" | "show" | "leave" | "gone">("boot");
-  const wrap = useRef<HTMLDivElement>(null);
-  useEffect(() => {
-    let seen = false;
-    try {
-      seen = sessionStorage.getItem("cs-splash") === "1";
-      sessionStorage.setItem("cs-splash", "1");
-    } catch {}
-    if (seen) return setPhase("gone");
-    setPhase("show");
-    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const root = document.documentElement;
-    const t1 = setTimeout(() => {
-      setPhase(reduced ? "gone" : "leave");
-      root.dataset.handoff = "1";
-    }, reduced ? 1200 : 2100);
-    const t2 = setTimeout(() => {
-      setPhase("gone");
-      delete root.dataset.handoff;
-    }, 2650);
-    return () => {
-      clearTimeout(t1);
-      clearTimeout(t2);
-      delete root.dataset.handoff;
-    };
-  }, []);
-  // The coins land centered on their own, then the lockup glides left as the name slides out from behind them.
-  useLayoutEffect(() => {
-    const lock = wrap.current?.querySelector(".logo-lock") as HTMLElement | null;
-    const word = wrap.current?.querySelector(".logo-word-clip") as HTMLElement | null;
-    if (lock && word) lock.style.setProperty("--half", `${(word.offsetWidth + parseFloat(getComputedStyle(word).marginLeft)) / 2}px`);
-  }, [phase === "show"]);
-  if (phase === "gone") return null;
-  return (
-    <div
-      aria-hidden
-      className={`splash fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center ${phase === "leave" ? "splash-leave" : ""}`}
-      style={{ background: BRAND_GRADIENT }}
-    >
-      {phase !== "boot" && (
-        <>
-          <div ref={wrap} className="logo-lock-wrap">
-            <Wordmark size={34} tone="light" animate />
-          </div>
-          <p className="anim-enter absolute bottom-[calc(40px+var(--safe-bottom))] text-[13px] font-semibold text-white/70">Real prices · practice money</p>
-        </>
-      )}
-    </div>
-  );
+  const { ready } = useApp();
+  if (ready) return null;
+  return <div aria-hidden className="splash fixed inset-0 z-[90] mx-auto max-w-[430px]" style={{ background: BRAND_GRADIENT }} />;
 }
 
 export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
@@ -188,20 +143,28 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
   const [step, setStep] = useState(0);
   const [name, setName] = useState(state.name);
   if (step === 0) {
+    // The logo lands and holds where it ends up; then the headline and button slide up from the bottom edge.
     return (
       <div
-        className="handoff-in fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col overflow-hidden px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(20px+var(--safe-top))] text-white"
+        className="welcome-anim fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col overflow-hidden px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(20px+var(--safe-top))] text-white"
         style={{ background: BRAND_GRADIENT }}
       >
-        <Wordmark size={22} tone="light" />
-        <h1 className="anim-enter pt-8 text-[44px] font-extrabold leading-[1.02] tracking-[-0.04em] [text-wrap:balance]">Learn crypto before it costs you.</h1>
-        <div className="relative flex flex-1 items-end justify-end pb-6">
-          <WelcomeArt />
+        <div className="flex flex-1 flex-col items-center justify-center gap-4">
+          <LogoMark size={104} tone="light" animate />
+          <span className="welcome-name text-[34px] leading-none tracking-[-0.04em]">
+            <span className="font-medium">crypto</span>
+            <span className="font-extrabold text-[#C9B8FF]">sim</span>
+          </span>
         </div>
-        <button onClick={() => setStep(1)} className="btn bg-white text-brand">
-          Get started
-        </button>
-        <p className="pt-3 text-center text-[12px] font-semibold text-white/60">Takes 2 minutes</p>
+        <div className="welcome-bottom flex flex-col">
+          <h1 className="pb-7 text-center text-[28px] font-extrabold leading-[1.08] tracking-[-0.035em] [text-wrap:balance]">
+            Learn crypto before it costs you.
+          </h1>
+          <button onClick={() => setStep(1)} className="btn bg-white text-brand">
+            Get started
+          </button>
+          <p className="pt-3 text-center text-[12px] font-semibold text-white/60">Takes 2 minutes</p>
+        </div>
       </div>
     );
   }
@@ -257,29 +220,6 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
   );
 }
 
-// The most expensive first-timer mistake: handing a "support" account your recovery phrase.
-function WelcomeArt() {
-  return (
-    <div
-      className="anim-enter -mr-2 w-[268px] max-w-full rotate-[-4deg] rounded-[24px] bg-white p-4 text-ink shadow-[0_28px_56px_-20px_rgba(20,6,80,0.65)] [animation-delay:120ms]"
-      aria-hidden
-    >
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2C6BED] text-[13px] font-extrabold text-white">W</span>
-        <div>
-          <div className="text-[14px] font-extrabold leading-tight">Wallet Support ✓</div>
-          <div className="text-[11px] font-semibold text-muted">Direct message</div>
-        </div>
-      </div>
-      <div className="mt-2.5 rounded-[18px] rounded-bl-[6px] bg-bg px-3.5 py-2.5 text-[14px] leading-[1.35]">
-        Your wallet is locked. Reply with your 12-word phrase within 30 min to restore it.
-      </div>
-      <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-[10px] bg-down-soft px-2.5 py-1.5 text-[12px] font-extrabold text-down">
-        ✕ Real support never asks for this
-      </div>
-    </div>
-  );
-}
 
 
 // Home's one next-step card: habit progress plus the single action that builds the next habit.
