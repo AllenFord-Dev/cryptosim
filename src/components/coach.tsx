@@ -10,16 +10,27 @@ type Box = { x: number; y: number; w: number; h: number };
 export function Coach({ target, title, body, step, total, radius = 20 }: { target: string; title: string; body: string; step: number; total: number; radius?: number }) {
   const [box, setBox] = useState<Box | null>(null);
   const [view, setView] = useState({ w: 390, h: 844 });
+  const [shown, setShown] = useState(false);
 
   useEffect(() => {
-    let first = true;
+    setShown(false);
+    let reveal: ReturnType<typeof setTimeout> | undefined;
+    // Glide the control into view first, then dim the rest and show the tip, so nothing jumps.
+    const start = setTimeout(() => {
+      const el = document.querySelector(`[data-coach="${target}"]`) as HTMLElement | null;
+      if (!el) return setShown(true);
+      const r = el.getBoundingClientRect();
+      const visible = r.top >= 60 && r.bottom <= window.innerHeight - 110;
+      const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      if (!visible) el.scrollIntoView({ block: "center", behavior: reduced ? "auto" : "smooth" });
+      reveal = setTimeout(() => {
+        measure();
+        setShown(true);
+      }, visible ? 0 : 550);
+    }, 250);
     const measure = () => {
       const el = document.querySelector(`[data-coach="${target}"]`) as HTMLElement | null;
       if (!el) return setBox(null);
-      if (first) {
-        el.scrollIntoView({ block: "center", behavior: "instant" as ScrollBehavior });
-        first = false;
-      }
       const screen = document.querySelector(".device-screen") as HTMLElement | null;
       const framed = screen && getComputedStyle(screen).display === "block";
       const base = framed ? screen!.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
@@ -28,17 +39,17 @@ export function Coach({ target, title, body, step, total, radius = 20 }: { targe
       setView({ w: base.width / scale, h: base.height / scale });
       setBox({ x: (r.left - base.left) / scale - 6, y: (r.top - base.top) / scale - 6, w: r.width / scale + 12, h: r.height / scale + 12 });
     };
-    const t = setTimeout(measure, 350);
-    const id = setInterval(measure, 400);
+    const id = setInterval(measure, 250);
     window.addEventListener("resize", measure);
     return () => {
-      clearTimeout(t);
+      clearTimeout(start);
+      clearTimeout(reveal);
       clearInterval(id);
       window.removeEventListener("resize", measure);
     };
   }, [target]);
 
-  if (!box) return null;
+  if (!box || !shown) return null;
   const below = box.y + box.h + 170 < view.h;
   const cx = box.x + box.w / 2;
   const tipLeft = Math.min(Math.max(16, cx - 145), view.w - 16 - 290);

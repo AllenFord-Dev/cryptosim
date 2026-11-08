@@ -14,7 +14,14 @@ import { LogoMark, Wordmark } from "./logo";
 export { Wordmark };
 
 export function MissionIcon({ icon, size = 44 }: { icon: MissionDef["icon"]; size?: number }) {
-  const I = { send: SendIcon, megaphone: MegaphoneIcon, chat: ChatIcon, key: KeyIcon, inbox: InboxIcon, chart: MarketIcon }[icon];
+  const I = {
+    send: SendIcon,
+    megaphone: MegaphoneIcon,
+    chat: ChatIcon,
+    key: KeyIcon,
+    inbox: InboxIcon,
+    chart: MarketIcon,
+  }[icon];
   return (
     <div className="flex shrink-0 items-center justify-center rounded-[14px] bg-bg" style={{ width: size, height: size }}>
       <I size={Math.round(size / 2)} color="#5521F5" />
@@ -30,11 +37,7 @@ export function CoinRow({ id, sub, value, change, last }: { id: string; sub: str
   const stable = c.kind === "Stablecoin";
   const tone = stable || Math.abs(change) < 0.05 ? "text-muted" : change >= 0 ? "text-up" : "text-down";
   return (
-    <Link
-      data-coach={coach}
-      href={`/coin/${id}`}
-      className={`flex items-center gap-3 py-2.5 ${last ? "" : "border-b border-line"}`}
-    >
+    <Link data-coach={coach} href={`/coin/${id}`} className={`flex items-center gap-3 py-2.5 ${last ? "" : "border-b border-line"}`}>
       <CoinMark id={id} />
       <div className="min-w-0 flex-1">
         <div className="text-[15px] font-bold">{c.name}</div>
@@ -57,13 +60,14 @@ export function holdingSub(id: string, qty: number) {
 export function PriceSource() {
   const { source, updatedAt } = usePrices();
   if (source === "loading") return <p className="px-1 text-[12px] text-faint">Loading prices…</p>;
-  const time = new Date(updatedAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  const time = new Date(updatedAt).toLocaleTimeString([], {
+    hour: "numeric",
+    minute: "2-digit",
+  });
   return (
     <p className="px-1 text-[12px] leading-[1.45] text-muted">
-      {source === "live"
-        ? `Live prices from CoinGecko · updated ${time}`
-        : "Live prices are unavailable right now, so these are sample prices."}{" "}
-      All money in CryptoSim is practice money.
+      {source === "live" ? `Live prices from CoinGecko · updated ${time}` : "Live prices are unavailable right now, so these are sample prices."} All
+      money in CryptoSim is practice money.
     </p>
   );
 }
@@ -82,13 +86,7 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
       <div className="flex flex-col gap-2.5 pt-4">
         {q.options.map((o, i) => {
           const chosen = picked === i;
-          const cls = show
-            ? o.correct
-              ? "border-up bg-up-soft"
-              : chosen
-                ? "border-down bg-down-soft"
-                : "opacity-60"
-            : "";
+          const cls = show ? (o.correct ? "border-up bg-up-soft" : chosen ? "border-down bg-down-soft" : "opacity-60") : "";
           return (
             <button
               key={o.label}
@@ -116,7 +114,9 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
               {q.options[picked].correct ? `+$${DAILY_REWARD} practice money added.` : "No reward this time. Come back tomorrow for a new one."}
             </p>
           )}
-          {picked === null && doneToday && <p className="pt-2 text-[13px] font-bold text-muted">You&apos;ve done today&apos;s check. New one tomorrow.</p>}
+          {picked === null && doneToday && (
+            <p className="pt-2 text-[13px] font-bold text-muted">You&apos;ve done today&apos;s check. New one tomorrow.</p>
+          )}
         </div>
       )}
       <button onClick={onClose} className="btn btn-dark mt-4">
@@ -170,6 +170,7 @@ export function Splash() {
 export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
   const { state, dispatch } = useApp();
   const [step, setStep] = useState(0);
+  const [leaving, setLeaving] = useState(false);
   const [name, setName] = useState(state.name);
   if (step === 0) {
     // The logo lands and holds where it ends up; then the headline and button slide up from the bottom edge.
@@ -198,58 +199,81 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
     );
   }
 
+  // Slide the name screen off to the left, revealing Home, then start the guided first trade.
   const save = (n: string) => {
-    dispatch({ type: "onboard", name: n });
-    onDone?.();
+    if (leaving) return;
+    setLeaving(true);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    setTimeout(
+      () => {
+        dispatch({ type: "onboard", name: n });
+        onDone?.();
+      },
+      reduced ? 0 : 380,
+    );
   };
   return (
-    <div className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-white pb-[calc(16px+var(--safe-bottom))] pt-[calc(8px+var(--safe-top))]">
-      <div className="flex h-12 items-center justify-between px-2">
-        <button onClick={() => setStep(0)} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full">
-          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#12111A" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-            <path d="M15 5l-7 7 7 7" />
-          </svg>
-        </button>
-        <button onClick={() => save("")} className="h-11 px-4 text-[15px] font-semibold text-muted">
-          Skip
-        </button>
-      </div>
-      <form
-        className="flex flex-1 flex-col px-6"
-        onSubmit={(e) => {
-          e.preventDefault();
-          save(name);
-        }}
+    <>
+      {/* The welcome slides off to the left as the name screen pushes in. */}
+      {!leaving && <div aria-hidden className="onb-leave fixed inset-0 z-[59] mx-auto max-w-[430px]" style={{ background: BRAND_GRADIENT }} />}
+      <div
+        className={`${leaving ? "onb-leave" : "onb-enter"} fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-white pb-[calc(16px+var(--safe-bottom))] pt-[calc(8px+var(--safe-top))]`}
       >
-        <div className="anim-enter pt-4">
-          <h1 className="text-[30px] font-bold leading-[1.12] tracking-[-0.03em]">What should we call you?</h1>
-          <p className="pt-2 text-[16px] text-muted">Just a first name. It stays on this phone.</p>
-          <label htmlFor="onboard-name" className="sr-only">
-            First name
-          </label>
-          <input
-            id="onboard-name"
-            autoFocus
-            autoComplete="given-name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            maxLength={20}
-            placeholder="First name"
-            style={{ outline: "none" }}
-            className="mt-8 w-full border-b-2 border-track bg-transparent pb-2 text-[30px] font-bold tracking-[-0.02em] outline-none transition-colors placeholder:text-[#D4D1DE] focus:border-brand"
-          />
-        </div>
-        <div className="mt-auto">
-          <button type="submit" disabled={!name.trim()} className="btn btn-brand">
-            Continue
+        <div className="flex h-12 items-center justify-between px-2">
+          <button onClick={() => setStep(0)} aria-label="Back" className="flex h-11 w-11 items-center justify-center rounded-full">
+            <svg
+              width="22"
+              height="22"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="#12111A"
+              strokeWidth="2.4"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              aria-hidden
+            >
+              <path d="M15 5l-7 7 7 7" />
+            </svg>
+          </button>
+          <button onClick={() => save("")} className="h-11 px-4 text-[15px] font-semibold text-muted">
+            Skip
           </button>
         </div>
-      </form>
-    </div>
+        <form
+          className="flex flex-1 flex-col px-6"
+          onSubmit={(e) => {
+            e.preventDefault();
+            save(name);
+          }}
+        >
+          <div className="anim-enter pt-4">
+            <h1 className="text-[30px] font-bold leading-[1.12] tracking-[-0.03em]">What should we call you?</h1>
+            <p className="pt-2 text-[16px] text-muted">Just a first name. It stays on this phone.</p>
+            <label htmlFor="onboard-name" className="sr-only">
+              First name
+            </label>
+            <input
+              id="onboard-name"
+              autoFocus
+              autoComplete="given-name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              maxLength={20}
+              placeholder="First name"
+              style={{ outline: "none" }}
+              className="mt-8 w-full border-b-2 border-track bg-transparent pb-2 text-[30px] font-bold tracking-[-0.02em] outline-none transition-colors placeholder:text-[#D4D1DE] focus:border-brand"
+            />
+          </div>
+          <div className="mt-auto">
+            <button type="submit" disabled={!name.trim()} className="btn btn-brand">
+              Continue
+            </button>
+          </div>
+        </form>
+      </div>
+    </>
   );
 }
-
-
 
 // Home's one next-step card: habit progress plus the single action that builds the next habit.
 export function HabitCard() {

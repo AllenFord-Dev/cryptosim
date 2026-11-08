@@ -123,7 +123,7 @@ body {
 
 .anim-enter { animation: enter 0.3s ease-out both; }
 .anim-sheet { animation: sheetUp 0.42s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
-.anim-dim { animation: dimIn 0.25s ease both; }
+.anim-dim { animation: dimIn 0.35s ease both; }
 .anim-pop { animation: pop 0.55s ease-out both; }
 .anim-caret { animation: blink 1s step-end infinite; }
 .bar-fill { transition: width 1s cubic-bezier(0.2, 0.8, 0.2, 1); }
@@ -170,6 +170,11 @@ html[data-launch] .splash { animation: launchOut 0.25s ease 1.55s forwards; }
 @keyframes launchZoom { to { transform: scale(18); opacity: 0; } }
 @keyframes launchOut { to { opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { html[data-launch] .splash-brand, html[data-launch] .splash, html[data-launch] .splash .logo-coin, html[data-launch] .splash .logo-spark, html[data-launch] .splash-name { animation: none !important; } }
+@keyframes onbIn { from { transform: translateX(100%); } to { transform: none; } }
+@keyframes onbOut { to { transform: translateX(-100%); } }
+.onb-enter { animation: onbIn 0.4s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.onb-leave { animation: onbOut 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+@media (prefers-reduced-motion: reduce) { .onb-enter, .onb-leave { animation: none !important; } }
 @keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
 html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
 .splash-leave .logo-lock-wrap { animation: lockOff 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
