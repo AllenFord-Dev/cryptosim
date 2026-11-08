@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { CoinRow, HabitCard, Onboarding, PriceSource, holdingSub } from "@/components/bits";
 import { BoltIcon } from "@/components/icons";
 import { HeaderButton, TabScreen, useUI } from "@/components/shell";
@@ -13,6 +14,7 @@ import { todayKey, useApp } from "@/lib/store";
 
 export default function Home() {
   const { state, ready } = useApp();
+  const router = useRouter();
   const { quotes } = usePrices();
   const [range, setRange] = useState<RangeKey>("1M");
   const history = useHistory(RANGES.find((r) => r.key === range)!.days, Object.keys(state.holdings));
@@ -21,6 +23,10 @@ export default function Home() {
   const dailyReady = state.daily.last !== todayKey();
   const series = p.series;
   const up = p.result >= 0;
+
+  useEffect(() => {
+    if (ready && state.onboarded && !state.starterDone) router.replace("/start");
+  }, [ready, state.onboarded, state.starterDone, router]);
 
   if (ready && !state.onboarded) return <Onboarding />;
 
@@ -41,7 +47,7 @@ export default function Home() {
               {Math.abs(p.result) < 0.005 ? "—" : up ? "▲" : "▼"} {usd(Math.abs(p.result))} ({Math.abs(p.resultPct).toFixed(1)}%){" "}
               <span className="font-medium text-muted">from the market</span>
             </div>
-            <div className="text-[12px] font-medium text-muted">Practice money · results reflect the market, not skill</div>
+            <div className="text-[12px] font-medium text-muted">Results reflect the market, not skill</div>
           </div>
           <div className="pt-3.5">
             {p.positions.length > 0 ? (

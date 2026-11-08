@@ -35,7 +35,7 @@ export type MissionDef = {
   minutes: number;
   reward: number;
   loss: number;
-  icon: "send" | "megaphone" | "chat" | "key" | "inbox";
+  icon: "send" | "megaphone" | "chat" | "key" | "inbox" | "chart";
   flag?: "hype" | "phrase";
   realWallet: { title: string; points: string[] };
   build: (r: Rand) => Step[];
@@ -78,7 +78,7 @@ export const MISSIONS: MissionDef[] = [
     id: "pay-back",
     title: "Pay a friend back",
     blurb: "Send money to the right person, on the right network, without falling for a look-alike address.",
-    skills: ["sending", "addresses"],
+    skills: ["sending"],
     minutes: 4,
     reward: 25,
     loss: 40,
@@ -243,7 +243,7 @@ export const MISSIONS: MissionDef[] = [
     id: "hype-pump",
     title: "The hype pump",
     blurb: "A coin is 'going to the moon' and everyone's posting about it. Practice saying no.",
-    skills: ["scams", "trading"],
+    skills: ["scams"],
     minutes: 3,
     reward: 25,
     loss: 100,
@@ -383,7 +383,7 @@ export const MISSIONS: MissionDef[] = [
     id: "fake-support",
     title: "The fake support DM",
     blurb: "'Support' says your wallet is at risk and needs you to verify it. Practice spotting the trap.",
-    skills: ["scams", "setup"],
+    skills: ["scams"],
     minutes: 4,
     reward: 25,
     loss: 150,
@@ -647,7 +647,7 @@ export const MISSIONS: MissionDef[] = [
     id: "receiving",
     title: "Get paid for a gig",
     blurb: "A client wants to pay you in crypto. Practice sharing the right details and reading the payment.",
-    skills: ["receiving", "addresses"],
+    skills: ["receiving"],
     minutes: 3,
     reward: 25,
     loss: 0,
@@ -771,6 +771,134 @@ export const MISSIONS: MissionDef[] = [
                 title: "No bank involved",
                 why: "Crypto transfers are confirmed by the blockchain network, not a bank. That's why no bank can reverse them either.",
                 real: "Knowing who confirms a payment tells you who can (and can't) help.",
+              },
+            },
+          ]),
+        },
+      ];
+    },
+  },
+  {
+    id: "the-dip",
+    title: "The dip",
+    blurb: "You bought, and the price dropped. Practice staying calm, reading fees, and sticking to a plan.",
+    skills: ["trading"],
+    minutes: 3,
+    reward: 25,
+    loss: 60,
+    icon: "chart",
+    realWallet: {
+      title: "In a real wallet",
+      points: [
+        "Daily swings of 5–10% are normal for most coins. Decide your plan before you buy.",
+        "Selling on a dip turns a paper loss into a real one, and you pay fees twice.",
+        "Fees and spreads differ a lot between apps. Always open the details before confirming.",
+      ],
+    },
+    build: (r) => {
+      const coin = pick(r, ["Bitcoin", "Ethereum", "Solana"]);
+      const amount = pick(r, [100, 150, 200]);
+      const drop = pick(r, [6, 8, 11]);
+      const feePct = pick(r, [1.5, 2, 2.5]);
+      return [
+        {
+          id: "fees",
+          kicker: "Step 1 · Before you buy",
+          prompt: `You're about to buy $${amount} of ${coin}. What do you check first?`,
+          visuals: [
+            {
+              type: "rows",
+              title: "Review order",
+              rows: [
+                { label: "You pay", value: `$${amount}.00` },
+                { label: "Fees and spread", value: "See details ›", tone: "bad" },
+                { label: `You get about`, value: `$${(amount * (1 - feePct / 100)).toFixed(2)} of ${coin}` },
+              ],
+            },
+          ],
+          options: shuffle(r, [
+            {
+              id: "fees",
+              label: "Open the fee details and see what I'm actually paying",
+              correct: true,
+              good: `Right. Here, fees and spread take $${((amount * feePct) / 100).toFixed(2)}, which is ${feePct}% gone before the price moves at all.`,
+            },
+            {
+              id: "fast",
+              label: "Confirm fast before the price changes",
+              correct: false,
+              mistake: {
+                title: "Speed costs you",
+                why: `Rushing is how fees surprise people. On this order, ${feePct}% disappears the moment you buy, and you'd never have looked.`,
+                real: "About 1 in 5 crypto owners has been surprised by fees.",
+              },
+            },
+            {
+              id: "max",
+              label: "Buy more so the fee is worth it",
+              correct: false,
+              mistake: {
+                title: "Percentage fees grow with you",
+                why: "Most fees are a percentage, so buying more just pays more. Decide the amount from your plan, not the fee.",
+                real: "Bigger orders mean bigger fees, and bigger losses on a swing.",
+              },
+            },
+          ]),
+        },
+        {
+          id: "drop",
+          kicker: "Step 2 · An hour later",
+          prompt: `${coin} is down ${drop}% since you bought. What do you do?`,
+          visuals: [{ type: "drop", coin, from: `$${amount}.00`, to: `$${(amount * (1 - drop / 100)).toFixed(2)}`, change: `−${drop}%` }],
+          options: shuffle(r, [
+            {
+              id: "plan",
+              label: "Nothing. Swings like this are normal, and I'm sticking to my plan",
+              correct: true,
+              good: "Calm call. A drop like this happens often, and nothing about the coin changed in an hour.",
+            },
+            {
+              id: "sell",
+              label: "Sell everything before it drops more",
+              correct: false,
+              mistake: {
+                title: "That's panic-selling",
+                why: `Selling now locks in the ${drop}% loss and you pay fees again on the way out. Swings like this often reverse, and you'd be out.`,
+                real: "Panic-selling after a dip is one of the most common ways beginners lose money.",
+              },
+            },
+            {
+              id: "double",
+              label: "Buy twice as much to make it back faster",
+              correct: false,
+              mistake: {
+                title: "Chasing losses",
+                why: "Buying more just to recover a loss is an emotional bet, not a plan. If it keeps falling, the loss doubles.",
+                real: "\"Making it back\" is how a small loss turns into a big one.",
+              },
+            },
+          ]),
+        },
+        {
+          id: "tip",
+          kicker: "Step 3 · The tip",
+          prompt: "A friend texts: \"Sell now, I heard it's going to crash tonight.\" What do you do?",
+          visuals: [{ type: "chat", app: "Messages", contact: "Friend", messages: [{ from: "them", text: "sell now!! someone in a discord said it's crashing tonight" }] }],
+          options: shuffle(r, [
+            {
+              id: "ignore",
+              label: "Thank them, and stick to my plan",
+              correct: true,
+              good: "Right. Rumors aren't information, and nobody can reliably predict tonight's price.",
+            },
+            {
+              id: "listen",
+              label: "Sell, just in case",
+              correct: false,
+              mistake: {
+                title: "Rumors move people, not facts",
+                why: "Unverified tips spread fastest when prices are already down, and they push people into selling at the worst time.",
+                real: "Some \"crash\" rumors are spread on purpose so others can buy cheap.",
               },
             },
           ]),

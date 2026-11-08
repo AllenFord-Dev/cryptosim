@@ -1,15 +1,10 @@
+import { Wordmark } from "./logo";
+
 // Shown beside the phone frame on laptops, so a recruiter knows what they're looking at.
 export function DesktopAside() {
   return (
     <aside className="device-aside">
-      <div className="flex items-center gap-2.5">
-        <span className="flex h-9 w-9 items-center justify-center rounded-[11px] bg-[linear-gradient(150deg,#7B4DFF_0%,#5521F5_50%,#2F0FA6_100%)]">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden>
-            <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
-          </svg>
-        </span>
-        <span className="text-[18px] font-extrabold tracking-[-0.02em]">CryptoSim</span>
-      </div>
+      <Wordmark size={22} />
       <h2 className="pt-6 text-[40px] font-extrabold leading-[1.04] tracking-[-0.035em] text-ink">
         Make your first crypto mistakes with fake money.
       </h2>

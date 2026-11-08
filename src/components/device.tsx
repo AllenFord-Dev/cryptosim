@@ -1,13 +1,20 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 
 // On a laptop, the app runs inside a realistic iPhone frame. On a phone, every wrapper here is
 // `display: contents`, so the app is simply full-screen.
 export function Device({ children }: { children: React.ReactNode }) {
   const scroller = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const [time, setTime] = useState("");
+  useEffect(() => {
+    const tick = () => setTime(new Date().toLocaleTimeString([], { hour: "numeric", minute: "2-digit" }).replace(/\s?[AP]M$/i, ""));
+    tick();
+    const id = setInterval(tick, 15_000);
+    return () => clearInterval(id);
+  }, []);
   useEffect(() => {
     scroller.current?.scrollTo(0, 0);
   }, [pathname]);
@@ -19,7 +26,7 @@ export function Device({ children }: { children: React.ReactNode }) {
       <div className="device-btn device-btn-power" aria-hidden />
       <div className="device-screen">
         <div className="device-status" aria-hidden>
-          <span>9:41</span>
+          <span className="tabular">{time}</span>
           <span className="flex items-center gap-[6px]">
             <svg width="18" height="12" viewBox="0 0 18 12">
               <rect x="0" y="8" width="3" height="4" rx="1" fill="currentColor" />

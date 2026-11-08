@@ -4,15 +4,17 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { COINS, usd, pct, qtyFmt } from "@/lib/coins";
 import { dailyFor } from "@/lib/daily";
-import { MISSIONS, MissionDef } from "@/lib/missions";
+import { MissionDef } from "@/lib/missions";
 import { usePrices } from "@/lib/prices";
 import { readiness, upNext } from "@/lib/progress";
-import { DAILY_REWARD, HabitId, STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
-import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MegaphoneIcon, SendIcon, SparkleIcon } from "./icons";
+import { DAILY_REWARD, STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
+import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MarketIcon, MegaphoneIcon, SendIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet, Spark } from "./ui";
+import { Wordmark } from "./logo";
+export { Wordmark };
 
 export function MissionIcon({ icon, size = 44 }: { icon: MissionDef["icon"]; size?: number }) {
-  const I = { send: SendIcon, megaphone: MegaphoneIcon, chat: ChatIcon, key: KeyIcon, inbox: InboxIcon }[icon];
+  const I = { send: SendIcon, megaphone: MegaphoneIcon, chat: ChatIcon, key: KeyIcon, inbox: InboxIcon, chart: MarketIcon }[icon];
   return (
     <div className="flex shrink-0 items-center justify-center rounded-[14px] bg-bg" style={{ width: size, height: size }}>
       <I size={Math.round(size / 2)} color="#5521F5" />
@@ -125,29 +127,6 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
 export const BRAND_GRADIENT =
   "radial-gradient(120% 70% at 85% 0%, rgba(160,130,255,0.55) 0%, rgba(160,130,255,0) 60%), linear-gradient(165deg, #6A3BFF 0%, #5521F5 38%, #3412B8 72%, #1D0868 100%)";
 
-export function Wordmark({ size = 22, light = true }: { size?: number; light?: boolean }) {
-  return (
-    <span className="flex items-center gap-2.5">
-      <span
-        className="flex items-center justify-center rounded-[30%]"
-        style={{
-          width: size * 1.6,
-          height: size * 1.6,
-          background: light ? "rgba(255,255,255,0.16)" : BRAND_GRADIENT,
-          boxShadow: light ? "inset 0 0 0 1px rgba(255,255,255,0.28)" : undefined,
-        }}
-      >
-        <svg width={size} height={size} viewBox="0 0 24 24" fill="#fff" aria-hidden>
-          <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
-        </svg>
-      </span>
-      <span className={`font-extrabold tracking-[-0.03em] ${light ? "text-white" : "text-ink"}`} style={{ fontSize: size }}>
-        CryptoSim
-      </span>
-    </span>
-  );
-}
-
 // Brief launch screen, once per visit.
 export function Splash() {
   const [phase, setPhase] = useState<"show" | "fade" | "gone">("gone");
@@ -159,8 +138,8 @@ export function Splash() {
     } catch {}
     if (seen) return;
     setPhase("show");
-    const t1 = setTimeout(() => setPhase("fade"), 1100);
-    const t2 = setTimeout(() => setPhase("gone"), 1500);
+    const t1 = setTimeout(() => setPhase("fade"), 1900);
+    const t2 = setTimeout(() => setPhase("gone"), 2300);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
@@ -173,9 +152,7 @@ export function Splash() {
       className={`fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center transition-opacity duration-400 ${phase === "fade" ? "opacity-0" : "opacity-100"}`}
       style={{ background: BRAND_GRADIENT }}
     >
-      <div className="anim-pop">
-        <Wordmark size={30} />
-      </div>
+      <Wordmark size={34} tone="light" animate />
       <p className="absolute bottom-[calc(40px+var(--safe-bottom))] text-[13px] font-semibold text-white/70">Real prices · practice money</p>
     </div>
   );
@@ -205,7 +182,7 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
         className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col overflow-hidden px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(20px+var(--safe-top))] text-white"
         style={{ background: BRAND_GRADIENT }}
       >
-        <Wordmark size={20} />
+        <Wordmark size={22} tone="light" />
         <div className="relative flex flex-1 items-center justify-center">
           <WelcomeArt />
         </div>
@@ -349,27 +326,21 @@ export function HabitCard() {
   const h = habits(state);
   const r = readiness(state);
   const next = upNext(state);
-  // Prefer the habit a mission teaches, so new users start with a mission, then market habits.
-  const order: HabitId[] = ["addresses", "phrase", "hype", "fees", "calm"];
-  const nextHabit = order.map((id) => h.list.find((x) => x.id === id)!).find((x) => x.status !== "locked-in");
-  const mission = nextHabit ? MISSIONS.find((m) => nextHabit.href === `/missions/${m.id}`) : undefined;
 
+  let kicker = `Safe habits · ${h.lockedIn} of ${h.total} locked in`;
   let title: string;
   let sub: string;
   let href: string;
-  let kicker = `Safe habits · ${h.lockedIn} of ${h.total} locked in`;
-  if (nextHabit) {
-    title = nextHabit.name;
-    sub = mission ? `Lock it in: ${mission.title} · ${mission.minutes} min` : nextHabit.how;
-    href = nextHabit.href;
-  } else if (next) {
-    title = next.mission.title;
-    sub = `Practice ${next.mission.skills.length > 1 ? "skills" : "a skill"} you haven't yet · ${next.mission.minutes} min`;
-    href = `/missions/${next.mission.id}`;
+  let cta = "Start";
+  if (next) {
+    title = next.target.title;
+    sub = `${next.target.label} · ${next.skill.name} · ${next.target.minutes} min`;
+    href = next.target.href;
+    cta = next.step === "learn" ? "Learn" : next.step === "prove" ? "Prove" : "Start";
   } else {
-    kicker = `All ${h.total} safe habits locked in`;
+    kicker = "Every skill proven";
     title = state.readiness?.passed ? "Try a real test send" : "Readiness check";
-    sub = r.unlocked ? "See if you're ready for one small, real test" : "Practice the last few skills first";
+    sub = r.unlocked ? "See if you're ready for one small, real test" : "Lock in a few more habits first";
     href = "/ready";
   }
 
@@ -390,7 +361,7 @@ export function HabitCard() {
           <span className="text-[13px] text-muted">{sub}</span>
         </div>
         <Link href={href} className="flex h-10 shrink-0 items-center rounded-full bg-brand px-4 text-[14px] font-bold text-white">
-          {mission || next || !nextHabit ? "Start" : "Go"}
+          {cta}
         </Link>
       </div>
     </div>

@@ -6,10 +6,11 @@ import { CheckIcon, ChevronIcon, LockIcon, ShieldIcon } from "@/components/icons
 import { TabScreen } from "@/components/shell";
 import { Sheet } from "@/components/ui";
 import { readiness } from "@/lib/progress";
-import { Level, SKILLS, levelOf } from "@/lib/skills";
+import { SKILLS } from "@/lib/skills";
+import { skillStatus } from "@/lib/progress";
 import { Habit, habits, useApp } from "@/lib/store";
 
-const LEVELS: Level[] = ["New", "Practicing", "Practiced"];
+const LEVELS = ["Learned", "Practiced", "Proven"];
 
 export default function Skills() {
   const { state } = useApp();
@@ -64,21 +65,21 @@ export default function Skills() {
           <h2 id="skillmap" className="text-[20px] font-extrabold tracking-[-0.02em]">
             Skill map
           </h2>
-          <p className="pt-0.5 text-[13px] text-muted">How much you&apos;ve practiced each part of using crypto.</p>
+          <p className="pt-0.5 text-[13px] text-muted">Learn it, practice it, then prove it on a version you haven&apos;t seen.</p>
         </div>
         <div className="pt-2">
           {SKILLS.map((s) => {
-            const lvl = levelOf(state.skills[s.id]);
-            const idx = LEVELS.indexOf(lvl);
+            const st = skillStatus(state, s);
+            const label = st.proven ? "Proven" : st.practiced ? "Practiced" : st.learned ? "Learned" : "Not started";
             return (
-              <Link key={s.id} href={s.href} className="flex flex-col gap-2 px-5 py-3.5 active:bg-bg">
+              <Link key={s.id} href={`/skills/${s.id}`} className="flex flex-col gap-2 px-5 py-3.5 active:bg-bg">
                 <div className="flex items-baseline justify-between gap-3">
                   <span className="text-[16px] font-bold">{s.name}</span>
-                  <span className={`text-[13px] font-bold ${idx === 2 ? "text-up" : idx === 1 ? "text-brand" : "text-faint"}`}>{lvl}</span>
+                  <span className={`text-[13px] font-bold ${st.proven ? "text-ink" : st.done ? "text-brand" : "text-faint"}`}>{label}</span>
                 </div>
-                <div className="grid grid-cols-3 gap-1" role="img" aria-label={`${s.name}: ${lvl}`}>
+                <div className="grid grid-cols-3 gap-1" role="img" aria-label={`${s.name}: ${label}`}>
                   {LEVELS.map((l, i) => (
-                    <span key={l} className={`h-1.5 rounded-full ${i <= idx && state.skills[s.id] > 0 ? (idx === 2 ? "bg-up" : "bg-brand") : "bg-[#E8E6EF]"}`} />
+                    <span key={l} className={`h-1.5 rounded-full ${i < st.done ? (st.proven ? "bg-ink" : "bg-brand") : "bg-[#E8E6EF]"}`} />
                   ))}
                 </div>
                 <span className="text-[13px] text-muted">{s.about}</span>

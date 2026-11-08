@@ -39,6 +39,9 @@ export type State = {
   daily: { last: string; streak: number; correct: number; seen: number };
   readiness: { passed: boolean; score: number; at: number } | null;
   graduation: { steps: string[]; tx: string; at: number } | null;
+  starterDone: boolean;
+  lessons: Record<string, boolean>;
+  proven: Record<string, boolean>;
 };
 
 const initialSkills = SKILLS.reduce((acc, s) => ({ ...acc, [s.id]: 0 }), {} as Record<SkillId, number>);
@@ -59,6 +62,9 @@ export const initialState: State = {
   daily: { last: "", streak: 0, correct: 0, seen: 0 },
   readiness: null,
   graduation: null,
+  starterDone: false,
+  lessons: {},
+  proven: {},
 };
 
 export type MissionResult = {
@@ -70,6 +76,7 @@ export type MissionResult = {
   skillDeltas: Partial<Record<SkillId, number>>;
   hype?: "resisted" | "fell";
   phrase?: "kept" | "shared";
+  prove?: string;
 };
 
 type Action =
@@ -82,6 +89,8 @@ type Action =
   | { type: "readiness"; score: number; passed: boolean }
   | { type: "graduation-step"; step: string; done: boolean }
   | { type: "graduation-tx"; tx: string }
+  | { type: "lesson"; skill: string }
+  | { type: "starter" }
   | { type: "reset" };
 
 export const todayKey = () => {
@@ -94,7 +103,7 @@ function reducer(state: State, action: Action): State {
     case "load":
       return action.state;
     case "reset":
-      return { ...initialState, name: state.name, onboarded: true };
+      return { ...initialState, name: state.name, onboarded: true, starterDone: true };
     case "onboard":
       return { ...state, name: action.name.trim().slice(0, 20), onboarded: true };
     case "trade": {
@@ -134,6 +143,10 @@ function reducer(state: State, action: Action): State {
         skills: { ...state.skills, trading: clamp(state.skills.trading + tradingDelta - (panic ? 6 : 0)) },
       };
     }
+    case "lesson":
+      return { ...state, lessons: { ...state.lessons, [action.skill]: true } };
+    case "starter":
+      return { ...state, starterDone: true };
     case "mistake":
       return { ...state, lastMistake: action.mistake };
     case "mission": {
@@ -160,6 +173,7 @@ function reducer(state: State, action: Action): State {
         phrase: action.phrase
           ? { seen: state.phrase.seen + 1, kept: state.phrase.kept + (action.phrase === "kept" ? 1 : 0) }
           : state.phrase,
+        proven: action.prove && clean ? { ...state.proven, [action.prove]: true } : state.proven,
       };
     }
     case "daily": {

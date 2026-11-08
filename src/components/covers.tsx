@@ -1,5 +1,5 @@
 import { MissionDef } from "@/lib/missions";
-import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MegaphoneIcon, SendIcon } from "./icons";
+import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MarketIcon, MegaphoneIcon, SendIcon } from "./icons";
 
 // Each mission gets its own small scene, drawn from the scenario itself.
 export const COVER: Record<string, { bg: string; ink: string }> = {
@@ -8,11 +8,12 @@ export const COVER: Record<string, { bg: string; ink: string }> = {
   "fake-support": { bg: "#FCE9EC", ink: "#B4233C" },
   backup: { bg: "#E6F5EC", ink: "#11734A" },
   receiving: { bg: "#FFF5D6", ink: "#8A6100" },
+  "the-dip": { bg: "#E6F4EF", ink: "#0F6B47" },
 };
 
 export function MissionThumb({ mission, size = 52 }: { mission: MissionDef; size?: number }) {
   const t = COVER[mission.id] ?? { bg: "#F1ECFF", ink: "#5521F5" };
-  const I = { send: SendIcon, megaphone: MegaphoneIcon, chat: ChatIcon, key: KeyIcon, inbox: InboxIcon }[mission.icon];
+  const I = { send: SendIcon, megaphone: MegaphoneIcon, chat: ChatIcon, key: KeyIcon, inbox: InboxIcon, chart: MarketIcon }[mission.icon];
   return (
     <div className="flex shrink-0 items-center justify-center rounded-[16px]" style={{ width: size, height: size, background: t.bg }} aria-hidden>
       <I size={Math.round(size * 0.46)} color={t.ink} />
@@ -74,6 +75,20 @@ export function MissionCover({ id }: { id: string }) {
           <span className="col-span-3 pt-1 text-[11px] font-bold" style={{ color: t.ink }}>
             Screenshot, notes app, or paper?
           </span>
+        </div>
+      )}
+      {id === "the-dip" && (
+        <div className="absolute inset-x-6 top-5 rounded-[16px] bg-white p-3 shadow-[0_10px_24px_-14px_rgba(0,0,0,0.3)]">
+          <div className="flex items-baseline justify-between">
+            <span className="text-[12px] font-bold">Your Bitcoin</span>
+            <span className="rounded-full bg-[#FDF0EB] px-2 py-0.5 text-[11px] font-bold text-[#C4320A]">−8% today</span>
+          </div>
+          <svg viewBox="0 0 200 40" className="mt-1.5 h-[36px] w-full" aria-hidden>
+            <path d="M0 10 L20 12 L40 8 L60 14 L80 11 L100 18 L120 16 L140 26 L160 24 L180 31 L200 30" fill="none" stroke="#C4320A" strokeWidth="2.2" strokeLinejoin="round" />
+          </svg>
+          <div className="pt-1 text-[11px] font-bold" style={{ color: t.ink }}>
+            Sell now, or stick to the plan?
+          </div>
         </div>
       )}
       {id === "receiving" && (
