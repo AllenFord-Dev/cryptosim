@@ -194,14 +194,14 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
         style={{ background: BRAND_GRADIENT }}
       >
         <Wordmark size={22} tone="light" />
-        <div className="relative flex flex-1 items-center justify-center">
+        <h1 className="anim-enter pt-8 text-[44px] font-extrabold leading-[1.02] tracking-[-0.04em] [text-wrap:balance]">Learn crypto before it costs you.</h1>
+        <div className="relative flex flex-1 items-end justify-end pb-6">
           <WelcomeArt />
         </div>
-        <h1 className="anim-enter text-[36px] font-extrabold leading-[1.04] tracking-[-0.035em]">Practice crypto with real prices and fake money.</h1>
-        <button onClick={() => setStep(1)} className="btn mt-7 bg-white text-brand">
+        <button onClick={() => setStep(1)} className="btn bg-white text-brand">
           Get started
         </button>
-        <p className="pt-3 text-center text-[12px] font-semibold text-white/60">No sign-up. Nothing to deposit.</p>
+        <p className="pt-3 text-center text-[12px] font-semibold text-white/60">Takes 2 minutes</p>
       </div>
     );
   }
@@ -257,28 +257,25 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
   );
 }
 
+// The most expensive first-timer mistake: handing a "support" account your recovery phrase.
 function WelcomeArt() {
   return (
-    <div className="relative h-[280px] w-full max-w-[330px]" aria-hidden>
-      <div className="anim-enter absolute left-1/2 top-[18px] w-[250px] -translate-x-1/2 rounded-[24px] bg-white/[0.14] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)] backdrop-blur-md">
-        <div className="text-[12px] font-semibold text-white/70">Portfolio</div>
-        <div className="tabular text-[34px] font-extrabold tracking-[-0.035em]">$1,000.00</div>
-        <svg viewBox="0 0 210 54" className="mt-2 w-full" aria-hidden>
-          <path d="M0 44 L14 40 L26 42 L38 33 L50 36 L62 27 L74 30 L86 22 L98 26 L110 18 L122 21 L134 14 L146 19 L158 11 L170 15 L182 8 L196 10 L210 4" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" />
-        </svg>
-      </div>
-      <div className="anim-enter absolute left-0 top-[170px] flex items-center gap-2.5 rounded-[18px] bg-white px-3.5 py-2.5 text-ink shadow-[0_16px_40px_-12px_rgba(20,6,80,0.5)] [animation-delay:120ms]">
-        <CoinMark id="bitcoin" size={30} />
+    <div
+      className="anim-enter -mr-2 w-[268px] max-w-full rotate-[-4deg] rounded-[24px] bg-white p-4 text-ink shadow-[0_28px_56px_-20px_rgba(20,6,80,0.65)] [animation-delay:120ms]"
+      aria-hidden
+    >
+      <div className="flex items-center gap-2.5">
+        <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[#2C6BED] text-[13px] font-extrabold text-white">W</span>
         <div>
-          <div className="text-[13px] font-extrabold">Bitcoin</div>
-          <div className="text-[11px] font-semibold text-up">Bought $50</div>
+          <div className="text-[14px] font-extrabold leading-tight">Wallet Support ✓</div>
+          <div className="text-[11px] font-semibold text-muted">Direct message</div>
         </div>
       </div>
-      <div className="anim-enter absolute right-0 top-[196px] flex items-center gap-2 rounded-[18px] bg-white px-3.5 py-2.5 text-ink shadow-[0_16px_40px_-12px_rgba(20,6,80,0.5)] [animation-delay:220ms]">
-        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-up">
-          <CheckIcon size={13} color="#fff" />
-        </span>
-        <div className="text-[13px] font-extrabold">Scam spotted</div>
+      <div className="mt-2.5 rounded-[18px] rounded-bl-[6px] bg-bg px-3.5 py-2.5 text-[14px] leading-[1.35]">
+        Your wallet is locked. Reply with your 12-word phrase within 30 min to restore it.
+      </div>
+      <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-[10px] bg-down-soft px-2.5 py-1.5 text-[12px] font-extrabold text-down">
+        ✕ Real support never asks for this
       </div>
     </div>
   );
