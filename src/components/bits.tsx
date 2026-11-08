@@ -131,7 +131,8 @@ export const BRAND_GRADIENT =
 
 // Brief launch screen, once per visit.
 export function Splash() {
-  const [phase, setPhase] = useState<"show" | "leave" | "gone">("gone");
+  // Rendered on the server as a plain purple launch screen, so the page underneath never flashes.
+  const [phase, setPhase] = useState<"boot" | "show" | "leave" | "gone">("boot");
   const wrap = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let seen = false;
@@ -139,7 +140,7 @@ export function Splash() {
       seen = sessionStorage.getItem("cs-splash") === "1";
       sessionStorage.setItem("cs-splash", "1");
     } catch {}
-    if (seen) return;
+    if (seen) return setPhase("gone");
     setPhase("show");
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const root = document.documentElement;
@@ -162,18 +163,22 @@ export function Splash() {
     const lock = wrap.current?.querySelector(".logo-lock") as HTMLElement | null;
     const word = wrap.current?.querySelector(".logo-word-clip") as HTMLElement | null;
     if (lock && word) lock.style.setProperty("--half", `${(word.offsetWidth + parseFloat(getComputedStyle(word).marginLeft)) / 2}px`);
-  }, [phase === "gone"]);
+  }, [phase === "show"]);
   if (phase === "gone") return null;
   return (
     <div
       aria-hidden
-      className={`fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center ${phase === "leave" ? "splash-leave" : ""}`}
+      className={`splash fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center ${phase === "leave" ? "splash-leave" : ""}`}
       style={{ background: BRAND_GRADIENT }}
     >
-      <div ref={wrap} className="logo-lock-wrap">
-        <Wordmark size={34} tone="light" animate />
-      </div>
-      <p className="absolute bottom-[calc(40px+var(--safe-bottom))] text-[13px] font-semibold text-white/70">Real prices · practice money</p>
+      {phase !== "boot" && (
+        <>
+          <div ref={wrap} className="logo-lock-wrap">
+            <Wordmark size={34} tone="light" animate />
+          </div>
+          <p className="anim-enter absolute bottom-[calc(40px+var(--safe-bottom))] text-[13px] font-semibold text-white/70">Real prices · practice money</p>
+        </>
+      )}
     </div>
   );
 }

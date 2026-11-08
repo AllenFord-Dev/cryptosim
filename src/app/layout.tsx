@@ -29,7 +29,11 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Returning in the same session: hide the launch screen before first paint so nothing flashes. */}
+        <script dangerouslySetInnerHTML={{ __html: `try{if(sessionStorage.getItem("cs-splash")==="1")document.documentElement.dataset.nosplash="1"}catch(e){}` }} />
+      </head>
       <body>
         <AppProvider>
           <PricesProvider>

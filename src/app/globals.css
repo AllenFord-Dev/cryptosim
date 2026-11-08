@@ -151,6 +151,7 @@ body {
 .logo-lock { position: relative; animation: lockCenter 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.95s both; }
 .logo-lock > svg { position: relative; z-index: 2; }
 .splash-leave { animation: splashOut 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+html[data-nosplash] .splash { display: none; }
 @keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
 html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
 .splash-leave .logo-lock-wrap { animation: lockOff 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
