@@ -24,14 +24,14 @@ export const SKILLS: Skill[] = [
     name: "Protect your wallet",
     short: "Protect",
     about: "Save and guard the recovery phrase that controls your money.",
-    why: "About 1 in 10 crypto owners has lost access to a wallet (SEC survey, 2026).",
+    why: "About 1 in 10 people who've owned crypto say they lost a private key (SEC Investor Advocate research, 2026).",
     practice: ["backup"],
     prove: "backup",
     lesson: {
       cards: [
-        { title: "Your wallet has a master key", body: "When you make a wallet, it gives you a recovery phrase: 12 or 24 ordinary words. Those words are your money.", visual: "phrase" },
+        { title: "Your wallet has a master key", body: "Most self-custody wallets give you a recovery phrase: 12 or 24 ordinary words. Those words are your money.", visual: "phrase" },
         { title: "Whoever has the words, has the money", body: "There's no password reset and no bank to call. Lose the words and lose your phone, and the money is gone. Share them, and it can be taken.", visual: "phrase" },
-        { title: "Paper, in two safe places", body: "Write the words on paper and keep a second copy somewhere else. Never screenshot them, type them, or save them in notes or email.", visual: "phrase" },
+        { title: "Paper, in two safe places", body: "Write the words on paper and keep a second copy somewhere else. Never screenshot them or save them in notes or email. Only ever enter them into your own wallet app to restore it.", visual: "phrase" },
         { title: "Nobody real will ever ask", body: "Not support, not a website, not an app, not an AI chat. Anyone asking for your recovery phrase is trying to steal from you.", visual: "dm" },
       ],
       check: {
@@ -49,14 +49,14 @@ export const SKILLS: Skill[] = [
     name: "Send safely",
     short: "Send",
     about: "Right person, right address, right network, with a test first.",
-    why: "21% of crypto holders have sent money to the wrong address (Kraken, 2025).",
+    why: "21% of US crypto holders have sent crypto to the wrong address (Kraken survey, 2025).",
     practice: ["pay-back"],
     prove: "pay-back",
     lesson: {
       cards: [
         { title: "Sends can't be undone", body: "Once a crypto transfer goes through, nobody can reverse it: not your wallet, not the network, not a bank.", visual: "final" },
         { title: "Copy the address fresh, every time", body: "Get the address from the person, through a channel you trust. Scammers plant look-alike addresses in your history that match the first and last characters.", visual: "address" },
-        { title: "Match the network", body: "The same coin can live on different networks, like Base or Ethereum. If you send on a different one than they use, the money may never arrive.", visual: "network" },
+        { title: "Match the network", body: "The same coin can live on different networks, like Base or Ethereum. Send on a different one than they use and it won't show up where they're looking, and if it went to an exchange it may be stuck for good.", visual: "network" },
         { title: "New contact? Send $1 first", body: "A tiny test send costs cents in fees and catches wrong addresses and wrong networks before they cost you.", visual: "test" },
       ],
       check: {
@@ -98,13 +98,13 @@ export const SKILLS: Skill[] = [
     name: "Spot scams",
     short: "Scams",
     about: "Fake support, hype pumps and too-good-to-be-true offers.",
-    why: "Reported crypto fraud losses hit $11.4B in 2025 (FBI IC3).",
+    why: "Americans reported $11.4B in crypto-related scam losses to the FBI in 2025 (FBI IC3).",
     practice: ["fake-support", "hype-pump"],
     prove: "fake-support",
     lesson: {
       cards: [
         { title: "Urgency is the number one tell", body: "\"Last chance,\" \"within 30 minutes,\" \"before it's too late.\" Scams rush you so you don't stop to think.", visual: "urgency" },
-        { title: "Real support never DMs you first", body: "Checkmarks and logos are easy to fake. If \"support\" reaches out to you, it isn't support. Open the app yourself and find Help there.", visual: "dm" },
+        { title: "Real support never DMs you first", body: "Checkmarks and logos are easy to fake. Real support won't DM you on social media, and never asks for your phrase or for you to move funds. Open the app yourself and find Help there.", visual: "dm" },
         { title: "Guaranteed returns don't exist", body: "\"2% a day,\" \"double your crypto,\" \"risk-free.\" Real investments never guarantee returns.", visual: "returns" },
         { title: "Hype posts sell to you", body: "When strangers push a coin with huge gains, they often bought early and need you to buy so they can sell.", visual: "urgency" },
       ],
@@ -123,12 +123,12 @@ export const SKILLS: Skill[] = [
     name: "Buy and sell calmly",
     short: "Trade",
     about: "Know the fees, expect the swings, don't panic-sell.",
-    why: "About 1 in 5 crypto owners has been surprised by fees (SEC survey, 2026).",
+    why: "1 in 5 people who've owned crypto say high fees surprised them (SEC Investor Advocate research, 2026).",
     practice: ["the-dip"],
     prove: "the-dip",
     lesson: {
       cards: [
-        { title: "Swings are normal", body: "Crypto prices can move 5–10% in a single day. A drop doesn't mean you did something wrong.", visual: "swing" },
+        { title: "Swings are normal", body: "Moves of 5% or more in a day happen often, especially for smaller coins. A drop doesn't mean you did something wrong.", visual: "swing" },
         { title: "Fees cost you on every trade", body: "Apps charge a fee and build a spread into the price. Together they can take a few percent. Always open the details before you confirm.", visual: "fees" },
         { title: "Selling on a dip locks in the loss", body: "Selling right after a drop turns a paper loss into a real one. Decide your plan before you buy, not in the moment.", visual: "panic" },
       ],

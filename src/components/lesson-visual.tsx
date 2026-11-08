@@ -37,7 +37,7 @@ export function LessonVisual({ kind }: { kind?: LessonCard["visual"] }) {
           ].map(([n, ok]) => (
             <div key={n as string} className={`flex items-center justify-between rounded-[14px] bg-card px-4 py-3 text-[14px] font-bold ${ok ? "ring-2 ring-up" : "opacity-60"}`}>
               USDC on {n as string}
-              {ok ? <CheckIcon size={16} color="var(--color-up)" /> : <span className="text-[12px] text-down">may never arrive</span>}
+              {ok ? <CheckIcon size={16} color="var(--color-up)" /> : <span className="text-[12px] text-down">may not show up</span>}
             </div>
           ))}
         </div>

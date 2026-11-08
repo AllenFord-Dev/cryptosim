@@ -16,8 +16,8 @@ type Reveal =
   | { kind: "notest" };
 
 const STEP_NO: Record<Step, number> = { address: 1, network: 2, review: 3, test: 3, rest: 4 };
-const L2_FEE = "≈ $0.01";
-const ETH_FEE = "≈ $1.80";
+const L2_FEE = "< $0.01";
+const ETH_FEE = "≈ $0.15";
 
 export function WalletMission({
   seed,
@@ -48,7 +48,7 @@ export function WalletMission({
     const stage = r.kind === "address" ? "Address" : r.kind === "network" ? "Network" : "Test";
     const note = r.kind === "address" ? (r.how === "history" ? "Look-alike from history" : "Typed it wrong") : r.kind === "network" ? `Sent on ${r.sentOn}` : "Skipped the test";
     setNotes((n) => (n[stage] ? n : { ...n, [stage]: note }));
-    if (r.kind !== "notest") setLost((x) => x + s.amount);
+    if (r.kind === "address") setLost((x) => x + s.amount);
     setSheet(null);
     setReveal(r);
     setMistakes((n) => n + 1);
@@ -104,7 +104,7 @@ export function WalletMission({
     const sentOn = choice === "default" ? "Ethereum" : s.cheap;
     miss(
       { kind: "network", sentOn },
-      { title: "Wrong network", why: `${s.friend} uses ${s.network}. Sent on ${sentOn}, the USDC doesn't show up in their wallet.` },
+      { title: "Wrong network", why: `${s.friend} uses ${s.network}. Sent on ${sentOn}, it doesn't show up where they're looking, and getting it back takes work, if it's possible at all.` },
     );
   };
 
@@ -295,13 +295,14 @@ function RevealScreen({
   prove: boolean;
   onRewind: () => void;
 }) {
-  const lost = reveal.kind !== "notest";
+  const lost = reveal.kind === "address";
+  const bad = reveal.kind !== "notest";
   return (
     <Shell title={`Pay ${s.friend} back`}>
       <Notif from={s.friend} text={reveal.kind === "notest" ? "got it, thanks!" : "did you send it? nothing on my end"} />
       <div className="flex flex-1 flex-col items-center justify-center text-center">
         <div className="tabular text-[52px] font-extrabold leading-none tracking-[-0.045em]">−{s.amount} USDC</div>
-        <div className={`pt-2 text-[16px] font-extrabold ${lost ? "text-bad-ink" : "text-muted"}`}>
+        <div className={`pt-2 text-[16px] font-extrabold ${bad ? "text-bad-ink" : "text-muted"}`}>
           {reveal.kind === "address" ? "Sent to the wrong address" : reveal.kind === "network" ? `Sent on the wrong network` : "Sent · it arrived"}
         </div>
       </div>
@@ -324,6 +325,9 @@ function RevealScreen({
               </Row>
               <Row label={`${s.friend} uses`}>
                 <span className="font-bold">{s.network}</span>
+              </Row>
+              <Row label="Getting it back">
+                <span className="text-right font-extrabold text-bad-ink">Maybe, with work</span>
               </Row>
             </>
           )}
@@ -353,8 +357,9 @@ function RevealScreen({
           )}
           {reveal.kind === "network" && (
             <>
-              <b>Same coin, different network.</b> USDC exists on many networks. {s.friend}&apos;s wallet is watching {s.network}, so money sent
-              on {reveal.sentOn} doesn&apos;t show up there. Ask which network before you send.
+              <b>Same coin, different network.</b> USDC exists on many networks, and {s.friend}&apos;s wallet is watching {s.network}. If {s.friend} uses a
+              self-custody wallet, they can usually find it by switching networks. If it went to an exchange, it may be stuck for good. Ask which network
+              before you send.
             </>
           )}
           {reveal.kind === "notest" && (

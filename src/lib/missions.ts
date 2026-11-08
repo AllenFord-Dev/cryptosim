@@ -198,7 +198,7 @@ export const MISSIONS: MissionDef[] = [
                 { label: "To", value: short(real), mono: true },
                 { label: "Amount", value: `${amount} USDC` },
                 { label: "Network", value: "Ethereum (default)" },
-                { label: "Network fee", value: "≈ $1.80" },
+                { label: "Network fee", value: "≈ $0.15" },
               ],
             },
           ],
@@ -215,8 +215,8 @@ export const MISSIONS: MissionDef[] = [
               correct: false,
               mistake: {
                 title: "Defaults don't know your friend",
-                why: `Your wallet picks a network for you, not for ${friend}. ${friend} uses ${network}. Sent on Ethereum, the USDC may never show up in their wallet.`,
-                real: "Wrong-network sends are one of the most common ways beginners lose money, and getting it back is hard or impossible.",
+                why: `Your wallet picks a network for you, not for ${friend}. ${friend} uses ${network}. Sent on Ethereum, it won't show up where ${friend} is looking.`,
+                real: "Sent to an exchange on the wrong network, money can be stuck for good. Sent to a self-custody wallet, it can usually be recovered by switching networks, but it's a hassle.",
               },
             },
             {
@@ -226,7 +226,7 @@ export const MISSIONS: MissionDef[] = [
               mistake: {
                 title: "Cheapest isn't the same as correct",
                 why: `Fees don't decide where the money can arrive. If you guess a network ${friend} doesn't use, the money may be stuck, even if the fee was low.`,
-                real: "Saving $1.80 in fees isn't worth risking the whole payment.",
+                real: "Saving a few cents isn't worth risking the whole payment.",
               },
             },
           ]),
@@ -321,7 +321,7 @@ export const MISSIONS: MissionDef[] = [
               mistake: {
                 title: "Urgency is the scam",
                 why: "'Last chance' and 'tonight' are there to stop you from thinking. The person posting likely bought early and needs new buyers to sell to.",
-                real: "Most coins pushed like this drop 80–100% within days.",
+                real: "Coins pushed like this often crash soon after. Chainalysis found 1 in 4 new tokens that took off lost 90%+ in their first week.",
               },
             },
             {
@@ -552,7 +552,7 @@ export const MISSIONS: MissionDef[] = [
               correct: false,
               mistake: {
                 title: "Search ads can be scams too",
-                why: "Scammers buy ads and fake listings for support numbers. Crypto wallets rarely offer phone support at all.",
+                why: "Scammers buy ads and fake listings for support numbers. Only use a number listed inside the app or on its official site.",
                 real: "Fake support lines are a top way people get talked into giving up their phrase.",
               },
             },
@@ -661,7 +661,7 @@ export const MISSIONS: MissionDef[] = [
               mistake: {
                 title: "Anyone with the phrase owns the wallet",
                 why: "Even someone you trust can lose it, have their phone hacked, or be pressured. The phrase isn't a spare key; it's the whole wallet.",
-                real: "Friends and family are involved in a surprising share of crypto thefts.",
+                real: "Even trusted people can lose it or be pressured into sharing it.",
               },
             },
             {
@@ -723,7 +723,7 @@ export const MISSIONS: MissionDef[] = [
               correct: false,
               mistake: {
                 title: "Say the network too",
-                why: "If the client sends on a different network than the one your wallet is watching, the money may never show up.",
+                why: "If the client sends on a different network than the one your wallet is watching, the money may not show up where you're looking.",
                 real: "Missing network info is a common reason payments 'disappear'.",
               },
             },
@@ -827,7 +827,7 @@ export const MISSIONS: MissionDef[] = [
     realWallet: {
       title: "In a real wallet",
       points: [
-        "Daily swings of 5–10% are normal for most coins. Decide your plan before you buy.",
+        "Moves of 5% or more in a day happen often, especially for smaller coins. Decide your plan before you buy.",
         "Selling on a dip turns a paper loss into a real one, and you pay fees twice.",
         "Fees and spreads differ a lot between apps. Always open the details before confirming.",
       ],
@@ -867,7 +867,7 @@ export const MISSIONS: MissionDef[] = [
               mistake: {
                 title: "Speed costs you",
                 why: `Rushing is how fees surprise people. On this order, ${feePct}% disappears the moment you buy, and you'd never have looked.`,
-                real: "About 1 in 5 crypto owners has been surprised by fees.",
+                real: "1 in 5 people who've owned crypto say high fees surprised them (SEC Investor Advocate research, 2026).",
               },
             },
             {

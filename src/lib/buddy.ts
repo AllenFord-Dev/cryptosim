@@ -40,7 +40,7 @@ export const ANSWERS: BuddyAnswer[] = [
   {
     id: "fees",
     q: "What are fees and spread?",
-    a: "A fee is what the app charges per trade (1% here). The spread is the gap between the buy and sell price (0.5% here). Together, a $100 buy is worth about $98.50 the moment you make it. Real apps vary a lot, so always open the details.",
+    a: "A fee is what the app charges per trade (1% here). The spread is a markup built into the price (0.5% each way here). Together, a $100 buy is worth about $98.50 the moment you make it. Real apps vary a lot, so always open the details.",
     tags: ["market", "coin"],
   },
   {
@@ -52,13 +52,13 @@ export const ANSWERS: BuddyAnswer[] = [
   {
     id: "volatile",
     q: "Why does the price swing so much?",
-    a: "Most coins have no earnings or cash flow anchoring their price, so it moves with demand and news. Swings of 5–10% in a day are normal. That's why panic-selling right after a dip is a common, costly mistake.",
+    a: "Most coins have no earnings or cash flow anchoring their price, so it moves with demand and news. Moves of 5% or more in a day happen often, especially for smaller coins. That's why panic-selling right after a dip is a common, costly mistake.",
     tags: ["coin", "market", "home"],
   },
   {
     id: "phrase",
     q: "What's a recovery phrase?",
-    a: "12 or 24 words that fully control your wallet. Anyone who has them can take everything, forever. No real support team, website, or AI will ever need them. Write them on paper; never screenshot or type them anywhere.",
+    a: "12 or 24 words that fully control your wallet. Anyone who has them can take everything, forever. No real support team, website, or AI will ever need them. Write them on paper; never screenshot them, and only enter them into your own wallet app to restore it.",
     tags: ["missions", "skills", "ready"],
   },
   {
@@ -70,7 +70,7 @@ export const ANSWERS: BuddyAnswer[] = [
   {
     id: "network",
     q: "What's a network, and why does it matter?",
-    a: "The same coin can live on different blockchains (Ethereum, Base, Solana). Sending on the wrong network can mean the money never arrives. Ask which network before you send.",
+    a: "The same coin can live on different blockchains (Ethereum, Base, Solana). Sending on the wrong network can mean it lands where they can't see it, or gets stuck for good if it went to an exchange. Ask which network before you send.",
     tags: ["missions", "skills", "ready"],
   },
   {
