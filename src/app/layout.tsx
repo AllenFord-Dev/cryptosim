@@ -11,6 +11,7 @@ import { AppProvider } from "@/lib/store";
 import { PricesProvider } from "@/lib/prices";
 import { UIProvider } from "@/components/shell";
 import { DesktopAside } from "@/components/aside";
+import { Device } from "@/components/device";
 
 export const metadata: Metadata = {
   title: "CryptoSim · Practice crypto safely",
@@ -32,12 +33,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <AppProvider>
           <PricesProvider>
-            <UIProvider>
-              <DesktopAside />
-              <div className="relative mx-auto min-h-dvh w-full max-w-[430px] bg-bg sm:shadow-[0_0_40px_rgba(14,23,38,0.08)]">
-                {children}
-              </div>
-            </UIProvider>
+            <DesktopAside />
+            <Device>
+              <UIProvider>
+                <div className="app-root relative mx-auto min-h-[var(--app-h)] w-full max-w-[430px] bg-bg">{children}</div>
+              </UIProvider>
+            </Device>
           </PricesProvider>
         </AppProvider>
       </body>

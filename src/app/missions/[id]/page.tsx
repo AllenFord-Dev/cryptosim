@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useMemo, useState } from "react";
-import { MissionIcon } from "@/components/bits";
+import { MissionCover } from "@/components/covers";
 import { CheckIcon, SparkleIcon, WalletIcon } from "@/components/icons";
 import { Visuals } from "@/components/visuals";
 import { Bar, Chip, Sheet, SubHeader } from "@/components/ui";
@@ -36,10 +36,12 @@ function Intro({ mission, onStart }: { mission: MissionDef; onStart: () => void 
   const { state } = useApp();
   const rec = state.missions[mission.id];
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-[var(--app-h)] flex-col">
       <SubHeader back="/missions" />
-      <div className="anim-enter flex flex-1 flex-col px-5 pt-4">
-        <MissionIcon icon={mission.icon} size={64} />
+      <div className="anim-enter flex flex-1 flex-col px-5 pt-2">
+        <div className="overflow-hidden rounded-[24px]">
+          <MissionCover id={mission.id} />
+        </div>
         <div className="pt-5 text-[13px] font-bold text-brand">Mission · {mission.minutes} min</div>
         <h1 className="pt-1 text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{mission.title}</h1>
         <p className="pt-3 text-[16px] leading-[1.5] text-muted">{mission.blurb}</p>
@@ -117,7 +119,8 @@ function Play({
       setI(i + 1);
       setPicked(null);
       setTried(new Set());
-      window.scrollTo({ top: 0 });
+      document.querySelector(".app-scroll")?.scrollTo(0, 0);
+      window.scrollTo(0, 0);
       return;
     }
     const clean = mistakes === 0;
@@ -140,7 +143,7 @@ function Play({
   };
 
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-[var(--app-h)] flex-col">
       <SubHeader
         back="/missions"
         title={mission.title}
@@ -241,7 +244,7 @@ function Done({
   const { state } = useApp();
   const clean = result.mistakes === 0;
   return (
-    <div className="flex min-h-dvh flex-col">
+    <div className="flex min-h-[var(--app-h)] flex-col">
       <SubHeader back="/missions" />
       <div className="flex flex-1 flex-col gap-3 px-4 pb-6">
         <div className="flex flex-col items-center rounded-[28px] bg-white px-5 pb-6 pt-7 text-center">

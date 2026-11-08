@@ -72,7 +72,7 @@ export default function Ready() {
     const q = QUESTIONS[qi];
     const last = qi === QUESTIONS.length - 1;
     return (
-      <div className="flex min-h-dvh flex-col">
+      <div className="flex min-h-[var(--app-h)] flex-col">
         <SubHeader back="/ready" title="Readiness check" right={<span className="pr-2 text-[13px] font-bold text-muted">{qi + 1}/{QUESTIONS.length}</span>} />
         <div key={qi} className="anim-enter flex flex-1 flex-col gap-4 px-4 pt-4">
           <h1 className="px-1 text-[22px] font-extrabold leading-[1.2] tracking-[-0.02em]">{q.q}</h1>
@@ -132,7 +132,7 @@ export default function Ready() {
   const graduated = !!state.graduation?.tx;
 
   return (
-    <div className="min-h-dvh pb-10">
+    <div className="min-h-[var(--app-h)] pb-10">
       <SubHeader back="/skills" />
       <div className="flex flex-col gap-3 px-4">
         <div className="rounded-[28px] bg-white px-5 pb-5 pt-6">

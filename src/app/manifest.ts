@@ -7,7 +7,7 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "A practice crypto wallet and market for first-timers. Real prices, practice money.",
     start_url: "/",
     display: "standalone",
-    background_color: "#F2F2F2",
+    background_color: "#5521F5",
     theme_color: "#FFFFFF",
     icons: [
       { src: "/icon-192.png", sizes: "192x192", type: "image/png" },

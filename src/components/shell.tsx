@@ -7,18 +7,44 @@ import { ANSWERS, SCREEN_INTRO, screenKey } from "@/lib/buddy";
 import { useApp } from "@/lib/store";
 import { BarsIcon, ChevronIcon, FlagIcon, HomeIcon, MarketIcon, SparkleIcon } from "./icons";
 import { Sheet } from "./ui";
+import { DailySheet, Onboarding, Splash } from "./bits";
+import { MenuDrawer, MenuIcon, ResetSheet, TradeHistorySheet } from "./menu";
 
-const UICtx = createContext<{ openBuddy: (topic?: string) => void }>({ openBuddy: () => {} });
+type UI = { openBuddy: (topic?: string) => void; openMenu: () => void; openHistory: () => void; openDaily: () => void; openReset: () => void };
+const UICtx = createContext<UI>({ openBuddy: () => {}, openMenu: () => {}, openHistory: () => {}, openDaily: () => {}, openReset: () => {} });
 export const useUI = () => useContext(UICtx);
 
 export function UIProvider({ children }: { children: React.ReactNode }) {
   const [buddy, setBuddy] = useState<{ open: boolean; topic?: string }>({ open: false });
   const openBuddy = useCallback((topic?: string) => setBuddy({ open: true, topic }), []);
   const close = useCallback(() => setBuddy({ open: false }), []);
+  const [panel, setPanel] = useState<"menu" | "history" | "daily" | "reset" | "intro" | null>(null);
+  const shut = useCallback(() => setPanel(null), []);
+  const ui: UI = {
+    openBuddy,
+    openMenu: () => setPanel("menu"),
+    openHistory: () => setPanel("history"),
+    openDaily: () => setPanel("daily"),
+    openReset: () => setPanel("reset"),
+  };
   return (
-    <UICtx.Provider value={{ openBuddy }}>
+    <UICtx.Provider value={ui}>
       {children}
       <BuddySheet open={buddy.open} topic={buddy.topic} onClose={close} />
+      <MenuDrawer
+        open={panel === "menu"}
+        onClose={shut}
+        onHistory={() => setPanel("history")}
+        onDaily={() => setPanel("daily")}
+        onBuddy={() => openBuddy()}
+        onIntro={() => setPanel("intro")}
+        onReset={() => setPanel("reset")}
+      />
+      <TradeHistorySheet open={panel === "history"} onClose={shut} />
+      <DailySheet open={panel === "daily"} onClose={shut} />
+      <ResetSheet open={panel === "reset"} onClose={shut} />
+      {panel === "intro" && <Onboarding onDone={shut} />}
+      <Splash />
     </UICtx.Provider>
   );
 }
@@ -138,34 +164,38 @@ export function TabScreen({
   right,
   hero,
   children,
+  tone = "gray",
 }: {
   title: string;
   right?: React.ReactNode;
   hero?: React.ReactNode;
   children?: React.ReactNode;
+  tone?: "gray" | "white";
 }) {
-  const { state } = useApp();
-  const initial = (state.name || "You").charAt(0).toUpperCase();
   return (
-    <div className="min-h-dvh pb-[120px]">
-      <div className="rounded-b-[28px] bg-white pb-1.5 pt-[calc(12px+var(--safe-top))]">
+    <div className={`min-h-[var(--app-h)] pb-[120px] ${tone === "white" ? "bg-white" : ""}`}>
+      <div className={`bg-white pb-1.5 pt-[calc(12px+var(--safe-top))] ${tone === "white" ? "" : "rounded-b-[28px]"}`}>
         <div className="flex items-center justify-between px-5 pt-1">
-          <div className="flex items-center gap-3">
-            <div
-              aria-hidden
-              className="flex h-10 w-10 items-center justify-center rounded-full bg-brand text-[16px] font-extrabold text-white"
-            >
-              {initial}
-            </div>
+          <div className="flex items-center gap-2.5">
+            <HeaderMenuButton />
             <h1 className="text-[22px] font-extrabold tracking-[-0.02em]">{title}</h1>
           </div>
           <div className="flex items-center gap-1">{right}</div>
         </div>
         {hero}
       </div>
-      <div className="flex flex-col gap-3 px-4 pt-4">{children}</div>
+      {tone === "white" ? children : <div className="flex flex-col gap-3 px-4 pt-4">{children}</div>}
       <TabBar />
     </div>
+  );
+}
+
+function HeaderMenuButton() {
+  const { openMenu } = useUI();
+  return (
+    <button onClick={openMenu} aria-label="Open menu" className="-ml-1 flex h-11 w-11 items-center justify-center rounded-full">
+      <MenuIcon />
+    </button>
   );
 }
 

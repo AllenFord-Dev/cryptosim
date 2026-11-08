@@ -10,7 +10,7 @@ const URL =
 
 // Clearly labeled sample prices, used only if the live price service can't be reached.
 function samplePrices(): Quote[] {
-  const base: Record<string, number> = { bitcoin: 100000, ethereum: 3500, solana: 175, "usd-coin": 1 };
+  const base: Record<string, number> = { bitcoin: 100000, ethereum: 3500, solana: 175, ripple: 2.3, dogecoin: 0.19, cardano: 0.62, chainlink: 16, "avalanche-2": 24, "usd-coin": 1 };
   return COINS.map((c, i) => {
     const p = base[c.id];
     const stable = c.id === "usd-coin";

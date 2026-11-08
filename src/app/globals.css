@@ -31,9 +31,38 @@
   --color-bad-soft: #fef3f2;
 }
 
-:root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); }
+:root { --safe-top: env(safe-area-inset-top, 0px); --safe-bottom: env(safe-area-inset-bottom, 0px); --app-h: 100dvh; }
+
+/* Device frame: invisible on phones, a realistic iPhone on laptops. */
+.device, .device-screen, .app-scroll { display: contents; }
+.device-status, .device-island, .device-home, .device-btn { display: none; }
+@media (min-width: 1024px) and (min-height: 660px) and (hover: hover) {
+  html, body { height: 100%; overflow: hidden; }
+  body { background: radial-gradient(1200px 700px at 70% 40%, #ECE8F8 0%, #E4E3E9 60%); }
+  .device {
+    display: block; position: fixed; left: 60%; top: 50%; width: 414px; height: 868px; padding: 12px;
+    border-radius: 66px; background: linear-gradient(150deg, #4a4a52 0%, #1b1b1f 22%, #0d0d0f 60%, #2a2a30 100%);
+    box-shadow: inset 0 0 0 1.5px #6a6a72, inset 0 0 0 5px #121214, 0 50px 100px -30px rgba(40, 20, 110, 0.35), 0 30px 60px -30px rgba(0, 0, 0, 0.45);
+    transform: translate(-50%, -50%) scale(var(--device-scale, 1));
+  }
+  .device-btn { display: block; position: absolute; width: 4px; border-radius: 2px; background: linear-gradient(90deg, #1a1a1d, #3b3b41); }
+  .device-btn-action { left: -3px; top: 150px; height: 32px; }
+  .device-btn-up { left: -3px; top: 205px; height: 62px; }
+  .device-btn-down { left: -3px; top: 280px; height: 62px; }
+  .device-btn-power { right: -3px; top: 240px; height: 96px; }
+  .device-screen { display: block; position: relative; width: 390px; height: 844px; border-radius: 55px; overflow: hidden; transform: translateZ(0); background: #F2F2F2; }
+  .app-scroll { display: block; height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; --app-h: 844px; --safe-top: 47px; --safe-bottom: 20px; }
+  .app-scroll::-webkit-scrollbar { display: none; }
+  .device-status { display: flex; position: absolute; z-index: 80; top: 0; left: 0; right: 0; height: 47px; padding: 4px 30px 0 46px; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px; color: #12111A; pointer-events: none; }
+  .device-island { display: block; position: absolute; z-index: 81; top: 11px; left: 50%; width: 124px; height: 36px; margin-left: -62px; border-radius: 20px; background: #000; pointer-events: none; }
+  .device-home { display: block; position: absolute; z-index: 81; bottom: 8px; left: 50%; width: 136px; height: 5px; margin-left: -68px; border-radius: 3px; background: #12111A; pointer-events: none; }
+}
+@media (min-width: 1024px) and (max-height: 940px) and (hover: hover) { .device { --device-scale: 0.9; } }
+@media (min-width: 1024px) and (max-height: 840px) and (hover: hover) { .device { --device-scale: 0.8; } }
+@media (min-width: 1024px) and (max-height: 760px) and (hover: hover) { .device { --device-scale: 0.72; } }
 html { background: #e4e3e9; }
 body { background: #e4e3e9; }
+.app-root { min-height: var(--app-h); }
 body {
   font-family: var(--font-sans);
   color: var(--color-ink);
@@ -68,13 +97,11 @@ body {
   text-align: left;
   transition: border-color 0.15s ease, background 0.15s ease;
 }
-.option:hover, .option
+.option:hover, .option:focus-visible { border-color: var(--color-brand); }
 }
 
-:focus-visible { border-color: var(--color-brand); }
-
 .glass {
-  background: rgba(255, 255, 255, 0.62);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(22px) saturate(180%);
   -webkit-backdrop-filter: blur(22px) saturate(180%);
   border: 1px solid rgba(255, 255, 255, 0.75);
@@ -105,3 +132,11 @@ body {
   .anim-enter, .anim-sheet, .anim-dim, .anim-pop, .anim-caret { animation: none !important; }
   .bar-fill { transition: none !important; }
 }
+
+.device-aside { display: none; }
+@media (min-width: 1024px) and (min-height: 660px) and (hover: hover) {
+  .device-aside { display: block; position: fixed; top: 50%; transform: translateY(-50%); right: calc(40% + 270px); width: min(380px, calc(60% - 330px)); }
+}
+@keyframes drawerIn { from { transform: translateX(-100%); } to { transform: none; } }
+.anim-drawer { animation: drawerIn 0.36s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+@media (prefers-reduced-motion: reduce) { .anim-drawer { animation: none !important; } }

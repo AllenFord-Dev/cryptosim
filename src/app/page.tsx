@@ -2,9 +2,9 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CoinRow, DailySheet, HabitCard, Onboarding, PriceSource, holdingSub } from "@/components/bits";
+import { CoinRow, HabitCard, Onboarding, PriceSource, holdingSub } from "@/components/bits";
 import { BoltIcon } from "@/components/icons";
-import { HeaderButton, TabScreen } from "@/components/shell";
+import { HeaderButton, TabScreen, useUI } from "@/components/shell";
 import { AreaChart, RangeTabs } from "@/components/ui";
 import { COINS, usd } from "@/lib/coins";
 import { portfolio } from "@/lib/portfolio";
@@ -15,8 +15,8 @@ export default function Home() {
   const { state, ready } = useApp();
   const { quotes } = usePrices();
   const [range, setRange] = useState<RangeKey>("1M");
-  const history = useHistory(RANGES.find((r) => r.key === range)!.days);
-  const [daily, setDaily] = useState(false);
+  const history = useHistory(RANGES.find((r) => r.key === range)!.days, Object.keys(state.holdings));
+  const { openDaily } = useUI();
   const p = portfolio(state, quotes, history);
   const dailyReady = state.daily.last !== todayKey();
   const series = p.series;
@@ -28,7 +28,7 @@ export default function Home() {
     <TabScreen
       title="Home"
       right={
-        <HeaderButton label={dailyReady ? "Daily scam check, ready" : "Daily scam check, done"} dot={dailyReady} onClick={() => setDaily(true)}>
+        <HeaderButton label={dailyReady ? "Daily scam check, ready" : "Daily scam check, done"} dot={dailyReady} onClick={openDaily}>
           <BoltIcon />
         </HeaderButton>
       }
@@ -94,7 +94,6 @@ export default function Home() {
             ))}
       </div>
       <PriceSource />
-      <DailySheet open={daily} onClose={() => setDaily(false)} />
     </TabScreen>
   );
 }

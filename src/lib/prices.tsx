@@ -48,30 +48,36 @@ export const RANGES = [
 ] as const;
 export type RangeKey = (typeof RANGES)[number]["key"];
 
-const historyCache = new Map<number, Record<string, number[]>>();
+const historyCache = new Map<string, Record<string, number[]>>();
 
-// Price history per coin for a range, cached for the visit.
-export function useHistory(days: number) {
-  const [series, setSeries] = useState<Record<string, number[]> | null>(historyCache.get(days) ?? null);
+// Price history for the given coins over a range, cached for the visit.
+export function useHistory(days: number, ids: string[]) {
+  const key = `${days}:${[...ids].sort().join(",")}`;
+  const [series, setSeries] = useState<Record<string, number[]> | null>(historyCache.get(key) ?? null);
   useEffect(() => {
     let alive = true;
-    const cached = historyCache.get(days);
+    if (!ids.length) {
+      setSeries(null);
+      return;
+    }
+    const cached = historyCache.get(key);
     if (cached) {
       setSeries(cached);
       return;
     }
     setSeries(null);
-    fetch(`/api/history?days=${days}`)
+    fetch(`/api/history?days=${days}&ids=${encodeURIComponent(ids.join(","))}`)
       .then((r) => r.json())
       .then((d: { series: Record<string, number[]> }) => {
-        historyCache.set(days, d.series);
+        historyCache.set(key, d.series);
         if (alive) setSeries(d.series);
       })
       .catch(() => {});
     return () => {
       alive = false;
     };
-  }, [days]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [key]);
   return series;
 }
 

@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { COINS, usd, pct, qtyFmt } from "@/lib/coins";
 import { dailyFor } from "@/lib/daily";
 import { MISSIONS, MissionDef } from "@/lib/missions";
@@ -122,16 +122,71 @@ export function DailySheet({ open, onClose }: { open: boolean; onClose: () => vo
   );
 }
 
-export function Onboarding() {
-  const { dispatch } = useApp();
+export const BRAND_GRADIENT =
+  "radial-gradient(120% 70% at 85% 0%, rgba(160,130,255,0.55) 0%, rgba(160,130,255,0) 60%), linear-gradient(165deg, #6A3BFF 0%, #5521F5 38%, #3412B8 72%, #1D0868 100%)";
+
+export function Wordmark({ size = 22, light = true }: { size?: number; light?: boolean }) {
+  return (
+    <span className="flex items-center gap-2.5">
+      <span
+        className="flex items-center justify-center rounded-[30%]"
+        style={{
+          width: size * 1.6,
+          height: size * 1.6,
+          background: light ? "rgba(255,255,255,0.16)" : BRAND_GRADIENT,
+          boxShadow: light ? "inset 0 0 0 1px rgba(255,255,255,0.28)" : undefined,
+        }}
+      >
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="#fff" aria-hidden>
+          <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z" />
+        </svg>
+      </span>
+      <span className={`font-extrabold tracking-[-0.03em] ${light ? "text-white" : "text-ink"}`} style={{ fontSize: size }}>
+        CryptoSim
+      </span>
+    </span>
+  );
+}
+
+// Brief launch screen, once per visit.
+export function Splash() {
+  const [phase, setPhase] = useState<"show" | "fade" | "gone">("gone");
+  useEffect(() => {
+    let seen = false;
+    try {
+      seen = sessionStorage.getItem("cs-splash") === "1";
+      sessionStorage.setItem("cs-splash", "1");
+    } catch {}
+    if (seen) return;
+    setPhase("show");
+    const t1 = setTimeout(() => setPhase("fade"), 1100);
+    const t2 = setTimeout(() => setPhase("gone"), 1500);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
+  }, []);
+  if (phase === "gone") return null;
+  return (
+    <div
+      aria-hidden
+      className={`fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center transition-opacity duration-400 ${phase === "fade" ? "opacity-0" : "opacity-100"}`}
+      style={{ background: BRAND_GRADIENT }}
+    >
+      <div className="anim-pop">
+        <Wordmark size={30} />
+      </div>
+      <p className="absolute bottom-[calc(40px+var(--safe-bottom))] text-[13px] font-semibold text-white/70">Real prices · practice money</p>
+    </div>
+  );
+}
+
+export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
+  const { state, dispatch } = useApp();
   const [step, setStep] = useState(0);
-  const [name, setName] = useState("");
+  const [name, setName] = useState(state.name);
   const slides = [
-    {
-      kicker: "Welcome to CryptoSim",
-      title: "Practice crypto with real prices and fake money.",
-      body: `You start with $${STARTING_CASH.toLocaleString()} in practice money. Buy and sell real coins at live prices. Nothing here can cost you a cent.`,
-    },
+    null,
     {
       kicker: "Missions",
       title: "Make your first mistakes here.",
@@ -143,11 +198,34 @@ export function Onboarding() {
       body: "We track five safe habits, not trading wins. When you've practiced enough, you'll try one small, real send on a free test network.",
     },
   ];
-  const s = slides[Math.min(step, 2)];
+
+  if (step === 0) {
+    return (
+      <div
+        className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col overflow-hidden px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(20px+var(--safe-top))] text-white"
+        style={{ background: BRAND_GRADIENT }}
+      >
+        <Wordmark size={20} />
+        <div className="relative flex flex-1 items-center justify-center">
+          <WelcomeArt />
+        </div>
+        <h1 className="anim-enter text-[36px] font-extrabold leading-[1.04] tracking-[-0.035em]">Practice crypto with real prices and fake money.</h1>
+        <p className="anim-enter pt-3 text-[16px] leading-[1.5] text-white/75">
+          Start with ${STARTING_CASH.toLocaleString()} in practice money. Make your first mistakes here, not with your savings.
+        </p>
+        <button onClick={() => setStep(1)} className="btn mt-7 bg-white text-brand">
+          Get started
+        </button>
+        <p className="pt-3 text-center text-[12px] font-semibold text-white/60">No sign-up. Nothing to deposit.</p>
+      </div>
+    );
+  }
+
+  const s = slides[Math.min(step, 2)]!;
   return (
     <div className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col bg-white px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(24px+var(--safe-top))]">
       <div className="flex gap-1.5 pt-2" aria-hidden>
-        {[0, 1, 2, 3].map((i) => (
+        {[1, 2, 3].map((i) => (
           <div key={i} className={`h-1 flex-1 rounded-full ${i <= step ? "bg-brand" : "bg-track"}`} />
         ))}
       </div>
@@ -164,6 +242,7 @@ export function Onboarding() {
           onSubmit={(e) => {
             e.preventDefault();
             dispatch({ type: "onboard", name });
+            onDone?.();
           }}
         >
           <div className="text-[13px] font-bold text-brand">Almost there</div>
@@ -171,6 +250,7 @@ export function Onboarding() {
           <label className="flex flex-col gap-2">
             <span className="text-[13px] font-bold text-muted">First name (optional, stays on this device)</span>
             <input
+              id="onboard-name"
               autoFocus
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -180,22 +260,47 @@ export function Onboarding() {
             />
           </label>
           <button type="submit" className="btn btn-brand mt-2">
-            Start with ${STARTING_CASH.toLocaleString()} practice money
+            {state.onboarded ? "Done" : `Start with $${STARTING_CASH.toLocaleString()} practice money`}
           </button>
         </form>
       )}
       {step < 3 && (
         <div className="flex gap-3">
-          {step > 0 && (
-            <button onClick={() => setStep(step - 1)} className="btn btn-ghost !w-auto px-6">
-              Back
-            </button>
-          )}
+          <button onClick={() => setStep(step - 1)} className="btn btn-ghost !w-auto px-6">
+            Back
+          </button>
           <button onClick={() => setStep(step + 1)} className="btn btn-brand flex-1">
             Continue
           </button>
         </div>
       )}
+    </div>
+  );
+}
+
+function WelcomeArt() {
+  return (
+    <div className="relative h-[280px] w-full max-w-[330px]" aria-hidden>
+      <div className="anim-enter absolute left-1/2 top-[18px] w-[250px] -translate-x-1/2 rounded-[24px] bg-white/[0.14] p-5 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.22)] backdrop-blur-md">
+        <div className="text-[12px] font-semibold text-white/70">Portfolio</div>
+        <div className="tabular text-[34px] font-extrabold tracking-[-0.035em]">$1,000.00</div>
+        <svg viewBox="0 0 210 54" className="mt-2 w-full" aria-hidden>
+          <path d="M0 44 L14 40 L26 42 L38 33 L50 36 L62 27 L74 30 L86 22 L98 26 L110 18 L122 21 L134 14 L146 19 L158 11 L170 15 L182 8 L196 10 L210 4" fill="none" stroke="#fff" strokeWidth="2.4" strokeLinejoin="round" strokeLinecap="round" />
+        </svg>
+      </div>
+      <div className="anim-enter absolute left-0 top-[170px] flex items-center gap-2.5 rounded-[18px] bg-white px-3.5 py-2.5 text-ink shadow-[0_16px_40px_-12px_rgba(20,6,80,0.5)] [animation-delay:120ms]">
+        <CoinMark id="bitcoin" size={30} />
+        <div>
+          <div className="text-[13px] font-extrabold">Bitcoin</div>
+          <div className="text-[11px] font-semibold text-up">Bought $50</div>
+        </div>
+      </div>
+      <div className="anim-enter absolute right-0 top-[196px] flex items-center gap-2 rounded-[18px] bg-white px-3.5 py-2.5 text-ink shadow-[0_16px_40px_-12px_rgba(20,6,80,0.5)] [animation-delay:220ms]">
+        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-up">
+          <CheckIcon size={13} color="#fff" />
+        </span>
+        <div className="text-[13px] font-extrabold">Scam spotted</div>
+      </div>
     </div>
   );
 }

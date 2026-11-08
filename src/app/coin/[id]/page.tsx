@@ -21,7 +21,7 @@ export default function CoinPage() {
   const { openBuddy } = useUI();
   const [trade, setTrade] = useState<"buy" | "sell" | null>(null);
   const [range, setRange] = useState<RangeKey>("1M");
-  const history = useHistory(RANGES.find((r) => r.key === range)!.days);
+  const history = useHistory(RANGES.find((r) => r.key === range)!.days, coin ? [coin.id] : []);
 
   if (!coin) {
     return (
@@ -43,7 +43,7 @@ export default function CoinPage() {
   const tone = stable || Math.abs(rangeChange) < 0.05 ? "text-muted" : rangeChange >= 0 ? "text-up" : "text-down";
 
   return (
-    <div className="min-h-dvh pb-[130px]">
+    <div className="min-h-[var(--app-h)] pb-[130px]">
       <SubHeader back="/market" title={coin.symbol} />
       <div className="mx-4 rounded-[28px] bg-white pb-4 pt-4">
         <div className="flex items-center gap-3 px-5">

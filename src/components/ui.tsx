@@ -154,7 +154,7 @@ export function Sheet({
           role="dialog"
           aria-modal="true"
           aria-label={label ?? (typeof title === "string" ? title : undefined)}
-          className="anim-sheet max-h-[90dvh] overflow-y-auto rounded-t-[28px] bg-white px-5 pb-[calc(24px+var(--safe-bottom))] pt-3 outline-none"
+          className="anim-sheet max-h-[calc(var(--app-h)*0.9)] overflow-y-auto rounded-t-[28px] bg-white px-5 pb-[calc(24px+var(--safe-bottom))] pt-3 outline-none"
         >
           <div className="mx-auto mb-2 h-1.5 w-10 rounded-full bg-track" />
           {title !== undefined && (
