@@ -1,3 +1,5 @@
+import type React from "react";
+
 // The CryptoSim mark: a stack of three coins with a spark on the top coin.
 type Tone = "light" | "brand";
 
@@ -37,9 +39,9 @@ export function Wordmark({ size = 22, tone = "brand", animate = false }: { size?
   const crypto = tone === "light" ? "#FFFFFF" : "#12111A";
   const sim = tone === "light" ? "#C9B8FF" : "#5521F5";
   return (
-    <span className="flex items-center" style={{ gap: size * 0.32 }}>
+    <span className={`flex items-center ${animate ? "logo-lock" : ""}`} style={{ gap: animate ? 0 : size * 0.32 }}>
       <LogoMark size={size * 1.45} tone={tone} animate={animate} />
-      <span className={animate ? "logo-word-clip" : undefined}>
+      <span className={animate ? "logo-word-clip" : undefined} style={animate ? ({ paddingLeft: size * 0.32 + size * 0.35, marginLeft: -size * 0.35, "--tuck": `${size * 0.67 + 4}px` } as React.CSSProperties) : undefined}>
         <span className={`block leading-none ${animate ? "logo-word" : ""}`} style={{ fontSize: size, letterSpacing: "-0.04em" }}>
           <span style={{ fontWeight: 500, color: crypto }}>crypto</span>
           <span style={{ fontWeight: 800, color: sim }}>sim</span>

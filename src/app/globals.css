@@ -144,12 +144,23 @@ body {
 /* Logo animation: coins drop in, spark pops, then the name slides out from behind the mark. */
 @keyframes coinDrop { 0% { transform: translateY(-70px); opacity: 0; } 60% { transform: translateY(4px); opacity: 1; } 100% { transform: none; opacity: 1; } }
 @keyframes sparkPop { 0% { transform: scale(0) rotate(-90deg); opacity: 0; } 70% { transform: scale(1.5) rotate(10deg); opacity: 1; } 100% { transform: none; opacity: 1; } }
-@keyframes wordOut { from { transform: translateX(-105%); } to { transform: none; } }
+@keyframes wordOut { from { transform: translateX(calc(-100% - var(--tuck, 16px))); } to { transform: none; } }
+@keyframes lockCenter { from { transform: translateX(var(--half, 0px)); } to { transform: none; } }
+@keyframes splashOut { to { transform: translateX(-100%); } }
+@keyframes lockOff { to { transform: translateX(-170%); opacity: 0; } }
+.logo-lock { position: relative; animation: lockCenter 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.95s both; }
+.logo-lock > svg { position: relative; z-index: 2; }
+.splash-leave { animation: splashOut 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
+@keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
+html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.splash-leave .logo-lock-wrap { animation: lockOff 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
 .logo-coin { animation: coinDrop 0.5s cubic-bezier(0.3, 0.9, 0.3, 1.2) both; }
 .logo-spark { transform-box: fill-box; transform-origin: center; animation: sparkPop 0.45s ease-out 0.55s both; }
 .logo-word-clip { display: block; overflow: hidden; padding: 0.12em 0.05em 0.18em 0; }
-.logo-word { animation: wordOut 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) 0.85s both; }
-@media (prefers-reduced-motion: reduce) { .logo-coin, .logo-spark, .logo-word { animation: none !important; } }
+.logo-word { animation: wordOut 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.95s both; }
+@media (prefers-reduced-motion: reduce) { .logo-coin, .logo-spark, .logo-word, .logo-lock, .splash-leave, @keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
+html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
+.splash-leave .logo-lock-wrap { animation: none !important; } }
 
 @keyframes coachPulse { 0%, 100% { box-shadow: 0 0 0 3px #fff, 0 0 0 6px rgba(85, 33, 245, 0.9); } 50% { box-shadow: 0 0 0 3px #fff, 0 0 0 11px rgba(85, 33, 245, 0.35); } }
 .coach-ring { animation: coachPulse 1.6s ease-in-out infinite; }

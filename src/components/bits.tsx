@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { COINS, usd, pct, qtyFmt } from "@/lib/coins";
 import { dailyFor } from "@/lib/daily";
 import { MissionDef } from "@/lib/missions";
@@ -131,7 +131,8 @@ export const BRAND_GRADIENT =
 
 // Brief launch screen, once per visit.
 export function Splash() {
-  const [phase, setPhase] = useState<"show" | "fade" | "gone">("gone");
+  const [phase, setPhase] = useState<"show" | "leave" | "gone">("gone");
+  const wrap = useRef<HTMLDivElement>(null);
   useEffect(() => {
     let seen = false;
     try {
@@ -140,21 +141,38 @@ export function Splash() {
     } catch {}
     if (seen) return;
     setPhase("show");
-    const t1 = setTimeout(() => setPhase("fade"), 1900);
-    const t2 = setTimeout(() => setPhase("gone"), 2300);
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const root = document.documentElement;
+    const t1 = setTimeout(() => {
+      setPhase(reduced ? "gone" : "leave");
+      root.dataset.handoff = "1";
+    }, reduced ? 1200 : 2100);
+    const t2 = setTimeout(() => {
+      setPhase("gone");
+      delete root.dataset.handoff;
+    }, 2650);
     return () => {
       clearTimeout(t1);
       clearTimeout(t2);
+      delete root.dataset.handoff;
     };
   }, []);
+  // The coins land centered on their own, then the lockup glides left as the name slides out from behind them.
+  useLayoutEffect(() => {
+    const lock = wrap.current?.querySelector(".logo-lock") as HTMLElement | null;
+    const word = wrap.current?.querySelector(".logo-word-clip") as HTMLElement | null;
+    if (lock && word) lock.style.setProperty("--half", `${(word.offsetWidth + parseFloat(getComputedStyle(word).marginLeft)) / 2}px`);
+  }, [phase === "gone"]);
   if (phase === "gone") return null;
   return (
     <div
       aria-hidden
-      className={`fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center transition-opacity duration-400 ${phase === "fade" ? "opacity-0" : "opacity-100"}`}
+      className={`fixed inset-0 z-[90] mx-auto flex max-w-[430px] flex-col items-center justify-center ${phase === "leave" ? "splash-leave" : ""}`}
       style={{ background: BRAND_GRADIENT }}
     >
-      <Wordmark size={34} tone="light" animate />
+      <div ref={wrap} className="logo-lock-wrap">
+        <Wordmark size={34} tone="light" animate />
+      </div>
       <p className="absolute bottom-[calc(40px+var(--safe-bottom))] text-[13px] font-semibold text-white/70">Real prices · practice money</p>
     </div>
   );
@@ -167,7 +185,7 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
   if (step === 0) {
     return (
       <div
-        className="fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col overflow-hidden px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(20px+var(--safe-top))] text-white"
+        className="handoff-in fixed inset-0 z-[60] mx-auto flex max-w-[430px] flex-col overflow-hidden px-6 pb-[calc(24px+var(--safe-bottom))] pt-[calc(20px+var(--safe-top))] text-white"
         style={{ background: BRAND_GRADIENT }}
       >
         <Wordmark size={22} tone="light" />
