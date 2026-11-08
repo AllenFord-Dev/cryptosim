@@ -50,26 +50,29 @@ export default function Learn() {
         </div>
       ) : (
         <div className="anim-enter flex flex-1 flex-col px-5 pt-6">
-          <div className="px-1 text-[13px] font-bold text-brand">Quick check</div>
-          <h1 className="px-1 pt-1 text-[22px] font-extrabold leading-[1.2] tracking-[-0.02em]">{check.q}</h1>
-          <div className="flex flex-col gap-2.5 pt-5">
+          <h1 className="text-[23px] font-extrabold leading-[1.2] tracking-[-0.02em]">{check.q}</h1>
+          <div className="mt-4 border-t border-line">
             {check.options.map((o, k) => {
               const show = picked !== null;
-              const cls = show ? (o.correct ? "!border-up bg-up-soft" : picked === k ? "!border-down bg-down-soft" : "opacity-50") : "";
+              const tone = show ? (o.correct && right ? "text-good-ink" : picked === k ? "text-bad-ink line-through" : "") : "";
               return (
-                <button key={o.label} disabled={right} onClick={() => setPicked(k)} className={`option min-h-[58px] px-4 py-3.5 text-[15px] font-bold ${cls}`}>
+                <button
+                  key={o.label}
+                  disabled={right}
+                  onClick={() => setPicked(k)}
+                  className={`flex min-h-[58px] w-full items-center justify-between gap-3 border-b border-line py-3.5 text-left text-[16px] font-bold active:bg-bg ${tone}`}
+                >
                   {o.label}
+                  {show && o.correct && right ? <span className="text-[18px] font-black">✓</span> : <span className="text-[20px] text-faint">›</span>}
                 </button>
               );
             })}
           </div>
           {picked !== null && (
-            <div className="anim-enter mt-4 rounded-[18px] bg-bg p-4">
-              <div className={`flex items-center gap-2 text-[13px] font-bold ${right ? "text-up" : "text-down"}`}>
-                <SparkleIcon size={16} color={right ? "var(--color-up)" : "#C4320A"} /> {right ? "Right" : "Not quite, try again"}
-              </div>
-              <p className="pt-1 text-[14px] leading-[1.5] text-body">{check.why}</p>
-            </div>
+            <p className={`anim-enter pt-4 text-[15px] font-semibold leading-[1.45] ${right ? "text-good-ink" : "text-body"}`}>
+              {right ? "" : "Not quite. "}
+              {check.why}
+            </p>
           )}
         </div>
       )}
@@ -99,7 +102,7 @@ export default function Learn() {
             }}
             className="btn btn-brand flex-1 gap-2"
           >
-            <CheckIcon size={18} color="#fff" /> Lesson done · practice it
+            Lesson done · practice it
           </button>
         )}
         {onCheck && !right && (

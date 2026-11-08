@@ -55,61 +55,38 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
   const skill = skillById(mission.skills[0])!;
   const st = skillStatus(state, skill);
   const locked = starter ? false : prove ? !st.practiced : !st.learned;
+  const rows: [string, React.ReactNode][] = [
+    ["Skill", skill.name],
+    ["Time", `About ${mission.minutes} minutes`],
+    [prove ? "Rules" : "Each run", prove ? "One try per step" : "New names and details"],
+    ["Clean run", <span key="r" className="text-up">+${mission.reward}</span>],
+    ["If you slip", mission.loss ? <span key="l" className="text-down">−${mission.loss}</span> : "Lesson only"],
+  ];
+  if (rec) rows.push(["Played", `${rec.done} time${rec.done === 1 ? "" : "s"}`]);
 
   return (
-    <div className="flex min-h-[var(--app-h)] flex-col">
-      <SubHeader back={`/skills/${skill.id}`} />
+    <div className="flex min-h-[var(--app-h)] flex-col bg-card">
+      <SubHeader back={starter ? "/" : `/skills/${skill.id}`} />
       <div className="anim-enter flex flex-1 flex-col px-5 pt-2">
-        <div className="relative overflow-hidden rounded-[24px]">
-          <MissionCover id={mission.id} />
-          {prove && (
-            <span className="absolute right-3 top-3 flex items-center gap-1.5 rounded-full bg-ink px-3 py-1.5 text-[12px] font-bold text-card">
-              <ShieldIcon size={14} color="#fff" /> Prove it
-            </span>
-          )}
+        <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{prove ? `Prove it: ${mission.title}` : mission.title}</h1>
+        <p className="pt-3 text-[16px] leading-[1.5] text-body">{prove ? "A version you haven't seen. Finish without a mistake to prove the skill." : mission.blurb}</p>
+        <div className="mt-6 border-t border-line">
+          {rows.map(([k, v]) => (
+            <div key={k} className="flex min-h-[52px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
+              <span className="font-semibold text-muted">{k}</span>
+              <span className="text-right font-bold">{v}</span>
+            </div>
+          ))}
         </div>
-        <div className="pt-5 text-[13px] font-bold text-brand">
-          {starter ? "Getting started · 2 of 2" : `${prove ? "Prove" : "Practice"} · ${skill.name} · ${mission.minutes} min`}
-        </div>
-        <h1 className="pt-1 text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{prove ? `Prove it: ${mission.title}` : mission.title}</h1>
-        <p className="pt-3 text-[16px] leading-[1.5] text-muted">{mission.blurb}</p>
-
-        <div className="mt-5 flex flex-col gap-2.5 rounded-[20px] bg-card p-4">
-          {prove ? (
-            <>
-              <Rule>A new version you haven&apos;t seen.</Rule>
-              <Rule>One try per step. No retries.</Rule>
-              <Rule>Finish without a mistake to prove the skill.</Rule>
-            </>
-          ) : (
-            <>
-              <Rule>Every run changes the names, amounts and details.</Rule>
-              <Rule>Make a mistake and Buddy explains it, then you retry.</Rule>
-              <Rule>A clean run counts as practiced.</Rule>
-            </>
-          )}
-        </div>
-
-        <div className="mt-3 grid grid-cols-2 gap-2.5">
-          <div className="rounded-[16px] bg-card px-4 py-3">
-            <div className="text-[12px] font-semibold text-muted">Clean run</div>
-            <div className="text-[17px] font-extrabold text-up">+${mission.reward}</div>
-          </div>
-          <div className="rounded-[16px] bg-card px-4 py-3">
-            <div className="text-[12px] font-semibold text-muted">If you slip</div>
-            <div className="text-[17px] font-extrabold text-down">{mission.loss ? `−$${mission.loss}` : "Lesson only"}</div>
-          </div>
-        </div>
-        {rec && <p className="pt-4 text-[13px] text-muted">You&apos;ve played this {rec.done}×.</p>}
       </div>
-      <div className="sticky bottom-0 bg-bg/90 px-5 pb-[calc(16px+var(--safe-bottom))] pt-3 backdrop-blur">
+      <div className="sticky bottom-0 bg-card px-5 pb-[calc(16px+var(--safe-bottom))] pt-3">
         {locked ? (
-          <Link href={prove ? `/missions/${mission.id}` : `/learn/${skill.id}`} className="btn btn-dark gap-2">
-            <LockIcon size={18} color="#fff" /> {prove ? "Practice it cleanly first" : "Take the 1-minute lesson first"}
+          <Link href={prove ? `/missions/${mission.id}` : `/learn/${skill.id}`} className="btn btn-brand">
+            {prove ? "Practice it cleanly first" : "Take the 1-minute lesson first"}
           </Link>
         ) : (
           <button onClick={onStart} className="btn btn-brand">
-            {prove ? "Start the challenge" : rec ? "Play a new variation" : "Start mission"}
+            {prove ? "Start the challenge" : rec ? "Play a new variation" : "Start"}
           </button>
         )}
       </div>
@@ -212,72 +189,54 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
   const canAdvance = !!picked || missed;
 
   return (
-    <div className="flex min-h-[var(--app-h)] flex-col">
-      <SubHeader
-        back="/missions"
-        title={prove ? "Prove it" : mission.title}
-        right={
-          <span className="pr-2 text-[13px] font-bold text-muted">
-            {i + 1}/{steps.length}
-          </span>
-        }
-      />
-      <div className="px-5">
-        <div className="flex gap-1.5" aria-hidden>
-          {steps.map((s, k) => (
-            <span key={s.id} className={`h-1.5 flex-1 rounded-full ${k < i || (k === i && canAdvance) ? (prove ? "bg-ink" : "bg-brand") : k === i ? "bg-brand/40" : "bg-track"}`} />
-          ))}
-        </div>
+    <div className="flex min-h-[var(--app-h)] flex-col bg-card pt-[calc(6px+var(--safe-top))]">
+      <div className="flex h-12 items-center justify-between px-3">
+        <Link href="/missions" aria-label="Leave mission" className="flex h-11 w-11 items-center justify-center">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
+            <path d="M6 6l12 12M18 6L6 18" />
+          </svg>
+        </Link>
+        <span className="text-[16px] font-bold">{prove ? `Prove it: ${mission.title}` : mission.title}</span>
+        <span className="w-11 pr-1 text-right text-[13px] font-bold text-faint">
+          {i + 1} of {steps.length}
+        </span>
       </div>
 
-      <div key={step.id} className="anim-enter flex flex-1 flex-col gap-4 px-4 pb-6 pt-5">
-        <div className="px-1">
-          <div className="text-[13px] font-bold text-brand">{step.kicker}</div>
-          <h1 className="pt-1 text-[22px] font-extrabold leading-[1.2] tracking-[-0.02em]">{step.prompt}</h1>
-        </div>
+      <div key={step.id} className="anim-enter flex flex-1 flex-col gap-4 px-5 pb-6 pt-3">
+        <h1 className="text-[23px] font-extrabold leading-[1.18] tracking-[-0.02em]">{step.prompt}</h1>
         <Visuals visuals={step.visuals} />
-        <div className="flex flex-col gap-2.5" role="group" aria-label="Choices">
+        <div className="border-t border-line" role="group" aria-label="Choices">
           {step.options.map((o) => {
             const isPicked = picked?.id === o.id;
             const isTried = tried.has(o.id);
             const reveal = missed && o.correct;
-            const cls = isPicked || reveal ? "!border-up bg-up-soft" : isTried ? (prove ? "!border-down bg-down-soft" : "opacity-45 line-through decoration-down/60") : picked || missed ? "opacity-45" : "";
+            const tone = isPicked || reveal ? "text-good-ink" : isTried ? "text-faint line-through" : picked || missed ? "text-faint" : "";
             return (
               <button
                 key={o.id}
                 onClick={() => choose(o)}
                 disabled={!!picked || missed || isTried}
-                className={`option flex min-h-[58px] items-center justify-between gap-3 px-4 py-3.5 ${cls}`}
+                className={`flex min-h-[58px] w-full items-center justify-between gap-3 border-b border-line py-3.5 text-left active:bg-bg ${tone}`}
               >
                 <span className="flex flex-col">
-                  <span className={`${o.mono ? "font-mono text-[13px] leading-[1.5] tracking-tight" : "text-[15px]"} font-bold`}>{o.label}</span>
-                  {o.detail && <span className="text-[13px] text-muted">{o.detail}</span>}
+                  <span className={`${o.mono ? "font-mono text-[13.5px] leading-[1.5] tracking-tight" : "text-[16px]"} font-bold`}>{o.label}</span>
+                  {o.detail && <span className="text-[13px] font-medium text-muted">{o.detail}</span>}
                 </span>
-                {(isPicked || reveal) && (
-                  <span className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-up">
-                    <CheckIcon size={14} color="#fff" />
-                  </span>
+                {isPicked || reveal ? (
+                  <span className="shrink-0 text-[18px] font-black text-good-ink">✓</span>
+                ) : (
+                  !picked && !missed && !isTried && <span className="shrink-0 text-[20px] text-faint">›</span>
                 )}
               </button>
             );
           })}
         </div>
-        {picked && (
-          <div className="anim-enter rounded-[18px] bg-card p-4">
-            <div className="text-[13px] font-bold text-up">Good call</div>
-            <p className="pt-1 text-[14px] leading-[1.5] text-body">{picked.good}</p>
-          </div>
-        )}
-        {missed && !wrong && (
-          <div className="anim-enter rounded-[18px] bg-card p-4">
-            <div className="text-[13px] font-bold text-down">Not this time</div>
-            <p className="pt-1 text-[14px] leading-[1.5] text-body">{correct.good}</p>
-          </div>
-        )}
+        {picked && <p className="anim-enter text-[15px] font-semibold leading-[1.45] text-good-ink">{picked.good}</p>}
+        {missed && !wrong && <p className="anim-enter text-[15px] font-semibold leading-[1.45] text-body">{correct.good}</p>}
       </div>
 
       {canAdvance && !wrong && (
-        <div className="sticky bottom-0 bg-bg/90 px-5 pb-[calc(16px+var(--safe-bottom))] pt-3 backdrop-blur">
+        <div className="sticky bottom-0 bg-card px-5 pb-[calc(16px+var(--safe-bottom))] pt-3">
           <button onClick={advance} className="btn btn-brand anim-enter">
             {last ? "Finish" : "Continue"}
           </button>
@@ -286,23 +245,16 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
 
       <Sheet open={!!wrong} onClose={() => setWrong(null)} label="What happened">
         {wrong?.mistake && (
-          <div className="flex flex-col gap-3 pt-2">
-            <Chip tone="bad">{prove ? "Challenge missed" : "Mistake"}</Chip>
-            <h2 className="text-[24px] font-extrabold leading-[1.15] tracking-[-0.02em]">{wrong.mistake.title}</h2>
-            <div className="rounded-[18px] bg-bg p-4">
-              <div className="flex items-center gap-2 text-[13px] font-bold text-brand">
-                <SparkleIcon size={16} color="var(--color-brand)" /> Buddy explains
+          <div className="flex flex-col gap-3 pt-1">
+            <h2 className="text-[24px] font-extrabold leading-[1.15] tracking-[-0.02em] text-bad-ink">{wrong.mistake.title}</h2>
+            <p className="text-[16px] font-semibold leading-[1.45]">{wrong.mistake.real}</p>
+            <div className="rounded-[16px] bg-brand-tint px-3.5 py-3 text-[15px] leading-[1.42] text-body">
+              <div className="flex items-center gap-1.5 pb-1 text-[13px] font-extrabold text-brand">
+                <SparkleIcon size={16} color="currentColor" /> Buddy
               </div>
-              <p className="pt-1 text-[15px] leading-[1.5] text-body">{wrong.mistake.why}</p>
+              {wrong.mistake.why}
             </div>
-            <div className="flex gap-3 rounded-[18px] border border-line p-4">
-              <WalletIcon size={20} color="var(--color-down)" />
-              <div>
-                <div className="text-[13px] font-bold text-down">In a real wallet</div>
-                <p className="pt-0.5 text-[14px] leading-[1.5] text-body">{wrong.mistake.real}</p>
-              </div>
-            </div>
-            <button onClick={() => setWrong(null)} className="btn btn-dark mt-1">
+            <button onClick={() => setWrong(null)} className="btn btn-brand mt-1">
               {prove ? "See the right answer" : "Try that step again"}
             </button>
           </div>

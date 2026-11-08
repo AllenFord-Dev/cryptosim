@@ -72,14 +72,14 @@ export default function Ready() {
     const q = QUESTIONS[qi];
     const last = qi === QUESTIONS.length - 1;
     return (
-      <div className="flex min-h-[var(--app-h)] flex-col">
+      <div className="flex min-h-[var(--app-h)] flex-col bg-card">
         <SubHeader back="/ready" title="Readiness check" right={<span className="pr-2 text-[13px] font-bold text-muted">{qi + 1}/{QUESTIONS.length}</span>} />
-        <div key={qi} className="anim-enter flex flex-1 flex-col gap-4 px-4 pt-4">
-          <h1 className="px-1 text-[22px] font-extrabold leading-[1.2] tracking-[-0.02em]">{q.q}</h1>
-          <div className="flex flex-col gap-2.5">
+        <div key={qi} className="anim-enter flex flex-1 flex-col gap-4 px-5 pt-4">
+          <h1 className="text-[23px] font-extrabold leading-[1.2] tracking-[-0.02em]">{q.q}</h1>
+          <div className="border-t border-line">
             {q.options.map((o, k) => {
               const show = picked !== null;
-              const cls = show ? (o.correct ? "!border-up bg-up-soft" : picked === k ? "!border-down bg-down-soft" : "opacity-50") : "";
+              const cls = show ? (o.correct ? "text-good-ink" : picked === k ? "text-bad-ink line-through" : "text-faint") : "";
               return (
                 <button
                   key={k}
@@ -88,24 +88,23 @@ export default function Ready() {
                     setPicked(k);
                     setAnswers([...answers, o.correct]);
                   }}
-                  className={`option min-h-[58px] px-4 py-3.5 text-[15px] font-bold ${cls}`}
+                  className={`flex min-h-[58px] w-full items-center justify-between gap-3 border-b border-line py-3.5 text-left text-[16px] font-bold active:bg-bg ${cls}`}
                 >
                   {o.label}
+                  {show && o.correct ? <span className="text-[18px] font-black">✓</span> : !show && <span className="text-[20px] text-faint">›</span>}
                 </button>
               );
             })}
           </div>
           {picked !== null && (
-            <div className="anim-enter rounded-[18px] bg-card p-4">
-              <div className={`text-[13px] font-bold ${q.options[picked].correct ? "text-up" : "text-down"}`}>
-                {q.options[picked].correct ? "Right" : "Not quite"}
-              </div>
-              <p className="pt-1 text-[14px] leading-[1.5] text-body">{q.why}</p>
-            </div>
+            <p className={`anim-enter text-[15px] font-semibold leading-[1.45] ${q.options[picked].correct ? "text-good-ink" : "text-body"}`}>
+              {q.options[picked].correct ? "" : "Not quite. "}
+              {q.why}
+            </p>
           )}
         </div>
         {picked !== null && (
-          <div className="sticky bottom-0 bg-bg/90 px-5 pb-[calc(16px+var(--safe-bottom))] pt-3 backdrop-blur">
+          <div className="sticky bottom-0 bg-card px-5 pb-[calc(16px+var(--safe-bottom))] pt-3">
             <button
               className="btn btn-brand"
               onClick={() => {
@@ -132,17 +131,14 @@ export default function Ready() {
   const graduated = !!state.graduation?.tx;
 
   return (
-    <div className="min-h-[var(--app-h)] pb-10">
-      <SubHeader back="/skills" />
-      <div className="flex flex-col gap-3 px-4">
-        <div className="rounded-[28px] bg-card px-5 pb-5 pt-6">
-          <div className={`flex h-14 w-14 items-center justify-center rounded-[18px] ${graduated ? "bg-up" : "bg-brand-soft"}`}>
-            {graduated ? <CheckIcon size={26} color="#fff" /> : <ShieldIcon size={28} color="var(--color-brand)" />}
-          </div>
-          <h1 className="pt-4 text-[28px] font-extrabold leading-[1.1] tracking-[-0.025em]">
+    <div className="min-h-[var(--app-h)] bg-card pb-10">
+      <SubHeader back="/missions" />
+      <div className="flex flex-col gap-3 px-5">
+        <div>
+          <h1 className="pt-1 text-[32px] font-extrabold leading-[1.1] tracking-[-0.025em]">
             {graduated ? "You did a real send" : passed ? "Ready for one small, real test" : "Ready for a real test?"}
           </h1>
-          <p className="pt-2 text-[15px] leading-[1.5] text-muted">
+          <p className="pt-3 text-[16px] leading-[1.5] text-body">
             {graduated
               ? "You sent a real transaction on a test network and checked it yourself. That's the full loop, with no real money at risk."
               : passed
@@ -150,25 +146,22 @@ export default function Ready() {
                 : "This isn't about being good at crypto. It checks that you've rehearsed the moments where people lose money, before you try a real send."}
           </p>
           {mode === "result" && state.readiness && !passed && (
-            <div className="mt-4 rounded-[18px] bg-bg p-4">
-              <div className="text-[13px] font-bold text-down">
-                Not yet · {state.readiness.score} of {QUESTIONS.length}
-              </div>
-              <p className="pt-1 text-[14px] leading-[1.5] text-body">You need 4 of 5. Replay a mission or two, then try again. Each attempt is free.</p>
-            </div>
+            <p className="pt-3 text-[16px] font-bold leading-[1.45] text-bad-ink">
+              Not yet: {state.readiness.score} of {QUESTIONS.length}. You need 4. Replay a mission or two, then try again.
+            </p>
           )}
         </div>
 
         {!passed && (
-          <div className="rounded-[20px] bg-card p-4">
-            <div className="pb-2 text-[16px] font-extrabold">Before the check</div>
-            {r.reqs.map((q, k) => (
-              <div key={q.label} className={`flex items-center gap-3 py-2.5 ${k ? "border-t border-line" : ""}`}>
+          <div className="pt-4">
+            <h2 className="pb-1 text-[18px] font-extrabold tracking-[-0.015em]">Before the check</h2>
+            {r.reqs.map((q) => (
+              <div key={q.label} className="flex min-h-[54px] items-center gap-3 border-b border-line py-3 first-of-type:border-t">
                 <span className={`flex h-6 w-6 shrink-0 items-center justify-center rounded-full ${q.done ? "bg-up" : "border-[1.5px] border-dashed border-track"}`}>
                   {q.done && <CheckIcon size={13} color="#fff" />}
                 </span>
-                <span className="flex-1 text-[14px] font-bold">{q.label}</span>
-                <span className="text-[13px] font-semibold text-muted">{q.progress}</span>
+                <span className="flex-1 text-[16px] font-bold">{q.label}</span>
+                <span className="text-[14px] font-semibold text-muted">{q.progress}</span>
               </div>
             ))}
             <button
@@ -179,7 +172,7 @@ export default function Ready() {
                 setPicked(null);
                 setMode("quiz");
               }}
-              className="btn btn-brand mt-3"
+              className="btn btn-brand mt-5"
             >
               {r.unlocked ? (state.readiness ? "Try the check again" : "Start the readiness check") : "Finish the steps above first"}
             </button>
@@ -192,11 +185,8 @@ export default function Ready() {
         )}
 
         {passed && (
-          <div className="rounded-[20px] bg-card p-4">
-            <div className="flex items-center justify-between pb-1">
-              <span className="text-[16px] font-extrabold">Your first real send</span>
-              <Chip tone="brand">Test network</Chip>
-            </div>
+          <div className="pt-4">
+            <h2 className="pb-1 text-[18px] font-extrabold tracking-[-0.015em]">Your first real send, on a test network</h2>
             <p className="pb-2 text-[13px] leading-[1.45] text-muted">
               Done outside CryptoSim, in a real wallet. Test coins are free and worthless, so mistakes still can&apos;t cost you.
             </p>
@@ -233,7 +223,7 @@ export default function Ready() {
                   onChange={(e) => setTx(e.target.value)}
                   placeholder="0x…"
                   spellCheck={false}
-                  className="mt-2 h-12 w-full rounded-[14px] border-[1.5px] border-track px-3 font-mono text-[13px] outline-none focus:border-brand"
+                  className="mt-2 h-12 w-full rounded-[14px] border-[1.5px] border-track bg-card px-3 font-mono text-[13px] outline-none focus:border-brand"
                 />
               </label>
               {tx && !txValid && <p className="pt-2 text-[13px] font-bold text-down">That doesn&apos;t look like a transaction hash yet.</p>}
@@ -259,9 +249,9 @@ export default function Ready() {
         )}
 
         {graduated && (
-          <div className="rounded-[20px] bg-card p-4">
-            <div className="flex items-center gap-2 text-[13px] font-bold text-brand">
-              <SparkleIcon size={16} color="var(--color-brand)" /> Buddy
+          <div className="mt-2 rounded-[16px] bg-brand-tint px-3.5 py-3">
+            <div className="flex items-center gap-1.5 text-[13px] font-extrabold text-brand">
+              <SparkleIcon size={16} color="currentColor" /> Buddy
             </div>
             <p className="pt-1 text-[14px] leading-[1.5] text-body">
               Before real money: start small, keep sending tests to new contacts, and come back here whenever something feels off. Your habits
