@@ -2,126 +2,86 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { CheckIcon, ChevronIcon, LockIcon, ShieldIcon } from "@/components/icons";
 import { TabScreen } from "@/components/shell";
 import { Sheet } from "@/components/ui";
-import { readiness } from "@/lib/progress";
-import { SKILLS } from "@/lib/skills";
-import { skillStatus } from "@/lib/progress";
 import { Habit, habits, useApp } from "@/lib/store";
 
-const LEVELS = ["Learned", "Practiced", "Proven"];
-
-export default function Skills() {
+// Habits tab: the five core habits, each with the last five times you faced it, and what happened recently.
+export default function Habits() {
   const { state } = useApp();
   const h = habits(state);
-  const r = readiness(state);
   const [open, setOpen] = useState<Habit | null>(null);
-  const practicing = h.list.filter((x) => x.status === "practicing").length;
+  const recent = (state.log ?? []).slice(0, 6);
+  const names = Object.fromEntries(h.list.map((x) => [x.id, x.name]));
 
   return (
     <TabScreen
-      title="Skills"
+      title="Habits"
       tone="white"
       hero={
-        <div className="flex items-center gap-5 px-5 pb-2 pt-5">
-          <Ring value={h.lockedIn} total={h.total} />
-          <div className="min-w-0 flex-1">
-            <div className="text-[13px] font-bold text-brand">Safe habits</div>
-            <div className="text-[22px] font-extrabold leading-tight tracking-[-0.02em]">
-              {h.lockedIn === 0 ? "None locked in yet" : `${h.lockedIn} locked in`}
-            </div>
-            <p className="pt-1 text-[13px] leading-[1.45] text-muted">
-              {practicing ? `${practicing} more in progress. ` : ""}Habits are things you&apos;ve actually done, again and again.
-            </p>
+        <div className="px-5 pb-1 pt-4">
+          <div className="tabular text-[40px] font-extrabold leading-none tracking-[-0.04em]">
+            {h.lockedIn} of {h.total}
           </div>
+          <div className="pt-1.5 text-[16px] font-semibold text-muted">locked in</div>
+          <p className="pt-3 text-[15px] leading-[1.45] text-body">A habit locks in when you do the safe thing most times, not once.</p>
         </div>
       }
     >
-      <section aria-labelledby="habits" className="pt-4">
-        <h2 id="habits" className="px-5 text-[20px] font-extrabold tracking-[-0.02em]">
-          Habits
+      <section aria-labelledby="core" className="px-5 pt-6">
+        <h2 id="core" className="pb-1 text-[18px] font-extrabold tracking-[-0.015em]">
+          Core habits
         </h2>
-        <div className="pt-1">
+        <div className="border-t border-line">
           {h.list.map((x) => (
-            <button key={x.id} onClick={() => setOpen(x)} className="flex min-h-[68px] w-full items-center gap-3.5 px-5 py-3 text-left active:bg-bg">
-              <HabitDot status={x.status} />
-              <div className="min-w-0 flex-1">
-                <div className="text-[16px] font-bold leading-tight">{x.name}</div>
-                <div className="pt-0.5 text-[13px] text-muted">{x.progress}</div>
-              </div>
-              <span className={`text-[13px] font-bold ${x.status === "locked-in" ? "text-up" : x.status === "practicing" ? "text-brand" : "text-faint"}`}>
-                {x.status === "locked-in" ? "Locked in" : x.status === "practicing" ? "Practicing" : "Not yet"}
+            <button key={x.id} onClick={() => setOpen(x)} className="flex w-full items-center gap-4 border-b border-line py-3.5 text-left active:bg-bg">
+              <span className="min-w-0 flex-1">
+                <span className="block text-[16px] font-bold leading-tight">{x.name}</span>
+                <Dots recent={x.recent} />
               </span>
+              <Status habit={x} />
             </button>
           ))}
         </div>
       </section>
 
-      <div className="mx-5 my-3 h-2 rounded-full bg-bg" aria-hidden />
-
-      <section aria-labelledby="skillmap">
-        <div className="px-5">
-          <h2 id="skillmap" className="text-[20px] font-extrabold tracking-[-0.02em]">
-            Skill map
+      {recent.length > 0 && (
+        <section aria-labelledby="recent" className="px-5 pt-7">
+          <h2 id="recent" className="pb-1 text-[18px] font-extrabold tracking-[-0.015em]">
+            Recent
           </h2>
-          <p className="pt-0.5 text-[13px] text-muted">Learn it, practice it, then prove it on a version you haven&apos;t seen.</p>
-        </div>
-        <div className="pt-2">
-          {SKILLS.map((s) => {
-            const st = skillStatus(state, s);
-            const label = st.proven ? "Proven" : st.practiced ? "Practiced" : st.learned ? "Learned" : "Not started";
-            return (
-              <Link key={s.id} href={`/skills/${s.id}`} className="flex flex-col gap-2 px-5 py-3.5 active:bg-bg">
-                <div className="flex items-baseline justify-between gap-3">
-                  <span className="text-[16px] font-bold">{s.name}</span>
-                  <span className={`text-[13px] font-bold ${st.proven ? "text-ink" : st.done ? "text-brand" : "text-faint"}`}>{label}</span>
-                </div>
-                <div className="grid grid-cols-3 gap-1" role="img" aria-label={`${s.name}: ${label}`}>
-                  {LEVELS.map((l, i) => (
-                    <span key={l} className={`h-1.5 rounded-full ${i < st.done ? (st.proven ? "bg-ink" : "bg-brand") : "bg-[#E8E6EF]"}`} />
-                  ))}
-                </div>
-                <span className="text-[13px] text-muted">{s.about}</span>
-              </Link>
-            );
-          })}
-        </div>
-      </section>
-
-      <div className="px-5 pt-3">
-        <Link href="/ready" className="flex items-center gap-3.5 rounded-[20px] bg-bg p-4">
-          <div className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-[14px] bg-white">
-            {r.unlocked ? <ShieldIcon color="#5521F5" /> : <LockIcon size={22} color="#5521F5" />}
+          <div className="border-t border-line">
+            {recent.map((e, i) => (
+              <div key={`${e.at}-${i}`} className="flex items-center gap-3 border-b border-line py-3">
+                <Mark ok={e.ok} />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[15px] font-semibold">{names[e.habit]}</span>
+                  <span className="block text-[13px] text-muted">
+                    {e.label} · {ago(e.at)}
+                  </span>
+                </span>
+              </div>
+            ))}
           </div>
-          <div className="flex-1">
-            <div className="text-[16px] font-bold">Ready for a real test?</div>
-            <div className="text-[13px] text-muted">
-              {state.graduation?.tx
-                ? "Graduated · real test send done"
-                : state.readiness?.passed
-                  ? "Check passed · try a test send"
-                  : r.unlocked
-                    ? "Take the readiness check"
-                    : `${r.reqs.filter((x) => x.done).length} of ${r.reqs.length} steps done to unlock`}
-            </div>
-          </div>
-          <ChevronIcon color="#A3A0AE" />
-        </Link>
-      </div>
+        </section>
+      )}
 
       <Sheet open={!!open} onClose={() => setOpen(null)} title={open?.name}>
         {open && (
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-4">
             <p className="text-[15px] leading-[1.5] text-body">{open.detail}</p>
-            <div className="rounded-[18px] bg-bg p-4">
-              <div className="text-[12px] font-bold text-muted">Your progress</div>
-              <div className="pt-0.5 text-[16px] font-extrabold">{open.progress}</div>
-              <div className="pt-2 text-[12px] font-bold text-muted">To lock it in</div>
-              <div className="pt-0.5 text-[14px] text-body">{open.how}</div>
+            <div className="border-t border-line">
+              <div className="flex justify-between gap-4 border-b border-line py-3 text-[15px]">
+                <span className="text-muted">So far</span>
+                <span className="text-right font-bold">{open.progress}</span>
+              </div>
+              <div className="flex justify-between gap-4 border-b border-line py-3 text-[15px]">
+                <span className="shrink-0 text-muted">To lock it in</span>
+                <span className="text-right font-semibold">{open.how}</span>
+              </div>
             </div>
             <Link href={open.href} onClick={() => setOpen(null)} className="btn btn-brand">
-              {open.href.startsWith("/missions") ? "Practice in a mission" : "Practice in the market"}
+              {open.action}
             </Link>
           </div>
         )}
@@ -130,51 +90,46 @@ export default function Skills() {
   );
 }
 
-function Ring({ value, total }: { value: number; total: number }) {
-  const r = 46;
-  const c = 2 * Math.PI * r;
-  const gap = 6;
-  const seg = c / total;
+function Status({ habit }: { habit: Habit }) {
+  if (habit.status === "locked-in") return <span className="shrink-0 text-[14px] font-extrabold text-good-ink">✓ Locked in</span>;
+  if (habit.status === "practicing") return <span className="shrink-0 text-right text-[14px] font-semibold text-muted">{habit.progress}</span>;
+  return <span className="shrink-0 text-[14px] font-bold text-brand">{habit.action} ›</span>;
+}
+
+// The last five times this habit came up: a check for the safe choice, a cross for a slip, empty for not yet.
+function Dots({ recent }: { recent: boolean[] }) {
+  // Oldest on the left, newest on the right; empty slots after.
+  const ordered = [...recent].reverse();
+  const slots = Array.from({ length: 5 }, (_, i) => ordered[i] as boolean | undefined);
   return (
-    <svg width="112" height="112" viewBox="0 0 112 112" className="shrink-0" role="img" aria-label={`${value} of ${total} safe habits locked in`}>
-      <g transform="rotate(-90 56 56)">
-        {Array.from({ length: total }, (_, i) => (
-          <circle
-            key={i}
-            cx="56"
-            cy="56"
-            r={r}
-            fill="none"
-            stroke={i < value ? "#5521F5" : "#ECEAF2"}
-            strokeWidth="10"
-            strokeLinecap="round"
-            strokeDasharray={`${seg - gap} ${c - seg + gap}`}
-            strokeDashoffset={-i * seg - gap / 2}
-          />
-        ))}
-      </g>
-      <text x="56" y="55" textAnchor="middle" fontSize="30" fontWeight="800" fill="#12111A" letterSpacing="-1">
-        {value}
-      </text>
-      <text x="56" y="74" textAnchor="middle" fontSize="12" fontWeight="700" fill="#6B6878">
-        of {total}
-      </text>
-    </svg>
+    <span className="mt-2 flex gap-1.5" role="img" aria-label={recent.length ? `Last ${recent.length}: ${recent.filter(Boolean).length} safe` : "Not tried yet"}>
+      {slots.map((v, i) => (
+        <span
+          key={i}
+          className={`flex h-[18px] w-[18px] items-center justify-center rounded-full text-[10px] font-black ${
+            v === undefined ? "border-[1.5px] border-[#E2E0EA]" : v ? "bg-good text-white" : "bg-bad text-white"
+          }`}
+        >
+          {v === undefined ? "" : v ? "✓" : "✕"}
+        </span>
+      ))}
+    </span>
   );
 }
 
-function HabitDot({ status }: { status: Habit["status"] }) {
-  if (status === "locked-in")
-    return (
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand">
-        <CheckIcon size={17} color="#fff" />
-      </span>
-    );
-  if (status === "practicing")
-    return (
-      <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-soft">
-        <span className="h-3 w-3 rounded-full bg-brand" />
-      </span>
-    );
-  return <span className="h-9 w-9 shrink-0 rounded-full border-[1.5px] border-dashed border-[#C9C6D4]" />;
+function Mark({ ok }: { ok: boolean }) {
+  return (
+    <span className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-[12px] font-black text-white ${ok ? "bg-good" : "bg-bad"}`}>
+      {ok ? "✓" : "✕"}
+    </span>
+  );
+}
+
+function ago(at: number) {
+  const m = Math.round((Date.now() - at) / 60000);
+  if (m < 1) return "just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.round(m / 60);
+  if (h < 24) return `${h}h ago`;
+  return `${Math.round(h / 24)}d ago`;
 }

@@ -2,6 +2,18 @@
 
 import { createContext, useContext, useEffect, useReducer, useState } from "react";
 import { SKILLS, SkillId, clamp } from "./skills";
+import { COINS } from "./coins";
+
+const COIN_NAMES: Record<string, string> = Object.fromEntries(COINS.map((c) => [c.id, c.name]));
+// Kept here (not imported from missions) to avoid a circular import.
+const MISSION_TITLES: Record<string, string> = {
+  "pay-back": "Pay a friend back",
+  "hype-pump": "The hype pump",
+  "fake-support": "The fake support DM",
+  backup: "Back up your wallet",
+  receiving: "Get paid for a gig",
+  "the-dip": "The dip",
+};
 
 export const STARTING_CASH = 1000;
 export const FEE_RATE = 0.01;
@@ -25,6 +37,8 @@ export type Mistake = { mission: string; title: string; why: string; at: number 
 
 export type TourStep = "intro" | "coin" | "buy" | "fees" | "confirm" | "send";
 
+export type HabitEvent = { habit: HabitId; ok: boolean; label: string; at: number };
+
 export type State = {
   name: string;
   onboarded: boolean;
@@ -43,6 +57,7 @@ export type State = {
   graduation: { steps: string[]; tx: string; at: number } | null;
   starterDone: boolean;
   tour: TourStep | null;
+  log: HabitEvent[];
   lessons: Record<string, boolean>;
   proven: Record<string, boolean>;
 };
@@ -67,6 +82,7 @@ export const initialState: State = {
   graduation: null,
   starterDone: false,
   tour: null,
+  log: [],
   lessons: {},
   proven: {},
 };
@@ -143,12 +159,16 @@ function reducer(state: State, action: Action): State {
         else holdings[coin] = { ...h, qty: remainingQty, cost: h.cost * (1 - share) };
       }
       const trade: Trade = { id: `${now}`, coin, side, usd, qty, price, fee, feeChecked, panic, at: now };
+      const coinName = COIN_NAMES[coin] ?? coin;
+      const events: HabitEvent[] = [{ habit: "fees", ok: feeChecked, label: `${coinName} ${side}`, at: now }];
+      if (side === "sell") events.push({ habit: "calm", ok: !panic, label: `${coinName} sell`, at: now });
       const tradingDelta = feeChecked ? 6 : 1;
       return {
         ...state,
         cash: Math.max(0, cash),
         holdings,
         trades: [trade, ...state.trades].slice(0, 200),
+        log: [...events, ...(state.log ?? [])].slice(0, 60),
         skills: { ...state.skills, trading: clamp(state.skills.trading + tradingDelta - (panic ? 6 : 0)) },
       };
     }
@@ -168,6 +188,12 @@ function reducer(state: State, action: Action): State {
       }
       const m = state.missions[action.id] ?? { done: 0, clean: 0, mistakes: 0 };
       const clean = action.mistakes === 0;
+      const now = Date.now();
+      const title = MISSION_TITLES[action.id] ?? "Mission";
+      const events: HabitEvent[] = [];
+      if (action.hype) events.push({ habit: "hype", ok: action.hype === "resisted", label: title, at: now });
+      if (action.phrase) events.push({ habit: "phrase", ok: action.phrase === "kept", label: title, at: now });
+      if (action.id === "pay-back") events.push({ habit: "addresses", ok: clean, label: title, at: now });
       return {
         ...state,
         cash: Math.max(0, state.cash + action.reward - action.loss),
@@ -185,6 +211,7 @@ function reducer(state: State, action: Action): State {
           ? { seen: state.phrase.seen + 1, kept: state.phrase.kept + (action.phrase === "kept" ? 1 : 0) }
           : state.phrase,
         proven: action.prove && clean ? { ...state.proven, [action.prove]: true } : state.proven,
+        log: [...events, ...(state.log ?? [])].slice(0, 60),
       };
     }
     case "daily": {
@@ -263,7 +290,9 @@ export type Habit = {
   status: HabitStatus;
   progress: string;
   how: string;
+  action: string;
   href: string;
+  recent: boolean[];
 };
 
 // Habits are concrete behaviors the user has shown. There is deliberately no overall score:
@@ -276,6 +305,7 @@ export function habits(state: State) {
     total === 0 ? "not-yet" : total < min ? "practicing" : good / total >= 0.8 ? "locked-in" : "practicing";
   const checked = trades.filter((t) => t.feeChecked).length;
   const calm = sells.filter((t) => !t.panic).length;
+  const recentOf = (id: HabitId) => (state.log ?? []).filter((e) => e.habit === id).slice(0, 5).map((e) => e.ok);
 
   const list: Habit[] = [
     {
@@ -285,7 +315,9 @@ export function habits(state: State) {
       status: rate(checked, trades.length, 3),
       progress: trades.length ? `${checked} of ${trades.length} trades checked` : "No trades yet",
       how: "Make 3+ trades and open the fee details on most of them.",
+      action: "Make a trade",
       href: "/market",
+      recent: trades.slice(0, 5).map((t) => t.feeChecked),
     },
     {
       id: "hype",
@@ -294,7 +326,9 @@ export function habits(state: State) {
       status: rate(state.hype.resisted, state.hype.seen, 1),
       progress: state.hype.seen ? `${state.hype.resisted} of ${state.hype.seen} resisted` : "Not practiced yet",
       how: "Play the Hype pump mission without buying in.",
+      action: "Try the mission",
       href: "/missions/hype-pump",
+      recent: recentOf("hype"),
     },
     {
       id: "calm",
@@ -303,7 +337,9 @@ export function habits(state: State) {
       status: rate(calm, sells.length, 2),
       progress: sells.length ? `${calm} of ${sells.length} sells calm` : "No sells yet",
       how: "Make 2+ sells without dumping a coin minutes after buying it.",
+      action: "Sell a coin",
       href: "/market",
+      recent: sells.slice(0, 5).map((t) => !t.panic),
     },
     {
       id: "addresses",
@@ -311,8 +347,10 @@ export function habits(state: State) {
       detail: "Never copy an address from your history.",
       status: pay ? rate(pay.clean, pay.done, 1) : "not-yet",
       progress: pay ? `${pay.clean} of ${pay.done} sends clean` : "Not practiced yet",
-      how: "Finish Pay Maya back without a mistake.",
+      how: "Finish Pay a friend back without a mistake.",
+      action: "Try the mission",
       href: "/missions/pay-back",
+      recent: recentOf("addresses"),
     },
     {
       id: "phrase",
@@ -321,7 +359,9 @@ export function habits(state: State) {
       status: rate(state.phrase.kept, state.phrase.seen, 1),
       progress: state.phrase.seen ? `${state.phrase.kept} of ${state.phrase.seen} kept private` : "Not practiced yet",
       how: "Play The fake support DM and keep your phrase to yourself.",
+      action: "Try the mission",
       href: "/missions/fake-support",
+      recent: recentOf("phrase"),
     },
   ];
   const lockedIn = list.filter((h) => h.status === "locked-in").length;

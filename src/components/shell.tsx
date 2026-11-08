@@ -119,7 +119,7 @@ const TABS = [
   { href: "/", label: "Home", icon: HomeIcon },
   { href: "/market", label: "Market", icon: MarketIcon },
   { href: "/missions", label: "Missions", icon: FlagIcon },
-  { href: "/skills", label: "Skills", icon: BarsIcon },
+  { href: "/skills", label: "Habits", icon: BarsIcon },
 ];
 
 export function TabBar() {

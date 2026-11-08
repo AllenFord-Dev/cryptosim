@@ -1,126 +1,102 @@
 "use client";
 
 import Link from "next/link";
-import { MissionCover } from "@/components/covers";
-import { CheckIcon, ChevronIcon, LockIcon, ShieldIcon } from "@/components/icons";
 import { TabScreen } from "@/components/shell";
-import { missionById } from "@/lib/missions";
 import { readiness, skillStatus, upNext } from "@/lib/progress";
 import { SKILLS } from "@/lib/skills";
 import { useApp } from "@/lib/store";
 
-const STEPS = ["Learn", "Practice", "Prove"] as const;
-
+// Missions tab: one next step, then the core path of five skills (Learn, Practice, Prove each).
 export default function Missions() {
   const { state } = useApp();
   const next = upNext(state);
   const r = readiness(state);
   const statuses = SKILLS.map((s) => ({ skill: s, ...skillStatus(state, s) }));
   const proven = statuses.filter((s) => s.proven).length;
+  const readyLabel = state.readiness?.passed
+    ? "Passed"
+    : r.unlocked
+      ? "Take it ›"
+      : `${r.reqs.filter((x) => x.done).length} of ${r.reqs.length} to unlock`;
 
   return (
     <TabScreen
       title="Missions"
+      tone="white"
       hero={
-        <div className="px-5 pb-5 pt-4">
-          <div className="flex items-baseline gap-2">
-            <span className="tabular text-[34px] font-extrabold leading-none tracking-[-0.03em]">{proven}</span>
-            <span className="text-[15px] font-bold text-muted">of {SKILLS.length} skills proven</span>
+        <div className="px-5 pb-1 pt-4">
+          <div className="tabular text-[40px] font-extrabold leading-none tracking-[-0.04em]">
+            {proven} of {SKILLS.length}
           </div>
-          <div className="mt-3 flex gap-1.5" aria-hidden>
-            {statuses.map((s) => (
-              <span key={s.skill.id} className="flex flex-1 gap-[3px]">
-                {[0, 1, 2].map((k) => (
-                  <span key={k} className={`h-2 flex-1 rounded-full ${k < s.done ? (s.proven ? "bg-ink" : "bg-brand") : "bg-[#E2E0EA]"}`} />
-                ))}
-              </span>
-            ))}
-          </div>
-          <p className="pt-3 text-[14px] leading-[1.5] text-muted">Five skills every first-timer needs. Learn each one, practice it, then prove it on a version you&apos;ve never seen.</p>
+          <div className="pt-1.5 text-[16px] font-semibold text-muted">skills proven</div>
         </div>
       }
     >
-      {next && (
-        <Link href={next.target.href} className="overflow-hidden rounded-[24px] bg-white">
-          {next.step === "learn" ? (
-            <div className="flex h-[120px] items-center gap-4 bg-brand-tint px-5">
-              <span className="text-[44px] font-extrabold tracking-[-0.04em] text-brand">{SKILLS.indexOf(next.skill) + 1}</span>
-              <span className="text-[14px] font-bold leading-[1.4] text-body">{next.skill.why}</span>
+      <div className="px-5 pt-5">
+        {next ? (
+          <div className="rounded-[22px] bg-brand-tint p-[18px]">
+            <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">
+              {next.target.label === "Practice" ? `Practice: ${next.target.title}` : next.target.title}
             </div>
-          ) : (
-            <MissionCover id={next.step === "prove" ? next.skill.prove : next.nextPractice} />
-          )}
-          <div className="flex flex-col gap-1 p-4">
-            <span className="text-[12px] font-bold text-brand">
-              Up next · {next.target.label} · {next.skill.name}
-            </span>
-            <span className="text-[22px] font-extrabold leading-tight tracking-[-0.02em]">{next.target.title}</span>
-            <p className="text-[14px] leading-[1.45] text-muted">{next.step === "learn" ? next.skill.about : missionById(next.step === "prove" ? next.skill.prove : next.nextPractice)?.blurb}</p>
-            <div className="flex items-center justify-between pt-3">
-              <span className="text-[13px] font-semibold text-muted">{next.target.minutes} min</span>
-              <span className="flex h-10 items-center rounded-full bg-brand px-5 text-[14px] font-bold text-white">{next.target.label}</span>
+            <div className="pt-1 text-[14.5px] text-body">
+              {next.step === "learn" ? "1 minute · then practice it" : `${next.skill.name} · ${next.target.minutes} minutes`}
             </div>
+            <Link href={next.target.href} className="btn btn-brand mt-4 !h-12">
+              Start
+            </Link>
           </div>
-        </Link>
-      )}
+        ) : (
+          <div className="rounded-[22px] bg-brand-tint p-[18px]">
+            <div className="text-[22px] font-extrabold leading-[1.15] tracking-[-0.025em]">Every core skill proven</div>
+            <div className="pt-1 text-[14.5px] text-body">Next: see if you&apos;re ready for one small, real test.</div>
+            <Link href="/ready" className="btn btn-brand mt-4 !h-12">
+              Readiness check
+            </Link>
+          </div>
+        )}
+      </div>
 
-      <section aria-labelledby="path" className="pt-2">
-        <h2 id="path" className="px-1 pb-2 text-[20px] font-extrabold tracking-[-0.02em]">
-          Your path
+      <section aria-labelledby="path" className="px-5 pt-7">
+        <h2 id="path" className="pb-1 text-[18px] font-extrabold tracking-[-0.015em]">
+          Core path
         </h2>
-        <div className="flex flex-col gap-2.5">
-          {statuses.map((s, idx) => (
-            <Link key={s.skill.id} href={`/skills/${s.skill.id}`} className="flex flex-col gap-3 rounded-[22px] bg-white p-4">
-              <div className="flex items-center gap-3">
+        <div className="border-t border-line">
+          {statuses.map((s, idx) => {
+            const isNext = next?.skill.id === s.skill.id;
+            const status = s.proven ? "Proven" : s.step === "learn" ? "Learn" : s.step === "practice" ? "Practice" : "Prove";
+            return (
+              <Link key={s.skill.id} href={`/skills/${s.skill.id}`} className="flex items-center gap-3.5 border-b border-line py-3.5 active:bg-bg">
                 <span
-                  className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full text-[15px] font-extrabold ${
-                    s.proven ? "bg-ink text-white" : s.done > 0 ? "bg-brand text-white" : "bg-bg text-muted"
+                  className={`flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full text-[14px] font-extrabold ${
+                    s.proven ? "bg-ink text-white" : isNext ? "border-[1.5px] border-brand text-brand" : "border-[1.5px] border-[#DDD9E6] text-muted"
                   }`}
                 >
-                  {s.proven ? <ShieldIcon size={18} color="#fff" /> : idx + 1}
+                  {s.proven ? "✓" : idx + 1}
                 </span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-[16px] font-bold leading-tight">{s.skill.name}</div>
-                  <div className="truncate pt-0.5 text-[13px] text-muted">{s.skill.about}</div>
-                </div>
-                <ChevronIcon color="#C9C6D4" />
-              </div>
-              <div className="grid grid-cols-3 gap-1.5">
-                {STEPS.map((label, k) => {
-                  const done = k === 0 ? s.learned : k === 1 ? s.practiced : s.proven;
-                  const current = s.step === label.toLowerCase();
-                  return (
-                    <span
-                      key={label}
-                      className={`flex h-8 items-center justify-center gap-1 rounded-full text-[12px] font-bold ${
-                        done ? (k === 2 ? "bg-ink text-white" : "bg-brand text-white") : current ? "bg-brand-soft text-brand ring-1 ring-brand/30" : "bg-bg text-faint"
-                      }`}
-                    >
-                      {done && <CheckIcon size={11} color="#fff" />}
-                      {!done && !current && <LockIcon size={11} color="#A3A0AE" />}
-                      {label}
-                    </span>
-                  );
-                })}
-              </div>
-            </Link>
-          ))}
+                <span className="min-w-0 flex-1">
+                  <span className="block text-[16px] font-bold leading-tight">{s.skill.name}</span>
+                  <span className="mt-2 flex w-[84px] gap-[3px]" role="img" aria-label={`${s.skill.name}: ${s.done} of 3 steps done`}>
+                    {[0, 1, 2].map((k) => (
+                      <span key={k} className={`h-1 flex-1 rounded-full ${k < s.done ? (s.proven ? "bg-ink" : "bg-brand") : "bg-[#E8E6EF]"}`} />
+                    ))}
+                  </span>
+                </span>
+                <span className={`shrink-0 text-[14px] font-bold ${s.proven ? "text-ink" : isNext ? "text-brand" : "text-muted"}`}>
+                  {status}
+                  {isNext ? " ›" : ""}
+                </span>
+              </Link>
+            );
+          })}
+          <Link href="/ready" className="flex items-center gap-3.5 border-b border-line py-3.5 active:bg-bg">
+            <span className="flex h-[30px] w-[30px] shrink-0 items-center justify-center rounded-full border-[1.5px] border-[#DDD9E6] text-[13px] text-muted">
+              ★
+            </span>
+            <span className="flex-1 text-[16px] font-bold">Readiness check</span>
+            <span className={`shrink-0 text-[14px] font-bold ${r.unlocked && !state.readiness?.passed ? "text-brand" : "text-muted"}`}>{readyLabel}</span>
+          </Link>
         </div>
       </section>
-
-      <Link href="/ready" className="flex items-center gap-3.5 rounded-[22px] bg-white p-4">
-        <div className="flex h-[48px] w-[48px] shrink-0 items-center justify-center rounded-[14px] bg-brand-soft">
-          {r.unlocked ? <ShieldIcon color="#5521F5" /> : <LockIcon size={22} color="#5521F5" />}
-        </div>
-        <div className="flex-1">
-          <div className="text-[16px] font-bold">Readiness check</div>
-          <div className="text-[13px] text-muted">
-            {state.readiness?.passed ? "Passed · try a real test send" : r.unlocked ? "Unlocked · 5 quick scenarios" : `${r.reqs.filter((x) => x.done).length} of ${r.reqs.length} steps done to unlock`}
-          </div>
-        </div>
-        <ChevronIcon color="#C9C6D4" />
-      </Link>
     </TabScreen>
   );
 }
-
