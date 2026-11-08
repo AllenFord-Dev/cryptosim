@@ -6,6 +6,7 @@ import { Suspense, useMemo, useState } from "react";
 import { MissionCover } from "@/components/covers";
 import { CheckIcon, LockIcon, ShieldIcon, SparkleIcon, WalletIcon } from "@/components/icons";
 import { Visuals } from "@/components/visuals";
+import { WalletMission } from "@/components/wallet-mission";
 import { Chip, Sheet, SubHeader } from "@/components/ui";
 import { MissionDef, Option, missionById, seeded } from "@/lib/missions";
 import { skillStatus } from "@/lib/progress";
@@ -40,6 +41,8 @@ function MissionInner() {
     );
   }
   if (phase.kind === "intro") return <Intro mission={mission} prove={prove} starter={starter} onStart={() => setPhase({ kind: "play", seed: Date.now() })} />;
+  if (phase.kind === "play" && mission.id === "pay-back")
+    return <PayBackPlay key={phase.seed} mission={mission} seed={phase.seed} prove={prove} starter={starter} onDone={(r) => setPhase({ kind: "done", ...r })} />;
   if (phase.kind === "play")
     return <Play key={phase.seed} mission={mission} seed={phase.seed} prove={prove} starter={starter} onDone={(r) => setPhase({ kind: "done", ...r })} />;
   return <Done mission={mission} result={phase} starter={starter} onReplay={() => setPhase({ kind: "play", seed: Date.now() })} />;
@@ -122,8 +125,47 @@ function Rule({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; seed: number; prove: boolean; starter?: boolean; onDone: (r: Result) => void }) {
+// Records the result of a finished mission (shared by the quiz-style and wallet-style missions).
+function useFinish(mission: MissionDef, prove: boolean, starter: boolean | undefined, onDone: (r: Result) => void) {
   const { state, dispatch } = useApp();
+  return (mistakes: number) => {
+    const clean = mistakes === 0;
+    const replay = (state.missions[mission.id]?.done ?? 0) > 0;
+    const reward = clean ? (replay || prove ? Math.round(mission.reward / 2) : mission.reward) : 0;
+    const loss = clean ? 0 : mission.loss;
+    const skill = mission.skills[0] as SkillId;
+    dispatch({
+      type: "mission",
+      id: mission.id,
+      mistakes,
+      reward,
+      loss,
+      skillDeltas: { [skill]: clean ? 20 : 8 },
+      hype: mission.flag === "hype" ? (clean ? "resisted" : "fell") : undefined,
+      phrase: mission.flag === "phrase" ? (clean ? "kept" : "shared") : undefined,
+      prove: prove ? skill : undefined,
+    });
+    if (starter) dispatch({ type: "starter" });
+    onDone({ mistakes, reward, loss, prove });
+  };
+}
+
+function PayBackPlay({ mission, seed, prove, starter, onDone }: { mission: MissionDef; seed: number; prove: boolean; starter?: boolean; onDone: (r: Result) => void }) {
+  const { dispatch } = useApp();
+  const finish = useFinish(mission, prove, starter, onDone);
+  return (
+    <WalletMission
+      seed={seed}
+      prove={prove}
+      onMistake={(m) => dispatch({ type: "mistake", mistake: { mission: mission.id, title: m.title, why: m.why, at: Date.now() } })}
+      onFinish={finish}
+    />
+  );
+}
+
+function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; seed: number; prove: boolean; starter?: boolean; onDone: (r: Result) => void }) {
+  const { dispatch } = useApp();
+  const finish = useFinish(mission, prove, starter, onDone);
   const steps = useMemo(() => mission.build(seeded(seed)), [mission, seed]);
   const [i, setI] = useState(0);
   const [picked, setPicked] = useState<Option | null>(null);
@@ -158,24 +200,7 @@ function Play({ mission, seed, prove, starter, onDone }: { mission: MissionDef; 
       window.scrollTo(0, 0);
       return;
     }
-    const clean = mistakes === 0;
-    const replay = (state.missions[mission.id]?.done ?? 0) > 0;
-    const reward = clean ? (replay || prove ? Math.round(mission.reward / 2) : mission.reward) : 0;
-    const loss = clean ? 0 : mission.loss;
-    const skill = mission.skills[0] as SkillId;
-    dispatch({
-      type: "mission",
-      id: mission.id,
-      mistakes,
-      reward,
-      loss,
-      skillDeltas: { [skill]: clean ? 20 : 8 },
-      hype: mission.flag === "hype" ? (clean ? "resisted" : "fell") : undefined,
-      phrase: mission.flag === "phrase" ? (clean ? "kept" : "shared") : undefined,
-      prove: prove ? skill : undefined,
-    });
-    if (starter) dispatch({ type: "starter" });
-    onDone({ mistakes, reward, loss, prove });
+    finish(mistakes);
   };
 
   const canAdvance = !!picked || missed;

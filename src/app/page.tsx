@@ -7,6 +7,7 @@ import { BoltIcon } from "@/components/icons";
 import { HeaderButton, TabScreen, useUI } from "@/components/shell";
 import { AreaChart, RangeTabs } from "@/components/ui";
 import { Coach } from "@/components/coach";
+import { TourIntro } from "@/components/tour-intro";
 import { COINS, usd } from "@/lib/coins";
 import { portfolio } from "@/lib/portfolio";
 import { RANGES, RangeKey, useHistory, usePrices } from "@/lib/prices";
@@ -26,7 +27,7 @@ export default function Home() {
   useEffect(() => {
     if (!ready || !state.onboarded || state.starterDone || state.tour) return;
     // Older progress without the starter: skip it if they've already traded, otherwise start the tour.
-    dispatch(state.trades.length ? { type: "starter" } : { type: "tour", step: "coin" });
+    dispatch(state.trades.length ? { type: "starter" } : { type: "tour", step: "intro" });
   }, [ready, state.onboarded, state.starterDone, state.tour, state.trades.length, dispatch]);
 
   // First run: Home renders underneath the welcome, so finishing the name screen slides straight onto it.
@@ -115,6 +116,7 @@ export default function Home() {
               ))}
         </div>
         <PriceSource />
+        {state.tour === "intro" && <TourIntro onStart={() => dispatch({ type: "tour", step: "coin" })} />}
         {state.tour === "coin" && (
           <Coach
             target="coin-bitcoin"

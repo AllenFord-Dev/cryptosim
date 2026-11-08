@@ -23,7 +23,7 @@ export type Trade = {
 
 export type Mistake = { mission: string; title: string; why: string; at: number };
 
-export type TourStep = "coin" | "buy" | "fees" | "confirm" | "send";
+export type TourStep = "intro" | "coin" | "buy" | "fees" | "confirm" | "send";
 
 export type State = {
   name: string;
@@ -114,7 +114,7 @@ function reducer(state: State, action: Action): State {
       // Wipe everything, including the name, so the app opens like it does for a brand-new user.
       return initialState;
     case "onboard":
-      return { ...state, name: action.name.trim().slice(0, 20), onboarded: true, tour: state.starterDone || state.onboarded ? state.tour : "coin" };
+      return { ...state, name: action.name.trim().slice(0, 20), onboarded: true, tour: state.starterDone || state.onboarded ? state.tour : "intro" };
     case "trade": {
       const { coin, side, usd, price, feeChecked } = action;
       const now = Date.now();

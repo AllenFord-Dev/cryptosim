@@ -175,6 +175,10 @@ html[data-launch] .splash { animation: launchOut 0.25s ease 1.55s forwards; }
 .onb-enter { animation: onbIn 0.4s cubic-bezier(0.65, 0, 0.35, 1) both; }
 .onb-leave { animation: onbOut 0.4s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
 @media (prefers-reduced-motion: reduce) { .onb-enter, .onb-leave { animation: none !important; } }
+.focus-row { box-shadow: inset 0 0 0 2px #5521f5; }
+@keyframes notifIn { from { opacity: 0; transform: translateY(-16px) scale(0.98); } to { opacity: 1; transform: none; } }
+.notif-in { animation: notifIn 0.4s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@media (prefers-reduced-motion: reduce) { .notif-in { animation: none !important; } }
 @keyframes handoffIn { from { transform: translateX(100%); } to { transform: none; } }
 html[data-handoff] .handoff-in { animation: handoffIn 0.5s cubic-bezier(0.65, 0, 0.35, 1) both; }
 .splash-leave .logo-lock-wrap { animation: lockOff 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }

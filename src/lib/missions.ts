@@ -1,7 +1,7 @@
 import type { SkillId } from "./skills";
 
 // Low-fee networks where USDC is common. All use the same 0x address format, which is why a wrong-network send is easy to make.
-const NETWORKS = ["Base", "Arbitrum", "Optimism", "Polygon"];
+export const NETWORKS = ["Base", "Arbitrum", "Optimism", "Polygon"];
 
 export type Visual =
   | {
@@ -68,13 +68,30 @@ const hex = (r: Rand, n: number) => Array.from({ length: n }, () => HEX[Math.flo
 const address = (r: Rand) => `0x${hex(r, 40)}`;
 // A look-alike: same first 6 and last 4 characters, different middle.
 const poison = (r: Rand, a: string) => `${a.slice(0, 6)}${hex(r, 32)}${a.slice(-4)}`;
-const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
+export const short = (a: string) => `${a.slice(0, 6)}…${a.slice(-4)}`;
 export const chunk = (a: string) => `0x ${a.replace(/^0x/, "").replace(/(.{4})/g, "$1 ").trim()}`;
 
 const WORDS = [
   "maple", "orbit", "candle", "river", "frost", "tiger", "velvet", "harbor", "pixel", "meadow", "lantern", "cobalt",
   "falcon", "ember", "quartz", "willow", "summit", "canyon", "breeze", "copper", "glacier", "nectar", "puzzle", "saddle",
 ];
+
+// The "Pay a friend back" situation, shared by the step list and the simulated-wallet screen.
+export function payBackScenario(r: Rand) {
+  const friend = pick(r, ["Maya", "Jordan", "Priya", "Leo", "Sam"]);
+  const amount = pick(r, [25, 40, 60]);
+  const reason = pick(r, ["the concert tickets", "dinner", "the Uber", "groceries"]);
+  // Rotate real networks so the lesson is "ask, then match," not "pick Base."
+  const network = pick(r, NETWORKS);
+  const real = address(r);
+  const fakeA = poison(r, real);
+  const fakeB = poison(r, real);
+  // Typed from memory: one character in the middle is off.
+  const k = 6 + Math.floor(r() * 30);
+  const typo = real.slice(0, k) + HEX[(HEX.indexOf(real[k]) + 1 + Math.floor(r() * 14)) % 16] + real.slice(k + 1);
+  const cheap = pick(r, NETWORKS.filter((n) => n !== network));
+  return { friend, amount, reason, network, real, fakeA, fakeB, typo, cheap };
+}
 
 export const MISSIONS: MissionDef[] = [
   {
@@ -95,14 +112,7 @@ export const MISSIONS: MissionDef[] = [
       ],
     },
     build: (r) => {
-      const friend = pick(r, ["Maya", "Jordan", "Priya", "Leo", "Sam"]);
-      const amount = pick(r, [25, 40, 60]);
-      const reason = pick(r, ["the concert tickets", "dinner", "the Uber", "groceries"]);
-      // Rotate real networks so the lesson is "ask, then match," not "pick Base."
-      const network = pick(r, NETWORKS);
-      const real = address(r);
-      const fakeA = poison(r, real);
-      const fakeB = poison(r, real);
+      const { friend, amount, reason, network, real, fakeA, fakeB } = payBackScenario(r);
       return [
         {
           id: "source",
