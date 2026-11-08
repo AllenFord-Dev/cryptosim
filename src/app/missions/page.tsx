@@ -106,7 +106,7 @@ export default function Missions() {
       ) : (
         <>
       <div className="px-5 pt-5">
-        <NextStepCard />
+        <NextStepCard only="safety" />
       </div>
 
       <section aria-labelledby="path" className="px-5 pt-7">

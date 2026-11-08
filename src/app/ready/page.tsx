@@ -5,6 +5,7 @@ import { useState } from "react";
 import { CheckIcon, ExternalIcon, ShieldIcon, SparkleIcon } from "@/components/icons";
 import { Chip, SubHeader } from "@/components/ui";
 import { readiness } from "@/lib/progress";
+import { planLabel } from "@/components/plan-setup";
 import { useApp } from "@/lib/store";
 
 const QUESTIONS = [
@@ -136,7 +137,7 @@ export default function Ready() {
       <div className="flex flex-col gap-3 px-5">
         <div>
           <h1 className="pt-1 text-[32px] font-extrabold leading-[1.1] tracking-[-0.025em]">
-            {graduated ? "You did a real send" : passed ? "Ready for one small, real test" : "Ready for a real test?"}
+            {graduated ? "You did a real send" : passed ? "Ready for one small, real test" : state.plan ? `Ready for your ${planLabel(state.plan)} plan?` : "Ready for a real purchase?"}
           </h1>
           <p className="pt-3 text-[16px] leading-[1.5] text-body">
             {graduated

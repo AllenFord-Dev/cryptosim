@@ -1,6 +1,7 @@
 import { MISSIONS, missionById } from "./missions";
 import { SKILLS, Skill, SkillId } from "./skills";
 import { State, habits } from "./store";
+import { marketProgress } from "./market-practice";
 
 export type Step = "learn" | "practice" | "prove" | "done";
 
@@ -41,12 +42,25 @@ export function readiness(state: State) {
   const h = habits(state);
   const proven = SKILLS.filter((s) => state.proven[s.id]).length;
   const practiced = SKILLS.filter((s) => skillStatus(state, s).practiced).length;
+  const mp = marketProgress(state);
   const reqs = [
     { label: "Practice every skill", done: practiced === SKILLS.length, progress: `${practiced} of ${SKILLS.length}` },
     { label: "Prove every skill", done: proven === SKILLS.length, progress: `${proven} of ${SKILLS.length}` },
+    { label: "Finish Market practice", done: mp.done === mp.total, progress: `${mp.done} of ${mp.total}` },
     { label: `Lock in ${READY_HABITS_MIN} safe habits`, done: h.lockedIn >= READY_HABITS_MIN, progress: `${h.lockedIn} of ${READY_HABITS_MIN}` },
   ];
   return { reqs, unlocked: reqs.every((r) => r.done) };
 }
 
 export const missionSkill = (missionId: string): SkillId | undefined => MISSIONS.find((m) => m.id === missionId)?.skills[0];
+
+// The single next step across both halves. Market practice is offered whenever it falls behind Safety,
+// so the two halves interleave instead of one waiting for the other.
+export function nextOverall(state: State) {
+  const safety = upNext(state);
+  const mp = marketProgress(state);
+  const safetySteps = SKILLS.reduce((n, s) => n + skillStatus(state, s).done, 0);
+  if (mp.next && (!safety || mp.done * 3 < safetySteps)) return { kind: "market" as const, step: mp.next };
+  if (safety) return { kind: "safety" as const, safety };
+  return null;
+}

@@ -6,7 +6,7 @@ import { COINS, usd, pct, qtyFmt } from "@/lib/coins";
 import { dailyFor } from "@/lib/daily";
 import { MissionDef } from "@/lib/missions";
 import { usePrices } from "@/lib/prices";
-import { readiness, upNext } from "@/lib/progress";
+import { nextOverall, readiness, upNext } from "@/lib/progress";
 import { STARTING_CASH, habits, todayKey, useApp } from "@/lib/store";
 import { ChatIcon, CheckIcon, InboxIcon, KeyIcon, MarketIcon, MegaphoneIcon, SendIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet, Spark } from "./ui";
@@ -277,10 +277,10 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
 
 // Home's one next-step card: habit progress plus the single action that builds the next habit.
 // The one next step, shared by Home and Missions: the only card on either screen.
-export function NextStepCard() {
+export function NextStepCard({ only }: { only?: "safety" } = {}) {
   const { state } = useApp();
   const r = readiness(state);
-  const next = upNext(state);
+  const overall = only === "safety" ? (upNext(state) ? { kind: "safety" as const, safety: upNext(state)! } : null) : nextOverall(state);
   let title: string;
   let sub: string;
   let href: string;
@@ -289,15 +289,23 @@ export function NextStepCard() {
     title = "Last step: pay a friend back";
     sub = "Send safely · about 2 minutes";
     href = "/missions/pay-back?starter=1";
-  } else if (next) {
+  } else if (overall?.kind === "safety") {
+    const next = overall.safety;
     title = next.target.label === "Practice" ? `Practice: ${next.target.title}` : next.target.title;
     sub = next.step === "learn" ? "1 minute · then practice it" : `${next.skill.name} · ${next.target.minutes} minutes`;
     href = next.target.href;
+  } else if (overall?.kind === "market") {
+    title = overall.step.title;
+    sub = `Market practice · ${overall.step.sub}`;
+    href = overall.step.href;
+  } else if (state.graduation?.tx) {
+    // Training wheels off: everything done, so no more prompts.
+    return null;
   } else {
-    title = state.readiness?.passed ? "Try a real test send" : "Every core skill proven";
-    sub = state.readiness?.passed ? "One small send on a test network" : r.unlocked ? "See if you're ready for one small, real test" : "Lock in a few more habits first";
+    title = state.readiness?.passed ? "Try a real test send" : "Readiness check";
+    sub = state.readiness?.passed ? "One small send on a test network" : r.unlocked ? "See if you're ready for your real purchase" : "Lock in a few more habits first";
     href = "/ready";
-    cta = state.readiness?.passed ? "Start" : "Readiness check";
+    cta = state.readiness?.passed ? "Start" : "Open";
   }
   return (
     <div className="rounded-[22px] bg-brand-tint p-[18px]">
