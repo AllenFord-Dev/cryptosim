@@ -479,6 +479,40 @@ code.full i.bad{padding:1px 2px!important}
 .ph b{display:block;font-family:"Newsreader",serif;font-weight:500;font-size:22px;color:var(--ink);margin-top:6px}
 .ph ul{margin:10px 0 0;padding-left:16px}.ph li{font-size:14px;line-height:1.5;color:var(--panel-ink);margin-top:6px}
 @media (max-width:760px){.plan{grid-template-columns:1fr}}
+
+/* ===== Design pass: fewer component types, boxes only for visuals, one label style, purple with one job ===== */
+/* Labels: one quiet mono label per visual, like "THE STACK" */
+.cap{font-family:"Geist Mono",ui-monospace,monospace!important;font-size:15px!important;letter-spacing:.03em!important;text-transform:uppercase;color:var(--faint)!important;margin-bottom:22px!important}
+.cap::before{content:"\201C"}.cap::after{content:"\201D"}
+.panel{padding:30px 32px!important;margin-top:30px!important}
+/* Small labels everywhere else: sentence case, no tracking */
+.adv .k,.loops .lk,.pair .k,.ba .k,.dir .tag,.dc .g span,.ph span,.ns-k,.sess .became span{text-transform:none!important;letter-spacing:0!important;font-family:"Schibsted Grotesk",sans-serif!important;font-size:13px!important;font-weight:500!important;color:var(--faint)!important}
+/* Text never sits in a box: stats, tables, decisions, directions, the plan and the north star are plain rows */
+.panel:has(.stats),.panel.tbl{background:transparent!important;border:0!important;padding:0!important}
+.panel.tbl .cap,.panel:has(.stats) .cap{margin-bottom:12px!important}
+.panel.tbl table{border-top:1px solid var(--line)}
+.dc{border:0!important;background:transparent!important;border-top:1px solid var(--line)!important;margin-top:34px!important}
+.dc .q{padding:16px 0 4px!important;border:0!important}
+.dc .g>div{padding:10px 24px 0 0!important}.dc .g>div+div{border:0!important}
+.dc .g .ch{background:transparent!important;color:var(--ink)!important;font-weight:500}
+.dirs{gap:0 32px!important}
+.dir{background:transparent!important;border:0!important;border-top:1px solid var(--line)!important;padding:16px 0 20px!important}
+.dir.yes{border-top:2px solid var(--ink)!important}
+.dir.yes .tag{color:var(--ink)!important}
+.plan{gap:0 28px!important}
+.ph{background:transparent!important;border-top:1px solid var(--line)!important;padding:16px 0 0!important}
+.ns{background:transparent!important;color:var(--ink)!important;padding:22px 0!important;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.ns-v{color:var(--ink)!important;font-size:38px!important}
+.ns p{color:var(--body)!important}
+.ns-why{border-top:0!important;padding-top:0!important;margin-top:10px!important;color:var(--body)!important}.ns-why b{color:var(--ink)!important}
+/* Purple has one job: the current section, and the one highlight inside a visual */
+.finds .bec{color:var(--ink)!important}
+.cmp td:last-child{background:transparent!important}.cmp th.hl{color:var(--ink)!important}
+.yn{background:transparent!important;padding:0!important;font-weight:500!important}.yn.y{color:var(--ink)!important}.yn.n{color:var(--faint)!important}.yn.p{color:var(--body)!important}
+.cmp td:last-child .yn.y{font-weight:700!important}
+/* Body text inside visuals: one sans, three sizes */
+.panel{font-family:"Schibsted Grotesk",sans-serif}
+@media (max-width:600px){.panel{padding:20px 18px!important}.cap{font-size:13px!important}}
 </style>
 
 <header class="top">
@@ -539,7 +573,7 @@ code.full i.bad{padding:1px 2px!important}
 <h3 style="margin-top:48px">Problem: crypto's first mistakes are permanent</h3>
       <p style="margin-top:10px">Transfers can't be reversed, fees are easy to miss, and scammers target exactly the people still figuring it out.</p>
       <div class="panel">
-        <div class="cap">What first-timers run into</div>
+        <div class="cap">First-timer mistakes</div>
         <div class="stats">
           <div class="stat"><b>21%</b><p>of US crypto holders have sent crypto to the wrong address</p><small>Kraken survey, 2025</small></div>
           <div class="stat"><b>1 in 10</b><p>people who've owned crypto say they lost a private key</p><small>SEC Investor Advocate, 2026</small></div>
@@ -550,7 +584,7 @@ code.full i.bad{padding:1px 2px!important}
       <h3 style="margin-top:40px">Why nothing fixes it yet</h3>
       <p style="margin-top:10px">Courses explain mistakes instead of letting you make them. Exchanges and wallets use real money from the first tap. Demo modes exist, but only for trading.</p>
       <div class="panel">
-        <div class="cap">What exists for a first-timer</div>
+        <div class="cap">The landscape</div>
         <div class="layers">
           <div class="layer"><span class="ln">Learn</span><div class="chips"><span>Courses</span><span>Articles</span><span>Videos</span><span>Exchange guides</span><span>Social posts</span></div></div>
           <div class="layer gap"><span class="ln">Practice</span><div class="chips"><span class="dim">Trading demo modes<small>trading only</small></span><span class="hl">CryptoSim<small>sends, scams, fees, real drops</small></span></div></div>
@@ -641,7 +675,7 @@ code.full i.bad{padding:1px 2px!important}
       <h2>I researched where first-time buyers lose money</h2>
       <p class="lede">My users are first-time buyers aged 18–25, and I'm one of them. So before designing anything, I went through it as one: I set up a real wallet, sent my first transactions and logged all 18 moments I got stuck. Then I checked each against surveys, studies and real incidents to see which ones trip up other people too.</p>
       <div class="panel">
-        <div class="jlabel">&ldquo;My first send&rdquo;</div>
+        <div class="cap">My first send</div>
         <div class="flow6">
           <div class="st"><div class="bx">Pick an app</div><small>Look-alike apps, opposite custody</small></div>
           <div class="st"><div class="bx">Back up phrase</div><small>Pasted it after the warning</small></div>
@@ -666,7 +700,7 @@ code.full i.bad{padding:1px 2px!important}
           <p class="bec">Became: a question about the total cost before the first buy.</p></div>
             </div>
       <div class="panel">
-        <div class="cap">What the wallet shows vs what's real</div>
+        <div class="cap">Shown vs real</div>
         <div class="adv">
           <div class="adv-c">
             <div class="k">What your wallet shows</div>
@@ -734,7 +768,7 @@ code.full i.bad{padding:1px 2px!important}
     
       
       <div class="panel tbl cmp">
-        <div class="cap">How the four compared</div>
+        <div class="cap">The four compared</div>
         <table>
           <thead><tr><th></th><th>Transaction explainer</th><th>Safety checker</th><th>AI copilot</th><th class="hl">CryptoSim</th></tr></thead>
           <tbody><tr><td>Stops the mistake before money moves</td><td><span class="yn n">No</span></td><td><span class="yn y">Yes</span></td><td><span class="yn p">Partly</span></td><td><span class="yn y">Yes</span></td></tr><tr><td>Not already done well by others</td><td><span class="yn n">No</span></td><td><span class="yn n">No</span></td><td><span class="yn p">Partly</span></td><td><span class="yn y">Yes</span></td></tr><tr><td>Safe if it gets something wrong</td><td><span class="yn y">Yes</span></td><td><span class="yn n">No</span></td><td><span class="yn n">No</span></td><td><span class="yn y">Yes</span></td></tr><tr><td>Builds a habit that lasts</td><td><span class="yn n">No</span></td><td><span class="yn n">No</span></td><td><span class="yn n">No</span></td><td><span class="yn y">Yes</span></td></tr><tr><td>Takes little effort from the user</td><td><span class="yn y">Yes</span></td><td><span class="yn y">Yes</span></td><td><span class="yn y">Yes</span></td><td><span class="yn n">No</span></td></tr></tbody>
@@ -751,7 +785,7 @@ code.full i.bad{padding:1px 2px!important}
         <div><b>It wasn't anchored to anything</b><p>Missions were practice in the abstract. But a first-timer has a specific purchase in mind, and that purchase is what they need to be ready for.</p></div>
       </div>
       <div class="panel">
-        <div class="cap">The product loop, before and after</div>
+        <div class="cap">The loop</div>
         <div class="loops">
           <div class="lk">Before</div>
           <div class="flowd sm"><div class="node">Missions</div><span class="arr"></span><div class="node">Earn practice money</div><span class="arr"></span><div class="node">Spend it in the market</div></div>
@@ -820,16 +854,6 @@ code.full i.bad{padding:1px 2px!important}
         <div class="q">Should missions pay out practice money?</div>
         <div class="g"><div><span>Options</span>Pay for clean runs · Charge for mistakes · Neither</div><div class="ch"><span>Chose</span>Neither: show what a mistake would cost, never charge it</div><div><span>Trade-off</span>Missions feel less rewarding in the moment</div></div>
       </div>
-      <div class="panel">
-        <div class="cap">What can move your practice money</div>
-        <div class="ledger">
-          <div><span>Real market prices</span><b class="ok">Moves it</b></div>
-          <div><span>Fees and spread</span><b class="ok">Moves it</b></div>
-          <div><span>Mission rewards</span><b class="no">Removed</b></div>
-          <div><span>Mission mistakes</span><b class="sh">Shown as "If this were real: −$40," never charged</b></div>
-        </div>
-      </div>
-      <blockquote>A sandbox stops teaching the moment you can earn your way out of a loss.</blockquote>
 
 
       <div class="dc">
@@ -868,7 +892,7 @@ code.full i.bad{padding:1px 2px!important}
         <div class="ns-why"><b>Why this one:</b> it only counts when practice carries over to a real wallet, the riskiest assumption. Sign-ups, time in the app and portfolio returns can all go up while nobody gets safer.</div>
       </div>
       <div class="panel">
-        <div class="cap">What drives it: one input metric per step</div>
+        <div class="cap">Input metrics</div>
         <div class="flowd funnel">
           <div class="node">Tutorial<small>Completion</small></div><span class="arr"></span>
           <div class="node">Missions<small>Clean run on the 2nd try</small></div><span class="arr"></span>
@@ -916,9 +940,9 @@ code.full i.bad{padding:1px 2px!important}
       <h3 style="margin-top:48px">What's next: putting it in front of real users</h3>
       <p style="margin-top:10px">The biggest gap in this project is that my research started with one person: me. Here's the plan to close it.</p>
       <div class="plan">
-        <div class="ph"><span>Weeks 1–2</span><b>Watch</b><ul><li>Recruit 5 people aged 18–25 who've never bought crypto, plus 3 who bought in the last year.</li><li>30-minute sessions: they think aloud through the tutorial, Pay a friend back and one market task.</li><li>The 3 recent buyers also answer: "What almost went wrong on your first buy?"</li></ul></div>
-        <div class="ph"><span>Week 3</span><b>Iterate</b><ul><li>Log every stall, skip and mistake by step.</li><li>Rework anything that 2 or more of 5 people get stuck on, and ship it.</li><li>Re-test just the changed steps with 2 new people.</li><li>Add any new mistake recent buyers name, if it can be practiced.</li></ul></div>
-        <div class="ph"><span>Week 4</span><b>Check it carries over</b><ul><li>A week later, the same 5 do one real test send.</li><li>Did they check the middle of the address and the total cost, without being reminded?</li><li>Update this case study with what I found.</li></ul></div>
+        <div class="ph"><span>Weeks 1–2</span><b>Watch</b><ul><li>Recruit 6 people aged 18–25 who've never bought crypto, plus 4 who bought in the last year.</li><li>30-minute sessions: they think aloud through the tutorial, Pay a friend back and one market task.</li><li>The 4 recent buyers also answer: "What almost went wrong on your first buy?"</li></ul></div>
+        <div class="ph"><span>Week 3</span><b>Iterate</b><ul><li>Log every stall, skip and mistake by step.</li><li>Rework anything that 2 or more of the 6 first-timers get stuck on, and ship it.</li><li>Re-test the changed steps with 5 new people.</li><li>Add any new mistake recent buyers name, if it can be practiced.</li></ul></div>
+        <div class="ph"><span>Week 4</span><b>Check it carries over</b><ul><li>A week later, the 6 first-timers do one real test send.</li><li>Did they check the middle of the address and the total cost, without being reminded?</li><li>Update this case study with what I found.</li></ul></div>
       </div>
       <p style="margin-top:18px">Then the loop repeats: watch, iterate, check that it carries over. Every round is judged by the north star, ready first-timers per week.</p>
       <div class="panel tbl">
