@@ -531,6 +531,10 @@ code.full i.bad{padding:1px 2px!important}
 @media (max-width:600px){.story .alock{font-size:11cqw}}
 @media (prefers-reduced-motion:reduce){.story .alock,.story .alock *{animation:none!important}}
 .story .on .c1{transition-delay:.25s}.story .on .c2{transition-delay:.35s}.story .on .c3{transition-delay:.45s}.story .on .c4{transition-delay:.55s}
+/* iPhone Safari ignores rounded corners on videos inside a clipped box; a mask forces the clip. Media also fills the whole screen. */
+.ip17 .scr{-webkit-mask-image:-webkit-radial-gradient(white,black);mask-image:radial-gradient(white,black);transform:translateZ(0)}
+.ip17 .content video,.ip17 .content img{width:100%;height:100%;object-fit:cover;object-position:top}
+.story .dev .content video{height:100%!important;object-fit:cover;object-position:top}
 </style>
 
 <header class="top">
