@@ -303,9 +303,18 @@ export function TradeSheet({
           radius={0}
           step={4}
           total={5}
-          title={`This buy costs ${usd(q.fee + q.spread)}`}
-          body={`${usd(q.fee)} trading fee plus ${usd(q.spread)} spread. Most first-timers never look, and real apps vary a lot, so check every time.`}
-          action={{ label: "Got it", onClick: () => dispatch({ type: "tour", step: "confirm" }) }}
+          title="Quick check: what does this buy cost you in total?"
+          body=""
+          check={{
+            options: [
+              { label: "$0.00", miss: "Practice money still shows real costs. Look at the two highlighted numbers." },
+              { label: usd(q.fee), miss: "That's only the trading fee. The spread costs you too." },
+              { label: usd(q.fee + q.spread) },
+            ],
+            answer: 2,
+            explain: `${usd(q.fee)} fee plus ${usd(q.spread)} spread. Most first-timers never look, and real apps vary a lot, so check every time.`,
+            onDone: () => dispatch({ type: "tour", step: "confirm" }),
+          }}
         />
       )}
       {state.tour === "confirm" && feesOpen && (

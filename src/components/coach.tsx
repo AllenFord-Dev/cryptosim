@@ -19,6 +19,7 @@ export function Coach({
   total,
   radius = 20,
   action,
+  check,
 }: {
   target: string;
   title: string;
@@ -27,7 +28,11 @@ export function Coach({
   total: number;
   radius?: number;
   action?: { label: string; onClick: () => void };
+  // A one-tap question about what's highlighted: the tutorial only moves on once it's answered right.
+  check?: { options: { label: string; miss?: string }[]; answer: number; explain: string; onDone: () => void };
 }) {
+  const [picked, setPicked] = useState<number | null>(null);
+  const solved = check && picked === check.answer;
   const [box, setBox] = useState<Box | null>(null);
   const [view, setView] = useState({ w: 390, h: 844 });
   const [shown, setShown] = useState(false);
@@ -92,7 +97,7 @@ export function Coach({
       <div className={shade} style={{ left: 0, top: box.y + box.h, width: "100%", bottom: 0 }} />
       <div className={shade} style={{ left: 0, top: box.y, width: Math.max(0, box.x), height: box.h }} />
       <div className={shade} style={{ left: box.x + box.w, top: box.y, right: 0, height: box.h }} />
-      {(locked || action) && <div className="fixed z-[70]" style={{ left: box.x, top: box.y, width: box.w, height: box.h }} aria-hidden />}
+      {(locked || action || check) && <div className="fixed z-[70]" style={{ left: box.x, top: box.y, width: box.w, height: box.h }} aria-hidden />}
       <div
         className="coach-ring pointer-events-none fixed z-[71]"
         style={{ left: box.x, top: box.y, width: box.w, height: box.h, borderRadius: radius }}
@@ -119,7 +124,40 @@ export function Coach({
           </span>
         </div>
         <div className="pt-2.5 text-[16px] font-bold leading-tight tracking-[-0.01em]">{title}</div>
-        <p className="pt-1 text-[14px] leading-[1.45] text-white/70">{body}</p>
+        {check ? (
+          <>
+            {!solved && (
+              <div className="flex gap-2 pt-3" role="radiogroup" aria-label={title}>
+                {check.options.map((o, k) => (
+                  <button
+                    key={o.label}
+                    role="radio"
+                    aria-checked={picked === k}
+                    onClick={() => setPicked(k)}
+                    className={`tabular h-10 flex-1 rounded-full text-[15px] font-extrabold ${
+                      picked === k ? "bg-[var(--color-bad)] text-white" : "bg-white/12 text-white"
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+            )}
+            {picked !== null && !solved && <p className="pt-2.5 text-[14px] leading-[1.45] text-[#FFB4AB]">{check.options[picked].miss}</p>}
+            {solved && (
+              <>
+                <p className="anim-enter pt-1.5 text-[14px] leading-[1.45] text-white/80">
+                  <b className="text-[var(--color-good)]">Right.</b> {check.explain}
+                </p>
+                <button onClick={check.onDone} className="mt-3 h-10 rounded-full bg-white px-5 text-[15px] font-extrabold text-[#12111A]">
+                  Continue
+                </button>
+              </>
+            )}
+          </>
+        ) : (
+          <p className="pt-1 text-[14px] leading-[1.45] text-white/70">{body}</p>
+        )}
         {action && (
           <button onClick={action.onClick} className="mt-3 h-10 rounded-full bg-white px-5 text-[15px] font-extrabold text-[#12111A]">
             {action.label}
