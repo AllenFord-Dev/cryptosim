@@ -15,7 +15,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <title>CryptoSim Case Study</title>
 <meta name="claude:viewport-fit-sides" content="cover">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,ital,wght@6..72,0,400;6..72,0,500;6..72,1,400&family=Schibsted+Grotesk:wght@400;500;600&family=Hanken+Grotesk:wght@500;800&family=Geist+Mono:wght@500&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,ital,wght@6..72,0,400;6..72,0,500;6..72,1,400&family=Schibsted+Grotesk:wght@400;500;600&family=Hanken+Grotesk:wght@400;500;800&family=Geist+Mono:wght@500&display=swap">
 <style>
 /* Layout: Rachel Chen-style reading page. Fixed section nav on the left (desktop), one centered
    reading column, gray figure panels with mono captions, serif headings. CryptoSim purple is the one accent. */
@@ -1021,7 +1021,7 @@ document.querySelectorAll('.mesh').forEach(function(c){
   var loc=gl.getAttribLocation(pr,'p');gl.enableVertexAttribArray(loc);gl.vertexAttribPointer(loc,2,gl.FLOAT,false,0,0);
   var ur=gl.getUniformLocation(pr,'r'),ut=gl.getUniformLocation(pr,'t');
   function size(){var d=Math.min(window.devicePixelRatio||1,1.5);var w=Math.round(c.clientWidth*d),h=Math.round(c.clientHeight*d);if(c.width!==w||c.height!==h){c.width=w;c.height=h;gl.viewport(0,0,w,h);}}
-  var still=window.matchMedia('(prefers-reduced-motion: reduce)').matches, vis=true, t0=performance.now(), seed=40+Math.random()*60;
+  var still=window.matchMedia('(prefers-reduced-motion: reduce)').matches, vis=true, t0=performance.now(), seed=85;
   function draw(now){size();gl.uniform2f(ur,c.width,c.height);gl.uniform1f(ut,seed+(still?0:(now-t0)/1000));gl.drawArrays(gl.TRIANGLES,0,3);}
   function loop(now){if(vis)draw(now);if(!still)requestAnimationFrame(loop);}
   if('IntersectionObserver' in window){new IntersectionObserver(function(e){vis=e[0].isIntersecting;}).observe(c);}
