@@ -417,6 +417,11 @@ main{padding-top:96px}
 .finds .src{display:block;font-family:"Schibsted Grotesk",sans-serif;font-size:12.5px;color:var(--faint);margin-top:8px}.finds .src a{color:var(--faint);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}.finds .src a:hover{color:var(--accent)}
 .finds .bec{font-family:"Schibsted Grotesk",sans-serif;font-size:14px!important;line-height:1.45!important;color:var(--accent);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
 @media (max-width:700px){.finds{grid-template-columns:1fr}}
+.log.cost{columns:1}
+.log.cost li{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.62fr);gap:24px;align-items:baseline;font-size:16px;padding:12px 0}
+.log.cost li em{font-style:normal;font-family:"Schibsted Grotesk",sans-serif;font-size:13.5px;font-weight:500;color:var(--bad)}
+.loghead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.62fr);gap:24px;font-family:"Schibsted Grotesk",sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:4px 0 6px}
+@media (max-width:700px){.log.cost li,.loghead{grid-template-columns:1fr;gap:4px}.loghead span:last-child{display:none}}
 </style>
 
 <header class="top">
@@ -576,19 +581,19 @@ main{padding-top:96px}
     <hr class="rule">
     <section id="research">
       <p class="label">Research</p>
-      <h2>Finding the mistakes that matter most.</h2>
-      <p class="lede">Before designing anything, I researched where first-time buyers lose money. I started with my own first wallet, logging every moment I got stuck, then checked each pattern against surveys, studies and real incidents. The findings that held up are built into CryptoSim.</p>
+      <h2>Seconds after the warning, I pasted my recovery phrase.</h2>
+      <p class="lede">That was one of 18 times I got stuck in my first 90 minutes with a real wallet. Before designing anything, I logged every one, then checked each against surveys, studies and real incidents to find the ones that cost real people money. Those became CryptoSim.</p>
       <div class="panel">
-        <div class="cap">My first session · 90 minutes · 18 friction points</div>
-        <ul class="log">
-          <li>I pasted my recovery phrase into a chat seconds after a "do not share" warning.</li>
-          <li>Every address was shortened to its first and last few characters.</li>
-          <li>Copying my address gave five options, with no guidance on which to use.</li>
-          <li>Two apps with nearly identical names, but opposite custody models.</li>
-          <li>The fee was shown only after I sent, and only in ETH.</li>
-          <li>"Successfully sent" appeared before the transfer was confirmed.</li>
+        <div class="cap">My first session · 90 minutes · 18 friction points · the 6 that can cost real money</div>
+        <div class="loghead"><span>What happened</span><span>What it can cost</span></div>
+        <ul class="log cost">
+          <li><span>I pasted my recovery phrase into a chat seconds after a "do not share" warning.</span><em>Anyone with it can empty the wallet</em></li>
+          <li><span>Every address was shortened to its first and last few characters.</span><em>Paying a scammer's look-alike address</em></li>
+          <li><span>Copying my address gave five options, with no guidance on which to use.</span><em>Money sent on the wrong network</em></li>
+          <li><span>Two apps with nearly identical names, but opposite custody models.</span><em>Not knowing who can recover your money</em></li>
+          <li><span>The fee was shown only after I sent, and only in ETH.</span><em>Paying more than you planned</em></li>
+          <li><span>"Successfully sent" appeared before the transfer was confirmed.</span><em>Thinking it's done before it is</em></li>
         </ul>
-        <p class="note">6 of 18 shown.</p>
       </div>
       <h3 style="margin-top:44px">Then I checked whether it was just me.</h3>
       <p style="margin-top:10px">One person's session isn't evidence, so I kept only the patterns I could also find in outside research. Four held up, and each one is built into CryptoSim:</p>
