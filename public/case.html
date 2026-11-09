@@ -465,6 +465,14 @@ code.full i.bad{padding:1px 2px!important}
 .legend{gap:6px 18px!important}.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--panel);margin-right:6px;vertical-align:-1px}
 .legend .d{color:var(--bad)}.legend .d::before{background:color-mix(in srgb,var(--bad) 25%,transparent)}
 @media (max-width:420px){code.full{font-size:11.5px!important}.fa{grid-template-columns:64px minmax(0,1fr)}}
+/* North star: one card in the brand color */
+.ns{margin-top:30px;background:var(--accent);color:#fff;padding:26px 28px;font-family:"Schibsted Grotesk",sans-serif}
+.ns-k{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.75)}
+.ns-v{font-family:"Newsreader",serif;font-size:34px;line-height:1.15;margin-top:8px;letter-spacing:-.01em}
+.ns p{margin:8px 0 0;font-size:16px;color:rgba(255,255,255,.92);line-height:1.5}
+.ns-why{margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.25);font-size:14px;line-height:1.55;color:rgba(255,255,255,.85)}
+.ns-why b{color:#fff;font-weight:600}
+@media (max-width:600px){.ns{padding:20px}.ns-v{font-size:27px}}
 </style>
 
 <header class="top">
@@ -846,31 +854,41 @@ code.full i.bad{padding:1px 2px!important}
     <section id="measuring">
       <p class="label">Metrics</p>
       <h2>How I'll know it works</h2>
-      <p class="lede">The riskiest assumption is that practice here carries over to a real wallet, so the last step is a real one: a send on a test network that the user checks themselves.</p>
+      <p class="lede">CryptoSim works only if practice turns into a safe first real send. So that's what the north star counts, and nothing here measures profit.</p>
+      <div class="ns">
+        <div class="ns-k">North star</div>
+        <div class="ns-v">Ready first-timers per week</div>
+        <p>People who pass the readiness check and then complete a real test send on their own.</p>
+        <div class="ns-why"><b>Why this one:</b> it only counts when practice carries over to a real wallet, the riskiest assumption. Sign-ups, time in the app and portfolio returns can all go up while nobody gets safer.</div>
+      </div>
       <div class="panel">
-        <div class="cap">What I measure at each step</div>
+        <div class="cap">What drives it: one input metric per step</div>
         <div class="flowd funnel">
           <div class="node">Tutorial<small>Completion</small></div><span class="arr"></span>
-          <div class="node">Missions<small>Clean-run rate</small></div><span class="arr"></span>
+          <div class="node">Missions<small>Clean run on the 2nd try</small></div><span class="arr"></span>
           <div class="node">Market practice<small>Steps done</small></div><span class="arr"></span>
           <div class="node">Readiness<small>Pass rate</small></div><span class="arr"></span>
           <div class="node hl">Real test send<small>Success</small></div>
         </div>
+        <p class="note">"Clean run on the 2nd try" measures learning: a first mistake is expected, a repeated one means the mission didn't teach.</p>
+      </div>
+      <h3 style="margin-top:40px">Guardrails: what must not go up</h3>
+      <div class="three">
+        <div><b>Trading frequency</b><p>Trades per user. If it climbs, CryptoSim is building a trading habit instead of a safe one.</p></div>
+        <div><b>Time to ready</b><p>From first open to passing readiness. Effort is the main weakness, so this has to stay short.</p></div>
+        <div><b>Quitting after a mistake</b><p>Drop-off right after a failed mission. Mistakes should teach, not shame people into leaving.</p></div>
       </div>
       <div class="panel tbl">
         <div class="cap">Riskiest assumptions</div>
         <table>
           <thead><tr><th>Assumption</th><th>If it's wrong</th><th>How I'm testing it</th></tr></thead>
           <tbody>
-            <tr><td>First-timers will practice before buying</td><td>Nobody uses it</td><td>Tutorial and Market practice completion; return after 1 and 7 days</td></tr>
-            <tr><td>Skills carry over to a real wallet</td><td>Practice doesn't help</td><td>Readiness pass rate, then the real test send</td></tr>
-            <tr><td>Habits change behavior</td><td>Habits are just checkboxes</td><td>Fee-check rate and holds through real dips over time</td></tr>
+            <tr><td>First-timers will practice before buying</td><td>Nobody uses it</td><td>Tutorial completion; return after 1 and 7 days</td></tr>
+            <tr><td>Skills carry over to a real wallet</td><td>Practice doesn't help</td><td>Readiness pass rate, then real test send success</td></tr>
+            <tr><td>Habits change behavior</td><td>Habits are just checkboxes</td><td>Fee-check rate and holds through real dips, over time</td></tr>
           </tbody>
         </table>
       </div>
-      
-      
-    
     </section>
     <hr class="rule">
     <section id="reflection">
