@@ -8,7 +8,7 @@ import { CoinMark } from "./ui";
 // Asked once after the guided first trade: the real purchase this practice is for.
 const CHOICES = ["bitcoin", "ethereum", "solana"];
 
-export function PlanSetup({ onDone }: { onDone?: () => void }) {
+export function PlanSetup({ onDone, tutorial }: { onDone?: () => void; tutorial?: boolean }) {
   const { state, dispatch } = useApp();
   const [coin, setCoin] = useState<string | null>(state.plan?.coin ?? "bitcoin");
   const [amount, setAmount] = useState(String(state.plan?.amount ?? 100));
@@ -19,7 +19,8 @@ export function PlanSetup({ onDone }: { onDone?: () => void }) {
   };
   return (
     <div className="onb-enter fixed inset-0 z-[65] mx-auto flex max-w-[430px] flex-col bg-card pb-[calc(16px+var(--safe-bottom))] pt-[calc(8px+var(--safe-top))]">
-      <div className="flex h-12 items-center justify-end px-2">
+      <div className="flex h-12 items-center justify-between pl-6 pr-2">
+        <span className="text-[13px] font-bold text-brand">{tutorial ? "Tutorial · Part 3 of 3" : ""}</span>
         <button onClick={() => save(state.plan)} className="h-11 px-4 text-[15px] font-semibold text-muted">
           Skip
         </button>

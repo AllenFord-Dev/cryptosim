@@ -144,7 +144,7 @@ export default function CoinPage() {
       </div>
 
       {state.tour === "buy" && !trade && (
-        <Coach target="buy" radius={999} step={2} total={3} title="Tap Buy" body="You&apos;ll pick an amount next. Nothing real is bought." />
+        <Coach target="buy" radius={999} step={2} total={5} title="Tap Buy" body="You&apos;ll pick an amount next. Nothing real is bought." />
       )}
       {recurring && <RecurringSheet coinId={coin.id} onClose={() => setRecurring(false)} />}
       {q && trade && <TradeSheet coinId={coin.id} side={trade} price={q.price} onClose={() => setTrade(null)} />}

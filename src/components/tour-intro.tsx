@@ -42,9 +42,11 @@ export function TourIntro({ onStart }: { onStart: () => void }) {
             </span>
           </Frag>
         </div>
-        <h2 className="pt-5 text-[26px] font-extrabold leading-[1.1] tracking-[-0.03em]">Your first trade</h2>
+        <div className="pt-5 text-[13px] font-bold text-brand">Tutorial · Part 1 of 3</div>
+        <h2 className="pt-1 text-[26px] font-extrabold leading-[1.1] tracking-[-0.03em]">Your first trade</h2>
         <p className="pt-2 text-[15.5px] leading-[1.45] text-body">
-          Buy ${TRADE} of Bitcoin with practice money. We&apos;ll point to each tap. About 2 minutes.
+          A quick guided tour: your first trade, a first send, then your plan. About 7 minutes. First, buy ${TRADE} of Bitcoin with practice
+          money. We&apos;ll point to each tap.
         </p>
         <button onClick={onStart} className="btn btn-brand mt-5">
           Start

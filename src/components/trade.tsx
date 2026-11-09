@@ -8,8 +8,11 @@ import { focusOnMount } from "@/lib/presence";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { FEE_RATE, SPREAD_RATE, Trade, TradeReason, useApp } from "@/lib/store";
 import { usePrices } from "@/lib/prices";
+import { MISSIONS } from "@/lib/missions";
 import { CheckIcon, ChevronIcon, SparkleIcon } from "./icons";
 import { CoinMark, Sheet } from "./ui";
+
+const MISSION_MIN = MISSIONS.find((m) => m.id === "pay-back")?.minutes ?? 4;
 
 export function TradeSheet({
   coinId,
@@ -26,7 +29,7 @@ export function TradeSheet({
   const coin = coinById(coinId)!;
   const h = state.holdings[coinId];
   const maxUsd = side === "buy" ? state.cash : h ? h.qty * price * (1 - SPREAD_RATE) : 0;
-  const touring = state.tour === "fees" || state.tour === "confirm";
+  const touring = state.tour === "fees" || state.tour === "feeinfo" || state.tour === "confirm";
   const [amount, setAmount] = useState(touring && side === "buy" ? "20" : "");
   const [feesOpen, setFeesOpen] = useState(false);
   const [done, setDone] = useState<Trade | null>(null);
@@ -96,13 +99,13 @@ export function TradeSheet({
             {done.panic
               ? "You sold at a loss just minutes after buying. Prices swing all the time, and selling on a dip locks the loss in. That's a habit worth breaking before real money is involved."
               : done.feeChecked
-                ? "Nice: you opened the fee details before confirming. That's one of your five safe habits, and it adds up on every trade."
+                ? "Nice: you opened the fee details before confirming. That's one of your safe habits, and it adds up on every trade."
                 : `Heads up: you didn't open the fee details. This trade cost ${usd(done.fee + q.spread)} in fees and spread. Real apps vary a lot, so checking first is a habit worth building.`}
           </p>
         </div>
         {state.tour === "send" ? (
           <div className="mt-4 flex flex-col gap-3 rounded-[18px] bg-[#12111A] p-4 text-white">
-            <div className="text-[12px] font-bold text-white/60">One more, about 2 minutes</div>
+            <div className="text-[12px] font-bold text-white/60">Tutorial · Part 2 of 3 · about {MISSION_MIN} minutes</div>
             <div className="text-[18px] font-bold leading-tight">Pay a friend back without falling for a look-alike address.</div>
             <button
               onClick={() => {
@@ -260,7 +263,7 @@ export function TradeSheet({
         <button
           data-coach="fees"
           onClick={() => {
-            if (state.tour === "fees" && !feesOpen) dispatch({ type: "tour", step: "confirm" });
+            if (state.tour === "fees" && !feesOpen) dispatch({ type: "tour", step: "feeinfo" });
             setFeesOpen(!feesOpen);
           }}
           aria-expanded={feesOpen}
@@ -276,7 +279,7 @@ export function TradeSheet({
           </span>
         </button>
         {feesOpen && (
-          <div className="anim-enter flex flex-col gap-2 border-t border-line px-4 py-3.5 text-[14px]">
+          <div data-coach="feeinfo" className="anim-enter flex flex-col gap-2 border-t border-line px-4 py-3.5 text-[14px]">
             <Row label={`Trading fee (${FEE_RATE * 100}%)`} value={usd(q.fee)} />
             <Row label={`Spread (${SPREAD_RATE * 100}%)`} value={usd(q.spread)} />
             <p className="pt-1 text-[13px] leading-[1.45] text-muted">
@@ -292,10 +295,21 @@ export function TradeSheet({
       </button>
       <p className="pt-3 text-center text-[12px] text-muted">Practice money only. Nothing real is bought or sold.</p>
       {state.tour === "fees" && (
-        <Coach target="fees" radius={14} step={3} total={3} title="Check the fees first" body="Most people skip this. Open it to see what this trade really costs." />
+        <Coach target="fees" radius={14} step={3} total={5} title="Check the fees first" body="Most people skip this. Open it to see what this trade really costs." />
+      )}
+      {state.tour === "feeinfo" && feesOpen && (
+        <Coach
+          target="feeinfo"
+          radius={0}
+          step={4}
+          total={5}
+          title={`This buy costs ${usd(q.fee + q.spread)}`}
+          body={`${usd(q.fee)} trading fee plus ${usd(q.spread)} spread. Most first-timers never look, and real apps vary a lot, so check every time.`}
+          action={{ label: "Got it", onClick: () => dispatch({ type: "tour", step: "confirm" }) }}
+        />
       )}
       {state.tour === "confirm" && feesOpen && (
-        <Coach target="confirm" radius={999} step={3} total={3} title="Now buy" body={`${usd(q.fee + q.spread)} goes to fees and spread. Checking that is one of your five safe habits.`} />
+        <Coach target="confirm" radius={999} step={5} total={5} title="Now buy" body="Checking fees first is one of your safe habits. Nothing real is bought." />
       )}
     </Sheet>
   );

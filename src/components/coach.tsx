@@ -6,11 +6,39 @@ import { createPortal } from "react-dom";
 type Box = { x: number; y: number; w: number; h: number };
 
 // One tip at a time, pointing at the real control. Everything outside the highlighted control is
-// dimmed and blocked, so the next step is always obvious.
-export function Coach({ target, title, body, step, total, radius = 20 }: { target: string; title: string; body: string; step: number; total: number; radius?: number }) {
+// dimmed and blocked, so the next step is always obvious. The control itself only unlocks a beat
+// after the tip appears, so people read it instead of tapping straight through. With an `action`,
+// the control stays locked and the tip's own button moves on.
+const READ_MS = 1000;
+
+export function Coach({
+  target,
+  title,
+  body,
+  step,
+  total,
+  radius = 20,
+  action,
+}: {
+  target: string;
+  title: string;
+  body: string;
+  step: number;
+  total: number;
+  radius?: number;
+  action?: { label: string; onClick: () => void };
+}) {
   const [box, setBox] = useState<Box | null>(null);
   const [view, setView] = useState({ w: 390, h: 844 });
   const [shown, setShown] = useState(false);
+  const [locked, setLocked] = useState(true);
+
+  useEffect(() => {
+    if (!shown) return;
+    setLocked(true);
+    const t = setTimeout(() => setLocked(false), READ_MS);
+    return () => clearTimeout(t);
+  }, [shown, target]);
 
   useEffect(() => {
     setShown(false);
@@ -64,6 +92,7 @@ export function Coach({ target, title, body, step, total, radius = 20 }: { targe
       <div className={shade} style={{ left: 0, top: box.y + box.h, width: "100%", bottom: 0 }} />
       <div className={shade} style={{ left: 0, top: box.y, width: Math.max(0, box.x), height: box.h }} />
       <div className={shade} style={{ left: box.x + box.w, top: box.y, right: 0, height: box.h }} />
+      {(locked || action) && <div className="fixed z-[70]" style={{ left: box.x, top: box.y, width: box.w, height: box.h }} aria-hidden />}
       <div
         className="coach-ring pointer-events-none fixed z-[71]"
         style={{ left: box.x, top: box.y, width: box.w, height: box.h, borderRadius: radius }}
@@ -79,13 +108,23 @@ export function Coach({ target, title, body, step, total, radius = 20 }: { targe
           className="absolute h-3.5 w-3.5 rotate-45 rounded-[3px] bg-[var(--coach-bg)]"
           style={{ left: arrowLeft, ...(below ? { top: -6 } : { bottom: -6 }) }}
         />
-        <div className="flex items-center gap-1.5" aria-label={`Step ${step} of ${total}`}>
-          {Array.from({ length: total }, (_, k) => (
-            <span key={k} className={`h-1 rounded-full ${k < step ? "w-5 bg-white" : "w-2.5 bg-white/25"}`} />
-          ))}
+        <div className="flex items-center justify-between gap-3">
+          <span className="text-[12px] font-bold text-white/60">
+            Tutorial · {step} of {total}
+          </span>
+          <span className="flex items-center gap-1.5" aria-hidden>
+            {Array.from({ length: total }, (_, k) => (
+              <span key={k} className={`h-1 rounded-full ${k < step ? "w-5 bg-white" : "w-2.5 bg-white/25"}`} />
+            ))}
+          </span>
         </div>
         <div className="pt-2.5 text-[16px] font-bold leading-tight tracking-[-0.01em]">{title}</div>
         <p className="pt-1 text-[14px] leading-[1.45] text-white/70">{body}</p>
+        {action && (
+          <button onClick={action.onClick} className="mt-3 h-10 rounded-full bg-white px-5 text-[15px] font-extrabold text-[#12111A]">
+            {action.label}
+          </button>
+        )}
       </div>
     </>,
     host,

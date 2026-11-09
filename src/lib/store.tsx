@@ -44,7 +44,7 @@ export type MarketStep = "planned" | "small" | "recurring" | "parked" | "reasone
 
 export type Mistake = { mission: string; title: string; why: string; at: number };
 
-export type TourStep = "intro" | "coin" | "buy" | "fees" | "confirm" | "send";
+export type TourStep = "intro" | "coin" | "buy" | "fees" | "feeinfo" | "confirm" | "send";
 
 export type HabitEvent = { habit: HabitId; ok: boolean; label: string; at: number };
 

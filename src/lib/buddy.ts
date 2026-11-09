@@ -14,7 +14,7 @@ export const SCREEN_INTRO: Record<string, { title: string; body: string }> = {
   },
   coin: {
     title: "Reading a coin page",
-    body: "The chart shows the last 7 days of real prices. Before you buy, open the fee details: that's one of your five safe habits.",
+    body: "The chart shows the last 7 days of real prices. Before you buy, open the fee details: that's one of your safe habits.",
   },
   missions: {
     title: "Missions",

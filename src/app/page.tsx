@@ -135,14 +135,14 @@ export default function Home() {
         <div className="px-5 pt-4">
           <PriceSource />
         </div>
-        {(editPlan || (ready && state.starterDone && !state.planAsked && !state.tour)) && <PlanSetup onDone={() => setEditPlan(false)} />}
+        {(editPlan || (ready && state.starterDone && !state.planAsked && !state.tour)) && <PlanSetup tutorial={!editPlan} onDone={() => setEditPlan(false)} />}
         {state.tour === "intro" && <TourIntro onStart={() => dispatch({ type: "tour", step: "coin" })} />}
         {state.tour === "coin" && (
           <Coach
             target="coin-bitcoin"
             radius={14}
             step={1}
-            total={3}
+            total={5}
             title="Your first trade"
             body="Real Bitcoin price, practice money. Tap Bitcoin to start."
           />
