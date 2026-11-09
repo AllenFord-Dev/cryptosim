@@ -437,6 +437,34 @@ main{padding-top:96px}
 .finds>div>b{align-self:end}
 .finds .src{align-self:start}
 .finds .bec{align-self:start}
+/* What the wallet shows vs what's real: a wallet-style view, then the full addresses */
+.adv{display:grid;grid-template-columns:minmax(0,.9fr) auto minmax(0,1.1fr);gap:16px;align-items:stretch;margin-top:4px}
+.adv-c{background:var(--bg);padding:18px 20px;font-family:"Schibsted Grotesk",sans-serif}
+.adv .k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin-bottom:14px}
+.adv-arrow{align-self:center;color:var(--faint);font-size:22px}
+.wrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.wrow .av{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-weight:600;font-size:14px;flex:none}
+.wrow .av.h{background:var(--panel);color:var(--faint)}
+.wrow .wt{display:flex;flex-direction:column}.wrow b{font-weight:500;font-size:14.5px;color:var(--ink)}
+.wrow code{font-family:"Geist Mono",ui-monospace,monospace;font-size:13px;color:var(--body);margin-top:2px}
+.same{margin-top:12px;font-size:13px;font-weight:500;color:var(--good)}.same::before{content:"✓ "}
+.fa{display:grid;grid-template-columns:78px minmax(0,1fr);gap:10px;align-items:start;padding:10px 0;border-top:1px solid var(--line)}
+.fa .wl{font-size:13.5px;color:var(--ink);font-weight:500;padding-top:2px}.fa .wl.bad{color:var(--bad)}
+code.full{font-family:"Geist Mono",ui-monospace,monospace;font-size:14px;line-height:1.75;color:var(--body);letter-spacing:.02em}
+code.full b,.legend b{font-weight:600;color:var(--ink);background:var(--panel);padding:1px 4px;border-radius:3px}
+code.full i,.legend i{font-style:normal}
+code.full i.bad,.legend i.bad{color:var(--bad);background:color-mix(in srgb,var(--bad) 12%,transparent);padding:1px 3px;border-radius:3px}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin-top:12px;font-size:12.5px;color:var(--faint)}
+.legend b,.legend i{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;margin-right:4px}
+@media (max-width:760px){.adv{grid-template-columns:1fr}.adv-arrow{justify-self:center;rotate:90deg}}
+/* Key insights: titles start together at the top */
+.finds>div>b{align-self:start}
+code.full{font-size:13px!important;line-height:1.5!important}
+code.full>span{display:block;white-space:nowrap;margin:3px 0}
+code.full i.bad{padding:1px 2px!important}
+.legend{gap:6px 18px!important}.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--panel);margin-right:6px;vertical-align:-1px}
+.legend .d{color:var(--bad)}.legend .d::before{background:color-mix(in srgb,var(--bad) 25%,transparent)}
+@media (max-width:420px){code.full{font-size:11.5px!important}.fa{grid-template-columns:64px minmax(0,1fr)}}
 </style>
 
 <header class="top">
@@ -625,14 +653,19 @@ main{padding-top:96px}
             </div>
       <div class="panel">
         <div class="cap">What the wallet shows vs what's real</div>
-        <div class="addr">
-          <div class="arow"><span class="who">From Maya</span><code>0xfafc…cc66</code></div>
-          <div class="arow"><span class="who">Your history</span><code>0xfafc…cc66</code><em>Look identical</em></div>
-          <div class="sep"></div>
-          <div class="agrid">
-            <span class="who">Maya</span><code class="a"><b>0xfafc</b></code><code class="m">982a b5a5 c897 e578 2dd0 3897 babf fe04</code><code class="a"><b>cc66</b></code>
-            <span class="who">Look-alike</span><code class="a"><b>0xfafc</b></code><code class="m bad">c3cd 9955 42f9 1bb1 a8ee 58f2 a166 2468</code><code class="a"><b>cc66</b></code>
-            <span></span><span class="tick">Same start</span><span class="tick mid">Different middle</span><span class="tick">Same end</span>
+        <div class="adv">
+          <div class="adv-c">
+            <div class="k">What your wallet shows</div>
+            <div class="wrow"><span class="av">M</span><span class="wt"><b>Maya</b><code>0xfafc…cc66</code></span></div>
+            <div class="wrow"><span class="av h">↺</span><span class="wt"><b>From your history</b><code>0xfafc…cc66</code></span></div>
+            <div class="same">Looks like the same address</div>
+          </div>
+          <div class="adv-arrow" aria-hidden="true">→</div>
+          <div class="adv-c">
+            <div class="k">What's really there</div>
+            <div class="fa"><span class="wl">Maya</span><code class="full"><span><b>0xfafc</b> <i>982a b5a5 c897 e578</i></span><span><i>2dd0 3897 babf fe04</i> <b>cc66</b></span></code></div>
+            <div class="fa"><span class="wl bad">Look-alike</span><code class="full"><span><b>0xfafc</b> <i class="bad">c3cd 9955 42f9 1bb1</i></span><span><i class="bad">a8ee 58f2 a166 2468</i> <b>cc66</b></span></code></div>
+            <div class="legend"><span>Same start</span><span class="d">Different middle</span><span>Same end</span></div>
           </div>
         </div>
         <p class="note">From the Pay a friend back mission. The look-alike sits in your history because a scammer sent you a tiny payment from it.</p>
