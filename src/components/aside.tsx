@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { go } from "@/lib/nav";
 import { useApp } from "@/lib/store";
 import { Wordmark } from "./logo";
-import { useTheme } from "@/lib/theme";
 
 // Shown beside the phone frame on laptops, so a recruiter knows what they're looking at.
 export function DesktopAside() {
@@ -25,7 +24,6 @@ export function DesktopAside() {
         </a>
         <RestartButton />
       </div>
-      <ThemeSwitch />
     </aside>
   );
 }
@@ -55,33 +53,5 @@ function RestartButton() {
       </svg>
       {armed ? "Click again to wipe progress" : "Restart as a new user"}
     </button>
-  );
-}
-
-// Light or dark, so a reviewer can see both without opening the app's menu.
-function ThemeSwitch() {
-  const { set } = useTheme();
-  const [mode, setMode] = useState<"light" | "dark">("dark");
-  useEffect(() => {
-    const read = () => setMode(document.documentElement.dataset.theme === "light" ? "light" : "dark");
-    read();
-    const o = new MutationObserver(read);
-    o.observe(document.documentElement, { attributes: true, attributeFilter: ["data-theme"] });
-    return () => o.disconnect();
-  }, []);
-  return (
-    <div role="radiogroup" aria-label="Appearance" className="mt-6 inline-grid grid-cols-2 gap-1 rounded-full border border-line bg-card p-1">
-      {(["light", "dark"] as const).map((m) => (
-        <button
-          key={m}
-          role="radio"
-          aria-checked={mode === m}
-          onClick={() => set(m)}
-          className={`min-h-[34px] rounded-full px-4 text-[13px] font-bold capitalize ${mode === m ? "bg-brand text-white" : "text-muted hover:text-ink"}`}
-        >
-          {m}
-        </button>
-      ))}
-    </div>
   );
 }

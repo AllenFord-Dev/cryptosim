@@ -25,8 +25,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
-    { media: "(prefers-color-scheme: dark)", color: "#15141c" },
+        { color: "#15141c" },
   ],
   viewportFit: "cover",
 };
@@ -35,10 +34,10 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        {/* Before first paint: pick the theme (saved choice, else the phone's setting) so nothing flashes. */}
+        {/* CryptoSim is dark-only: set it before first paint so nothing flashes. */}
         <script
           dangerouslySetInnerHTML={{
-            __html: `try{var t=localStorage.getItem("cs-theme")||"dark",m=window.matchMedia("(prefers-color-scheme: dark)");var a=function(){document.documentElement.dataset.theme=(t==="dark"||(t==="auto"&&m.matches))?"dark":"light"};a();m.addEventListener&&m.addEventListener("change",function(){t=localStorage.getItem("cs-theme")||"dark";a()})}catch(e){}`,
+            __html: `document.documentElement.dataset.theme="dark"`,
           }}
         />
         {/* Before first paint: returning users get the launch animation once per session; otherwise skip the cover. */}

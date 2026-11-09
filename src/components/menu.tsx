@@ -8,7 +8,6 @@ import { BoltIcon, ChevronIcon, CloseIcon, ExternalIcon, HistoryIcon, InfoIcon, 
 import { Sheet } from "./ui";
 import { focusOnMount, usePresence } from "@/lib/presence";
 import { go as navigate } from "@/lib/nav";
-import { ThemeChoice, useTheme } from "@/lib/theme";
 
 export const PROJECT_URL = "/";
 
@@ -123,8 +122,6 @@ export function MenuDrawer({
           <Item icon={<InfoIcon size={20} />} label="How CryptoSim works" onClick={go(onIntro)} />
           <Item icon={<ExternalIcon size={18} />} label="Read the case study" href={PROJECT_URL} external onClick={onClose} />
         </nav>
-
-        <Appearance />
 
         <div className="mt-auto px-5 pt-6">
           <button onClick={go(onReset)} className="min-h-[44px] text-[14px] font-bold text-down">
@@ -270,31 +267,3 @@ export function MenuIcon({ size = 22 }: { size?: number }) {
   );
 }
 
-function Appearance() {
-  const { choice, set } = useTheme();
-  const opts: { id: ThemeChoice; label: string }[] = [
-    { id: "auto", label: "Automatic" },
-    { id: "light", label: "Light" },
-    { id: "dark", label: "Dark" },
-  ];
-  return (
-    <div className="px-5 pt-5">
-      <div className="pb-2 text-[14px] font-bold text-muted" id="appearance">
-        Appearance
-      </div>
-      <div role="radiogroup" aria-labelledby="appearance" className="grid grid-cols-3 gap-1 rounded-full bg-bg p-1">
-        {opts.map((o) => (
-          <button
-            key={o.id}
-            role="radio"
-            aria-checked={choice === o.id}
-            onClick={() => set(o.id)}
-            className={`min-h-[38px] rounded-full text-[14px] font-bold ${choice === o.id ? "bg-card text-ink shadow-[0_1px_4px_rgba(0,0,0,0.12)]" : "text-muted"}`}
-          >
-            {o.label}
-          </button>
-        ))}
-      </div>
-    </div>
-  );
-}
