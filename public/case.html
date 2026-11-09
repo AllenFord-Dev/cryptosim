@@ -432,6 +432,11 @@ main{padding-top:96px}
 .flow6 .hot small{color:var(--accent);font-weight:500}
 .jfoot{margin-top:34px;font-family:"Schibsted Grotesk",sans-serif;font-size:12.5px;color:var(--faint)}
 @media (max-width:760px){.flow6{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:22px}}
+/* Key insights: title, proof, source and "Became" line up across the three columns */
+.finds>div{display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:0}
+.finds>div>b{align-self:end}
+.finds .src{align-self:start}
+.finds .bec{align-self:start}
 </style>
 
 <header class="top">
