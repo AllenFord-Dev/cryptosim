@@ -414,6 +414,9 @@ main{padding-top:96px}
 .pair .fr{max-width:230px}
 .anno .fr{max-width:none}
 @media (max-width:760px){.side,.side.flip{grid-template-columns:1fr}.side.flip .shot{order:0}.shot.tile{max-width:420px}.shot.tile .duo{width:56%}}
+.finds .src{display:block;font-family:"Schibsted Grotesk",sans-serif;font-size:12.5px;color:var(--faint);margin-top:8px}.finds .src a{color:var(--faint);text-decoration:underline;text-decoration-color:var(--line);text-underline-offset:2px}.finds .src a:hover{color:var(--accent)}
+.finds .bec{font-family:"Schibsted Grotesk",sans-serif;font-size:14px!important;line-height:1.45!important;color:var(--accent);margin-top:10px;padding-top:10px;border-top:1px solid var(--line)}
+@media (max-width:700px){.finds{grid-template-columns:1fr}}
 </style>
 
 <header class="top">
@@ -587,12 +590,21 @@ main{padding-top:96px}
         </ul>
         <p class="note">6 of 18 shown.</p>
       </div>
-      <h3 style="margin-top:44px">Then I zoomed out from my own session.</h3>
-      <p style="margin-top:10px">One person's session isn't evidence, so I kept only the patterns that outside research also showed. Three held up and shaped everything after:</p>
-      <div class="three">
-        <div><b>People check the ends. Scammers change the middle.</b><p>Wallets shorten addresses to the first and last few characters, and look-alikes are built to match exactly those.</p></div>
-        <div><b>Fees show up too late.</b><p>My fee appeared only after I sent, and only in ETH. One in five people who've owned crypto say fees surprised them.</p></div>
-        <div><b>No one to ask, so scammers answer.</b><p>There's no bank to call, and fake "support" targets exactly the people looking for help.</p></div>
+      <h3 style="margin-top:44px">Then I checked whether it was just me.</h3>
+      <p style="margin-top:10px">One person's session isn't evidence, so I kept only the patterns I could also find in outside research. Four held up, and each one became part of the product:</p>
+      <div class="two finds">
+        <div><b>Warnings don't change behavior.</b><p>I pasted my recovery phrase seconds after a "do not share" warning. Brain-imaging research shows people tune out a warning by the second time they see it.</p>
+          <small class="src"><a href="https://www.schneier.com/blog/archives/2015/03/how_we_become_h.html" target="_blank" rel="noopener">Anderson et al., BYU</a></small>
+          <p class="bec">Became: missions where you make the risky move safely and see what it would cost.</p></div>
+        <div><b>People check the ends. Scammers change the middle.</b><p>Wallets shorten addresses to the first and last few characters. 21% of US holders have sent crypto to the wrong address, and one person lost $68M to a look-alike.</p>
+          <small class="src"><a href="https://www.kraken.com/learn/crypto-safety-survey" target="_blank" rel="noopener">Kraken, 2025</a> · <a href="https://www.coindesk.com/business/2024/05/03/exploiter-steals-68m-worth-of-crypto-through-address-poisoning" target="_blank" rel="noopener">CoinDesk, 2024</a></small>
+          <p class="bec">Became: Pay a friend back, which shows the full address.</p></div>
+        <div><b>Fees show up too late.</b><p>My fee appeared only after I sent, and only in ETH. One in five people who've owned crypto say fees surprised them.</p>
+          <small class="src">SEC Investor Advocate, 2026</small>
+          <p class="bec">Became: a question about the total cost before the first buy.</p></div>
+        <div><b>No one to ask, so scammers answer.</b><p>There's no bank to call. The FBI has warned that scammers pose as exchange staff, claim your account is compromised, and ask for your login.</p>
+          <small class="src"><a href="https://www.malwarebytes.com/blog/news/2024/08/scammers-are-impersonating-cryptocurrency-exchanges-fbi-warns" target="_blank" rel="noopener">FBI warning, Aug 2024</a></small>
+          <p class="bec">Became: the "fake support DM" mission.</p></div>
       </div>
       <div class="panel">
         <div class="cap">What the wallet shows vs what's real</div>
