@@ -53,9 +53,10 @@ export function NavMotion() {
     const onClick = (e: MouseEvent) => {
       if (e.defaultPrevented || e.button !== 0 || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
       const a = (e.target as Element | null)?.closest?.("a");
-      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download")) return;
+      if (!a || (a.target && a.target !== "_self") || a.hasAttribute("download") || a.hasAttribute("data-doc")) return;
       const url = new URL(a.href, window.location.href);
-      if (url.origin !== window.location.origin || url.pathname === window.location.pathname) return;
+      // "/" is the case study, a separate static page: let the browser load it normally.
+      if (url.origin !== window.location.origin || url.pathname === window.location.pathname || url.pathname === "/") return;
       // Stops next/link's own navigation; the link's onClick still runs.
       e.preventDefault();
       run(a.href, (a.dataset.nav as NavDir | undefined) || undefined);

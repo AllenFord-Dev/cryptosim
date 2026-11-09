@@ -10,22 +10,20 @@ export function DesktopAside() {
   return (
     <aside className="device-aside">
       <Wordmark size={22} />
-      <h2 className="pt-6 text-[40px] font-extrabold leading-[1.04] tracking-[-0.035em] text-ink">
-        Learn crypto before it costs you.
-      </h2>
-      <p className="pt-4 text-[16px] leading-[1.55] text-muted">
-        A practice wallet and market for first-timers. Real prices, practice money, and missions that recreate the scams and slip-ups
-        that cost real people real money.
-      </p>
-      <div className="flex flex-col gap-2.5 pt-6 text-[14px] font-semibold text-body">
-        <span>→ Try a mission: Missions tab</span>
-        <span>→ Buy a coin: Market tab</span>
-        <span>→ Ask a question: the sparkle button</span>
+      <p className="pt-5 text-[17px] leading-[1.5] text-body">A practice wallet for your first crypto purchase. Real prices, practice money.</p>
+      <div className="flex flex-col items-start gap-3 pt-6">
+        <a
+          href="/"
+          data-doc=""
+          className="inline-flex min-h-[40px] items-center gap-2 rounded-full bg-brand px-4 text-[14px] font-bold text-white hover:bg-brand-hover"
+        >
+          Read the case study
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+        <RestartButton />
       </div>
-      <p className="pt-6 text-[13px] leading-[1.5] text-faint">
-        Practice money only. Nothing can be deposited, withdrawn or lost. Designed and built by Allen Ford.
-      </p>
-      <RestartButton />
     </aside>
   );
 }
@@ -45,9 +43,9 @@ function RestartButton() {
         if (!armed) return setArmed(true);
         setArmed(false);
         dispatch({ type: "restart" });
-        go("/", "fade");
+        go("/app", "fade");
       }}
-      className="mt-5 inline-flex min-h-[40px] items-center gap-2 self-start rounded-full border border-line bg-card px-4 text-[14px] font-bold text-ink hover:border-brand"
+      className="inline-flex min-h-[40px] items-center gap-2 self-start rounded-full border border-line bg-card px-4 text-[14px] font-bold text-ink hover:border-brand"
     >
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
         <path d="M3 12a9 9 0 1 0 3-6.7" />

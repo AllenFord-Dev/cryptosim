@@ -10,7 +10,7 @@ import { focusOnMount, usePresence } from "@/lib/presence";
 import { go as navigate } from "@/lib/nav";
 import { ThemeChoice, useTheme } from "@/lib/theme";
 
-export const PROJECT_URL = "https://github.com/AllenFord-Dev/cryptosim";
+export const PROJECT_URL = "/";
 
 export function MenuDrawer({
   open,
@@ -121,7 +121,7 @@ export function MenuDrawer({
           <Item icon={<SparkleIcon size={20} />} label="Ask Buddy" onClick={go(onBuddy)} />
           <div className="mx-2 my-2 h-px bg-line" />
           <Item icon={<InfoIcon size={20} />} label="How CryptoSim works" onClick={go(onIntro)} />
-          <Item icon={<ExternalIcon size={18} />} label="About this project" href={PROJECT_URL} external onClick={onClose} />
+          <Item icon={<ExternalIcon size={18} />} label="Read the case study" href={PROJECT_URL} external onClick={onClose} />
         </nav>
 
         <Appearance />
@@ -171,7 +171,7 @@ function Item({
   );
   if (href && external)
     return (
-      <a href={href} target="_blank" rel="noreferrer" className={cls} onClick={onClick}>
+      <a href={href} {...(href.startsWith("http") ? { target: "_blank", rel: "noreferrer" } : { "data-doc": "" })} className={cls} onClick={onClick}>
         {inner}
       </a>
     );
@@ -238,7 +238,7 @@ export function ResetSheet({ open, onClose }: { open: boolean; onClose: () => vo
           onClick={() => {
             dispatch({ type: "restart" });
             onClose();
-            navigate("/", "fade");
+            navigate("/app", "fade");
           }}
           className="btn bg-down text-white"
         >

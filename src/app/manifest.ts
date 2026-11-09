@@ -5,7 +5,7 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "CryptoSim · Practice crypto safely",
     short_name: "CryptoSim",
     description: "A practice crypto wallet and market for first-timers. Real prices, practice money.",
-    start_url: "/",
+    start_url: "/app",
     display: "standalone",
     background_color: "#5521F5",
     theme_color: "#FFFFFF",

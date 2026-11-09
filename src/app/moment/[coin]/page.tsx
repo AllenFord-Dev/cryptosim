@@ -32,7 +32,7 @@ export default function MomentPage() {
     return (
       <div className="min-h-[var(--app-h)] bg-card p-6 pt-[calc(24px+var(--safe-top))]">
         <p className="text-[16px]">Nothing to decide here right now.</p>
-        <Link href="/" className="btn btn-brand mt-6">
+        <Link href="/app" className="btn btn-brand mt-6">
           Back home
         </Link>
       </div>
@@ -58,7 +58,7 @@ export default function MomentPage() {
   return (
     <div className="flex min-h-[var(--app-h)] flex-col bg-card pb-[calc(20px+var(--safe-bottom))] pt-[calc(6px+var(--safe-top))]">
       <div className="flex h-12 items-center justify-between px-3">
-        <Link href="/" aria-label="Close" className="flex h-11 w-11 items-center justify-center">
+        <Link href="/app" aria-label="Close" className="flex h-11 w-11 items-center justify-center">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--color-ink)" strokeWidth="2.4" strokeLinecap="round" aria-hidden>
             <path d="M6 6l12 12M18 6L6 18" />
           </svg>
@@ -85,7 +85,7 @@ export default function MomentPage() {
             Selling now would have locked in a {usd(Math.max(0, down))} loss plus fees. Holding means the result is still up to the market, which is what a long-term plan expects.
           </p>
           <div className="flex-1" />
-          <Link href="/" className="btn btn-brand">
+          <Link href="/app" className="btn btn-brand">
             Done
           </Link>
         </div>

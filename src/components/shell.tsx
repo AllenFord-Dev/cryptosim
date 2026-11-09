@@ -118,7 +118,7 @@ function BuddySheet({ open, topic, onClose }: { open: boolean; topic?: string; o
 }
 
 const TABS = [
-  { href: "/", label: "Home", icon: HomeIcon },
+  { href: "/app", label: "Home", icon: HomeIcon },
   { href: "/market", label: "Market", icon: MarketIcon },
   { href: "/missions", label: "Missions", icon: FlagIcon },
   { href: "/skills", label: "Habits", icon: BarsIcon },
@@ -132,7 +132,7 @@ export function TabBar() {
       <div className="pointer-events-auto flex items-center gap-2.5">
         <nav aria-label="Main" className="glass grid h-[66px] flex-1 grid-cols-4 items-center rounded-full px-1.5">
           {TABS.map((t) => {
-            const active = t.href === "/" ? pathname === "/" : pathname.startsWith(t.href);
+            const active = t.href === "/app" ? pathname === "/app" : pathname.startsWith(t.href);
             const Icon = t.icon;
             return (
               <Link
@@ -143,7 +143,7 @@ export function TabBar() {
                   active ? "bg-[rgba(85,33,245,0.12)] font-bold text-brand" : "font-semibold text-muted"
                 }`}
               >
-                {t.href === "/" ? <HomeIcon filled={active} size={20} /> : <Icon size={22} />}
+                {t.href === "/app" ? <HomeIcon filled={active} size={20} /> : <Icon size={22} />}
                 {t.label}
               </Link>
             );

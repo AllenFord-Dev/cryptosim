@@ -5,7 +5,7 @@
 
 export type NavDir = "push" | "back" | "fade";
 
-const TABS = new Set(["/", "/market", "/missions", "/skills"]);
+const TABS = new Set(["/app", "/market", "/missions", "/skills"]);
 const depth = (path: string) => (TABS.has(path) ? 0 : path.split("/").filter(Boolean).length);
 
 export function navDirection(from: string, to: string): NavDir {

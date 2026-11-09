@@ -74,7 +74,7 @@ function Intro({ mission, prove, starter, seed, onStart }: { mission: MissionDef
 
   return (
     <div className="flex min-h-[var(--app-h)] flex-col bg-card">
-      <SubHeader back={starter ? "/" : `/skills/${skill.id}`} />
+      <SubHeader back={starter ? "/app" : `/skills/${skill.id}`} />
       <div className="anim-enter flex flex-1 flex-col px-5 pt-2">
         {starter && <div className="pb-2 text-[13px] font-bold text-brand">Tutorial · Part 2 of 3</div>}
         <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{prove ? `Prove it: ${mission.title}` : mission.title}</h1>
@@ -324,7 +324,7 @@ function Done({ mission, result, starter, onReplay }: { mission: MissionDef; res
         </div>
         <div className="flex flex-col gap-2.5 pt-6">
           {starter ? (
-            <Link href="/" className="btn btn-brand">
+            <Link href="/app" className="btn btn-brand">
               Next: your plan · last part
             </Link>
           ) : st.step === "prove" && !result.prove ? (

@@ -179,7 +179,7 @@ export function Sheet({
   );
 }
 
-export function SubHeader({ title, back = "/", onBack, right }: { title?: string; back?: string; onBack?: () => void; right?: React.ReactNode }) {
+export function SubHeader({ title, back = "/app", onBack, right }: { title?: string; back?: string; onBack?: () => void; right?: React.ReactNode }) {
   const cls = "flex h-11 w-11 items-center justify-center rounded-full bg-bg";
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between bg-card/90 px-3 pb-2 pt-[calc(10px+var(--safe-top))] backdrop-blur-md">
