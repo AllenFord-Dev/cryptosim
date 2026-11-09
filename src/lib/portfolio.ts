@@ -11,8 +11,9 @@ export function portfolio(state: State, quotes: Record<string, Quote>, history?:
   positions.sort((a, b) => b.value - a.value);
   const invested = positions.reduce((s, p) => s + p.value, 0);
   const value = state.cash + invested;
-  // Market result excludes practice rewards and mission losses, so it only reflects the market (and fees).
-  const base = STARTING_CASH + state.earned - state.lost;
+  // Market result only reflects the market (and fees). Mission losses are shown, never taken from cash,
+  // so they don't move the baseline. `earned` only exists in older saves, where rewards were paid into cash.
+  const base = STARTING_CASH + state.earned;
   const result = value - base;
   const resultPct = base > 0 ? (result / base) * 100 : 0;
 

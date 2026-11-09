@@ -11,7 +11,7 @@ export function marketSteps(state: State): MarketStepDef[] {
     { id: "small", title: "Keep it small", sub: "Keep one coin under 25% of your money", href: `/coin/${plan}?buy=1` },
     { id: "recurring", title: "Set a recurring buy", sub: "A little, on a schedule, on real prices", href: `/coin/${plan}?recurring=1` },
     { id: "parked", title: "Park in a stablecoin", sub: "Move some into USDC instead of cashing out", href: "/coin/usd-coin?buy=1" },
-    { id: "reasoned", title: "Sell with a reason", sub: "Sell part of a coin, and say why", href: owned ? `/coin/${owned}?sell=1` : `/coin/${plan}?buy=1` },
+    { id: "reasoned", title: "Sell with a reason", sub: owned ? "Sell part of a coin, and say why" : "Buy a coin first, then sell part of it", href: owned ? `/coin/${owned}?sell=1` : `/coin/${plan}?buy=1` },
     { id: "dip", title: "Hold through a real dip", sub: "Counts when the market dips", href: "/market", live: true },
   ];
 }

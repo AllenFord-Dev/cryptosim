@@ -24,7 +24,14 @@ export default function MissionPage() {
   );
 }
 
+// Practice and prove are the same page with a different ?mode, so remount when the query changes
+// (otherwise "Next: prove it" would keep showing the finished practice run).
 function MissionInner() {
+  const params = useSearchParams();
+  return <MissionBody key={params.toString()} />;
+}
+
+function MissionBody() {
   const { id } = useParams<{ id: string }>();
   const params = useSearchParams();
   const prove = params.get("mode") === "prove";

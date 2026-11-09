@@ -6,7 +6,7 @@ import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { habits, useApp } from "@/lib/store";
 import { BoltIcon, ChevronIcon, CloseIcon, ExternalIcon, HistoryIcon, InfoIcon, ShieldIcon, SparkleIcon } from "./icons";
 import { Sheet } from "./ui";
-import { usePresence } from "@/lib/presence";
+import { focusOnMount, usePresence } from "@/lib/presence";
 import { go as navigate } from "@/lib/nav";
 import { ThemeChoice, useTheme } from "@/lib/theme";
 
@@ -40,7 +40,7 @@ export function MenuDrawer({
     if (!open) return;
     setName(state.name);
     setEditing(false);
-    panel.current?.focus();
+    panel.current?.focus({ preventScroll: true });
     const onKey = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
@@ -87,7 +87,7 @@ export function MenuDrawer({
             >
               <input
                 id="menu-name"
-                autoFocus
+                ref={focusOnMount(0)}
                 value={name}
                 maxLength={20}
                 onChange={(e) => setName(e.target.value)}

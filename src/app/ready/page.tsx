@@ -74,7 +74,7 @@ export default function Ready() {
     const last = qi === QUESTIONS.length - 1;
     return (
       <div className="flex min-h-[var(--app-h)] flex-col bg-card">
-        <SubHeader back="/ready" title="Readiness check" right={<span className="pr-2 text-[13px] font-bold text-muted">{qi + 1}/{QUESTIONS.length}</span>} />
+        <SubHeader onBack={() => setMode("overview")} title="Readiness check" right={<span className="pr-2 text-[13px] font-bold text-muted">{qi + 1}/{QUESTIONS.length}</span>} />
         <div key={qi} className="anim-enter flex flex-1 flex-col gap-4 px-5 pt-4">
           <h1 className="text-[23px] font-extrabold leading-[1.2] tracking-[-0.02em]">{q.q}</h1>
           <div className="border-t border-line">

@@ -39,7 +39,7 @@ export type Trade = {
 // Why a trade happened. "hype" (buy) and "panic" (sell) are the red flags.
 export type TradeReason = "long" | "curious" | "hype" | "profit" | "changed" | "panic";
 export type Plan = { coin: string | null; amount: number };
-export type Recurring = { coin: string; amount: number; every: "day" | "week" | "month"; next: number; runs: number };
+export type Recurring = { coin: string; amount: number; every: "day" | "week" | "month"; next: number; runs: number; skipped?: number };
 export type MarketStep = "planned" | "small" | "recurring" | "parked" | "reasoned" | "dip";
 
 export type Mistake = { mission: string; title: string; why: string; at: number };
@@ -121,7 +121,7 @@ export type MissionResult = {
 type Action =
   | { type: "load"; state: State }
   | { type: "onboard"; name: string }
-  | { type: "trade"; coin: string; side: "buy" | "sell"; usd: number; price: number; feeChecked: boolean; reason?: TradeReason; okLoss?: number; auto?: boolean }
+  | { type: "trade"; coin: string; side: "buy" | "sell"; usd: number; price: number; feeChecked: boolean; reason?: TradeReason; okLoss?: number; auto?: boolean; all?: boolean }
   | { type: "plan"; plan: Plan | null }
   | { type: "market"; step: MarketStep }
   | { type: "recurring"; recurring: Recurring | null }
@@ -155,8 +155,10 @@ function reducer(state: State, action: Action): State {
     case "onboard":
       return { ...state, name: action.name.trim().slice(0, 20), onboarded: true, tour: state.starterDone || state.onboarded ? state.tour : "intro" };
     case "trade": {
-      const { coin, side, usd, price, feeChecked, reason, okLoss, auto } = action;
+      const { coin, side, usd, price, feeChecked, reason, okLoss, auto, all } = action;
       const now = Date.now();
+      if (!(usd > 0) || !(price > 0) || (side === "buy" && usd > state.cash + 0.005)) return state;
+      if (side === "sell" && !state.holdings[coin]) return state;
       const holdings = { ...state.holdings };
       const h = holdings[coin] ?? { qty: 0, cost: 0, lastBuyAt: 0, lastBuyPrice: 0 };
       let cash = state.cash;
@@ -170,18 +172,21 @@ function reducer(state: State, action: Action): State {
         holdings[coin] = { qty: h.qty + qty, cost: h.cost + usd, lastBuyAt: now, lastBuyPrice: price };
       } else {
         const effPrice = price * (1 - SPREAD_RATE);
-        qty = Math.min(h.qty, usd / effPrice);
+        // "Sell all" sells the whole position, so no dust is left behind.
+        qty = all ? h.qty : Math.min(h.qty, usd / effPrice);
         const gross = qty * effPrice;
         fee = gross * FEE_RATE;
         cash += gross - fee;
         const share = h.qty > 0 ? qty / h.qty : 1;
         const remainingQty = h.qty - qty;
-        // Panic sell: selling at a loss within 15 minutes of buying.
-        panic = (now - h.lastBuyAt < 15 * 60 * 1000 && price < h.lastBuyPrice * 0.995) || reason === "panic";
-        if (remainingQty * price < 0.01) delete holdings[coin];
+        // Panic sell: selling at a loss within 15 minutes of your own last buy (recurring buys don't count),
+        // or saying you're selling because it's dropping.
+        const lastBuy = state.trades.find((t) => t.coin === coin && t.side === "buy" && !t.auto);
+        panic = (!!lastBuy && now - lastBuy.at < 15 * 60 * 1000 && price < lastBuy.price * 0.995) || reason === "panic";
+        if (all || remainingQty * price < 0.01) delete holdings[coin];
         else holdings[coin] = { ...h, qty: remainingQty, cost: h.cost * (1 - share) };
       }
-      const trade: Trade = { id: `${now}`, coin, side, usd, qty, price, fee, feeChecked, panic, at: now, reason, okLoss, auto };
+      const trade: Trade = { id: `${now}-${Math.random().toString(36).slice(2, 7)}`, coin, side, usd, qty, price, fee, feeChecked, panic, at: now, reason, okLoss, auto };
       const coinName = COIN_NAMES[coin] ?? coin;
       const events: HabitEvent[] = auto ? [] : [{ habit: "fees", ok: feeChecked, label: `${coinName} ${side}`, at: now }];
       if (side === "sell") events.push({ habit: "calm", ok: !panic, label: `${coinName} sell`, at: now });
@@ -189,7 +194,7 @@ function reducer(state: State, action: Action): State {
       const market = { ...state.market };
       if (side === "buy" && reason && reason !== "hype") market.planned = true;
       if (side === "buy" && coin === "usd-coin") market.parked = true;
-      if (side === "sell" && reason && reason !== "panic") market.reasoned = true;
+      if (side === "sell" && reason && !panic) market.reasoned = true;
       const tradingDelta = feeChecked ? 6 : 1;
       return {
         ...state,
@@ -212,6 +217,7 @@ function reducer(state: State, action: Action): State {
     case "recurring":
       return { ...state, recurring: action.recurring, market: action.recurring ? { ...state.market, recurring: true } : state.market };
     case "moment": {
+      if (state.moments?.[action.coin] === action.at) return state;
       const name = COIN_NAMES[action.coin] ?? action.coin;
       const ev: HabitEvent = { habit: "calm", ok: action.held, label: `${name} dip`, at: Date.now() };
       return {

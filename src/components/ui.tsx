@@ -138,7 +138,7 @@ export function Sheet({
     window.addEventListener("keydown", onKey);
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
-    ref.current?.focus();
+    ref.current?.focus({ preventScroll: true });
     return () => {
       window.removeEventListener("keydown", onKey);
       document.body.style.overflow = prev;
@@ -179,12 +179,19 @@ export function Sheet({
   );
 }
 
-export function SubHeader({ title, back = "/", right }: { title?: string; back?: string; right?: React.ReactNode }) {
+export function SubHeader({ title, back = "/", onBack, right }: { title?: string; back?: string; onBack?: () => void; right?: React.ReactNode }) {
+  const cls = "flex h-11 w-11 items-center justify-center rounded-full bg-card";
   return (
     <div className="sticky top-0 z-30 flex items-center justify-between bg-bg/90 px-3 pb-2 pt-[calc(10px+var(--safe-top))] backdrop-blur-md">
-      <Link href={back} aria-label="Back" data-nav="back" className="flex h-11 w-11 items-center justify-center rounded-full bg-card">
-        <BackIcon />
-      </Link>
+      {onBack ? (
+        <button onClick={onBack} aria-label="Back" className={cls}>
+          <BackIcon />
+        </button>
+      ) : (
+        <Link href={back} aria-label="Back" data-nav="back" className={cls}>
+          <BackIcon />
+        </Link>
+      )}
       {title && <div className="text-[16px] font-extrabold">{title}</div>}
       <div className="flex h-11 min-w-11 items-center justify-end">{right}</div>
     </div>

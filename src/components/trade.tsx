@@ -4,6 +4,7 @@ import Link from "next/link";
 import { go } from "@/lib/nav";
 import { Coach } from "./coach";
 import { useMemo, useState } from "react";
+import { focusOnMount } from "@/lib/presence";
 import { coinById, qtyFmt, usd } from "@/lib/coins";
 import { FEE_RATE, SPREAD_RATE, Trade, TradeReason, useApp } from "@/lib/store";
 import { usePrices } from "@/lib/prices";
@@ -62,10 +63,13 @@ export function TradeSheet({
 
   const confirm = () => {
     if (touring) dispatch({ type: "tour", step: "send" });
-    dispatch({ type: "trade", coin: coinId, side, usd: usdAmt, price, feeChecked: feesOpen, reason: reason ?? undefined, okLoss: okLoss ?? undefined });
+    const all = side === "sell" && usdAmt >= Math.floor(maxUsd * 100) / 100;
+    dispatch({ type: "trade", coin: coinId, side, usd: usdAmt, price, feeChecked: feesOpen, reason: reason ?? undefined, okLoss: okLoss ?? undefined, all });
     if (side === "buy" && !stableCoin && !touring && share <= 0.25) dispatch({ type: "market", step: "small" });
     const now = Date.now();
-    const panic = side === "sell" && !!h && now - h.lastBuyAt < 15 * 60 * 1000 && price < h.lastBuyPrice * 0.995;
+    // Same rule the store uses, so Buddy never praises a sell the app just flagged.
+    const lastBuy = state.trades.find((t) => t.coin === coinId && t.side === "buy" && !t.auto);
+    const panic = side === "sell" && ((!!lastBuy && now - lastBuy.at < 15 * 60 * 1000 && price < lastBuy.price * 0.995) || reason === "panic");
     setDone({ id: `${now}`, coin: coinId, side, usd: usdAmt, qty: q.qty, price, fee: q.fee, feeChecked: feesOpen, panic, at: now });
   };
 
@@ -210,7 +214,7 @@ export function TradeSheet({
           <span className="text-[34px] font-extrabold text-faint">$</span>
           <input
             inputMode="decimal"
-            autoFocus
+            ref={focusOnMount(0)}
             value={amount}
             onChange={(e) => setAmount(e.target.value.replace(/[^0-9.]/g, "").replace(/(\..*)\./g, "$1"))}
             placeholder="0"

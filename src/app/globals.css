@@ -85,7 +85,7 @@ html[data-theme="dark"] { --coach-bg: #2b2838; }
   .device-btn-up { left: -3px; top: 205px; height: 62px; }
   .device-btn-down { left: -3px; top: 280px; height: 62px; }
   .device-btn-power { right: -3px; top: 240px; height: 96px; }
-  .device-screen { display: block; position: relative; width: 390px; height: 844px; border-radius: 55px; overflow: hidden; transform: translateZ(0); background: var(--color-bg); }
+  .device-screen { display: block; position: relative; width: 390px; height: 844px; border-radius: 55px; overflow: hidden; overflow: clip; transform: translateZ(0); background: var(--color-bg); }
   .app-scroll { display: block; height: 100%; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: none; --app-h: 844px; --safe-top: 47px; --safe-bottom: 20px; }
   .app-scroll::-webkit-scrollbar { display: none; }
   .device-status { display: flex; position: absolute; z-index: 80; top: 0; left: 0; right: 0; height: 47px; padding: 4px 30px 0 46px; align-items: center; justify-content: space-between; font-weight: 700; font-size: 16px; color: var(--color-ink); pointer-events: none; }
@@ -283,3 +283,4 @@ html[data-nav="fade"]::view-transition-new(root) { animation: navFadeIn 0.16s ea
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) { animation: none !important; }
 }
 html[data-theme="dark"] .anim-dim { background: rgba(0, 0, 0, 0.6); }
+html, body { overflow-x: clip; }

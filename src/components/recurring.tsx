@@ -46,7 +46,7 @@ export function RecurringSheet({ coinId, onClose }: { coinId: string; onClose: (
         </div>
       </div>
       <p className="pt-3 text-[14px] leading-[1.45] text-muted">
-        Buying a little on a schedule means you don&apos;t have to guess the right moment. Each buy happens the next time you open CryptoSim after it&apos;s due.
+        Buying a little on a schedule means you don&apos;t have to guess the right moment. Each buy happens the next time you open CryptoSim after it&apos;s due, and is skipped if you&apos;re short on practice cash.
         {other ? ` This replaces your ${other.name} recurring buy.` : ""}
       </p>
       <div className="flex flex-col gap-2.5 pt-5">
@@ -92,8 +92,10 @@ export function RecurringRunner() {
       next += PERIOD[r.every];
       runs++;
     }
+    // A buy that comes due without enough practice cash is skipped, and the coin page says so.
+    const short = next <= Date.now() && cash < r.amount;
     while (next <= Date.now()) next += PERIOD[r.every];
-    dispatch({ type: "recurring", recurring: { ...r, next, runs } });
+    dispatch({ type: "recurring", recurring: { ...r, next, runs, skipped: short ? Date.now() : runs > r.runs ? undefined : r.skipped } });
   }, [ready, r, price, state.cash, dispatch]);
   return null;
 }

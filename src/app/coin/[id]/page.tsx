@@ -34,7 +34,7 @@ export default function CoinPage() {
     const q = new URLSearchParams(window.location.search);
     if (q.get("buy")) setTrade("buy");
     else if (q.get("sell") && state.holdings[id]) setTrade("sell");
-    else if (q.get("recurring")) setRecurring(true);
+    else if (q.get("recurring") && coinById(id)?.kind !== "Stablecoin") setRecurring(true);
   }, [ready, id, state.holdings]);
   const [range, setRange] = useState<RangeKey>("1M");
   const history = useHistory(RANGES.find((r) => r.key === range)!.days, coin ? [coin.id] : []);
@@ -106,6 +106,9 @@ export default function CoinPage() {
               {state.recurring?.coin === coin.id ? `${recurringLabel(state.recurring)} ›` : "Set up ›"}
             </span>
           </button>
+          {state.recurring?.coin === coin.id && state.recurring.skipped && (
+            <p className="pt-2 text-[13px] text-muted">Last buy skipped: not enough practice cash.</p>
+          )}
         </div>
       )}
 

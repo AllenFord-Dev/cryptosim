@@ -7,7 +7,7 @@ import { useState } from "react";
 import { SparkleIcon } from "@/components/icons";
 import { AreaChart } from "@/components/ui";
 import { coinById, usd } from "@/lib/coins";
-import { activeMoment } from "@/lib/moments";
+import { activeMoment, momentKey } from "@/lib/moments";
 import { useHistory, usePrices } from "@/lib/prices";
 import { useApp } from "@/lib/store";
 
@@ -25,7 +25,10 @@ export default function MomentPage() {
   const h = state.holdings[id];
   const lastBuy = state.trades.find((t) => t.coin === id && t.side === "buy" && t.reason);
 
-  if (!coin || !h) {
+  // Wait for the live price before deciding whether there's a real dip here.
+  if (coin && h && !quotes[id] && held === null) return <div className="min-h-[var(--app-h)] bg-card" />;
+  // Only a real, unfaced dip in this coin opens the moment (you can't visit it to farm credit).
+  if (!coin || !h || (held === null && m?.coin !== id)) {
     return (
       <div className="min-h-[var(--app-h)] bg-card p-6 pt-[calc(24px+var(--safe-top))]">
         <p className="text-[16px]">Nothing to decide here right now.</p>
@@ -47,7 +50,7 @@ export default function MomentPage() {
   const recurringHere = state.recurring?.coin === id;
 
   const decide = (hold: boolean) => {
-    dispatch({ type: "moment", coin: id, at: h.lastBuyAt, held: hold });
+    dispatch({ type: "moment", coin: id, at: momentKey(state, id), held: hold });
     if (hold) setHeld(true);
     else go(`/coin/${id}?sell=1`);
   };

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { focusOnMount } from "@/lib/presence";
 import { COINS, usd, pct, qtyFmt } from "@/lib/coins";
 import { dailyFor } from "@/lib/daily";
 import { MissionDef } from "@/lib/missions";
@@ -254,7 +255,7 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
             </label>
             <input
               id="onboard-name"
-              autoFocus
+              ref={focusOnMount(420)}
               autoComplete="given-name"
               value={name}
               onChange={(e) => setName(e.target.value)}
