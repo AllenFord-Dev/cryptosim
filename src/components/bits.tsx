@@ -200,18 +200,14 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
     );
   }
 
-  // Slide the name screen off to the left, revealing Home, then start the guided first trade.
+  // Save right away so the tutorial screen slides in while this one slides off to the left (one push),
+  // then let the parent unmount this screen once its slide has finished.
   const save = (n: string) => {
     if (leaving) return;
     setLeaving(true);
+    dispatch({ type: "onboard", name: n });
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    setTimeout(
-      () => {
-        dispatch({ type: "onboard", name: n });
-        onDone?.();
-      },
-      reduced ? 0 : 380,
-    );
+    setTimeout(() => onDone?.(), reduced ? 0 : 420);
   };
   return (
     <>
