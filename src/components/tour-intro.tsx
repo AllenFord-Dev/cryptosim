@@ -16,47 +16,42 @@ export function TourIntro({ onStart }: { onStart: () => void }) {
   const spread = (TRADE - fee) * (SPREAD_RATE / (1 + SPREAD_RATE));
 
   return (
-    <div
-      role="dialog"
-      aria-modal="true"
-      aria-label="Your first trade"
-      className="onb-enter fixed inset-0 z-[70] mx-auto flex max-w-[430px] flex-col bg-card px-5 pb-[calc(20px+var(--safe-bottom))] pt-[calc(16px+var(--safe-top))]"
-    >
-      {/* The three moments of the first trade, centered in the space above the text. */}
-      <div className="flex flex-1 items-center justify-center" aria-hidden>
-        <div className="relative h-[260px] w-full max-w-[340px] overflow-hidden rounded-[28px] bg-brand-tint">
-          <span className="absolute bottom-12 left-[46px] top-16 border-l-2 border-dashed border-track" />
-          <Frag className="left-5 top-6 w-[250px]">
+    <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="Your first trade">
+      <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.45)]" />
+      <div className="anim-sheet absolute inset-x-2 bottom-2 mx-auto max-w-[414px] rounded-[34px] bg-card px-5 pb-[calc(20px+var(--safe-bottom))] pt-5">
+        <div className="relative h-[232px] overflow-hidden rounded-[24px] bg-brand-tint" aria-hidden>
+          <span className="absolute bottom-10 left-[42px] top-14 border-l-2 border-dashed border-track" />
+          <Frag className="left-4 top-5 w-[240px]">
             <CoinMark id="bitcoin" size={34} />
             <span>
               <b className="block text-[14px] font-extrabold">Bitcoin</b>
               <span className="block text-[12px] text-muted">{price ? usd(price, 0) : "Live"} · real price</span>
             </span>
           </Frag>
-          <Frag className="left-16 top-[104px] w-[250px]">
+          <Frag className="left-14 top-[92px] w-[240px]">
             <span className="flex-1">
               <span className="block text-[12px] text-muted">Fees and spread</span>
               <b className="tabular block text-[14px] font-extrabold">{usd(fee + spread)}</b>
             </span>
             <span className="text-[12px] font-extrabold text-up">Checked</span>
           </Frag>
-          <Frag className="left-8 top-[184px] w-[270px] !bg-[#12111A] text-white">
+          <Frag className="left-7 top-[162px] w-[260px] !bg-[#12111A] text-white">
             <span>
               <span className="block text-[12px] text-white/60">Practice trade</span>
               <b className="block text-[14px] font-extrabold">Bought ${TRADE} of BTC</b>
             </span>
           </Frag>
         </div>
+        <div className="pt-5 text-[13px] font-bold text-brand">Tutorial · Part 1 of 3</div>
+        <h2 className="pt-1 text-[26px] font-extrabold leading-[1.1] tracking-[-0.03em]">Your first trade</h2>
+        <p className="pt-2 text-[15.5px] leading-[1.45] text-body">
+          A quick guided tour: your first trade, a first send, then your plan. About 7 minutes. First, buy ${TRADE} of Bitcoin with practice
+          money. We&apos;ll point to each tap.
+        </p>
+        <button onClick={onStart} className="btn btn-brand mt-5">
+          Start
+        </button>
       </div>
-      <div className="text-[13px] font-bold text-brand">Tutorial · Part 1 of 3</div>
-      <h2 className="pt-1 text-[30px] font-extrabold leading-[1.1] tracking-[-0.03em]">Your first trade</h2>
-      <p className="pt-2 text-[16px] leading-[1.45] text-body">
-        A quick guided tour: your first trade, a first send, then your plan. About 7 minutes. First, buy ${TRADE} of Bitcoin with practice money.
-        We&apos;ll point to each tap.
-      </p>
-      <button onClick={onStart} className="btn btn-brand mt-6">
-        Start
-      </button>
     </div>
   );
 }

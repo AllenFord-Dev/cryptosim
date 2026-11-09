@@ -38,17 +38,10 @@ export default function Home() {
 
   // First run: Home renders underneath the welcome, so finishing the name screen slides straight onto it.
   const firstRun = ready && !state.onboarded;
-  // Stays true until the name screen has finished sliding away, so it isn't cut off mid-animation.
-  const [onbOpen, setOnbOpen] = useState(false);
-  useEffect(() => {
-    if (firstRun) setOnbOpen(true);
-  }, [firstRun]);
 
   return (
     <>
-      {(firstRun || onbOpen) && <Onboarding onDone={() => setOnbOpen(false)} />}
-      {/* Keeps Home hidden behind the name screen as it slides away, until the tutorial's first step. */}
-      {(firstRun || state.tour === "intro") && <div className="fixed inset-0 z-[55] mx-auto max-w-[430px] bg-bg" aria-hidden />}
+      {firstRun && <Onboarding />}
       <TabScreen
         title="Home"
         tone="white"
