@@ -422,17 +422,16 @@ main{padding-top:96px}
 .log.cost li em{font-style:normal;font-family:"Schibsted Grotesk",sans-serif;font-size:13.5px;font-weight:500;color:var(--bad)}
 .loghead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,.62fr);gap:24px;font-family:"Schibsted Grotesk",sans-serif;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--faint);margin:4px 0 6px}
 @media (max-width:700px){.log.cost li,.loghead{grid-template-columns:1fr;gap:4px}.loghead span:last-child{display:none}}
-/* My first send: the steps of a first transfer as quiet boxes (like a stack diagram), with the worst moment highlighted */
-.jcap{font-family:"Geist Mono",ui-monospace,monospace;font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--faint);margin-bottom:22px}
-.journey{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:26px 16px;counter-reset:j}
-.js .box{display:flex;align-items:center;gap:10px;background:var(--bg);padding:16px 16px;font-family:"Schibsted Grotesk",sans-serif;font-size:15px;font-weight:500;color:var(--ink);min-height:58px}
-.js .box span{font-family:"Geist Mono",ui-monospace,monospace;font-size:12px;color:var(--faint)}
-.js.hot .box{background:var(--accent);color:#fff}.js.hot .box span{color:rgba(255,255,255,.7)}
-.js p{margin:12px 2px 0;font-size:15.5px!important;line-height:1.45!important;color:var(--panel-ink)}
-.js em{display:block;margin:8px 2px 0;font-style:normal;font-family:"Schibsted Grotesk",sans-serif;font-size:12.5px;color:var(--faint)}
-.js em::before{content:"Can cost: ";color:var(--bad);font-weight:500}
-@media (max-width:760px){.journey{grid-template-columns:1fr 1fr}}
-@media (max-width:480px){.journey{grid-template-columns:1fr}}
+/* My first send: one quiet row of steps, the worst moment highlighted (same language as a stack diagram) */
+.jlabel{font-family:"Geist Mono",ui-monospace,monospace;font-size:20px;letter-spacing:.02em;text-transform:uppercase;color:var(--faint);margin:6px 0 34px}
+.flow6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;padding:0 4px}
+.flow6 .st{display:flex;flex-direction:column;align-items:center;text-align:center}
+.flow6 .bx{width:100%;display:flex;align-items:center;justify-content:center;min-height:64px;padding:8px;background:var(--bg);font-family:"Schibsted Grotesk",sans-serif;font-size:14.5px;font-weight:500;color:var(--ink);line-height:1.25}
+.flow6 .hot .bx{background:var(--accent);color:#fff}
+.flow6 small{display:block;margin-top:12px;font-family:"Schibsted Grotesk",sans-serif;font-size:12.5px;line-height:1.4;color:var(--faint);max-width:14ch}
+.flow6 .hot small{color:var(--accent);font-weight:500}
+.jfoot{margin-top:34px;font-family:"Schibsted Grotesk",sans-serif;font-size:12.5px;color:var(--faint)}
+@media (max-width:760px){.flow6{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:22px}}
 </style>
 
 <header class="top">
@@ -595,15 +594,16 @@ main{padding-top:96px}
       <h2>Seconds after the warning, I pasted my recovery phrase.</h2>
       <p class="lede">That was one of 18 times I got stuck in my first 90 minutes with a real wallet. Before designing anything, I logged every one, then checked each against surveys, studies and real incidents to find the ones that cost real people money. Those became CryptoSim.</p>
       <div class="panel">
-        <div class="jcap">"My first send" · 90 minutes · 18 friction points · the 6 that can cost real money</div>
-        <div class="journey">
-          <div class="js"><div class="box"><span>1</span>Pick an app</div><p>Two apps with nearly identical names worked in opposite ways.</p><em>Not knowing who can recover your money</em></div>
-          <div class="js hot"><div class="box"><span>2</span>Back up your phrase</div><p>I pasted my recovery phrase into a chat seconds after a "do not share" warning.</p><em>Anyone with it can empty the wallet</em></div>
-          <div class="js"><div class="box"><span>3</span>Copy your address</div><p>Five options, with no guidance on which to use.</p><em>Money sent on the wrong network</em></div>
-          <div class="js"><div class="box"><span>4</span>Paste who you're paying</div><p>Every address shortened to its first and last few characters.</p><em>Paying a scammer's look-alike address</em></div>
-          <div class="js"><div class="box"><span>5</span>Check the cost</div><p>The fee was shown only after I sent, and only in ETH.</p><em>Paying more than you planned</em></div>
-          <div class="js"><div class="box"><span>6</span>Send</div><p>"Successfully sent" before the transfer was confirmed.</p><em>A payment that never arrives, or paying twice</em></div>
+        <div class="jlabel">&ldquo;My first send&rdquo;</div>
+        <div class="flow6">
+          <div class="st"><div class="bx">Pick an app</div><small>Look-alike apps, opposite custody</small></div>
+          <div class="st hot"><div class="bx">Back up phrase</div><small>Pasted it after the warning</small></div>
+          <div class="st"><div class="bx">Copy address</div><small>Five formats, no guidance</small></div>
+          <div class="st"><div class="bx">Paste recipient</div><small>Shortened to the ends</small></div>
+          <div class="st"><div class="bx">Check the fee</div><small>Shown after sending</small></div>
+          <div class="st"><div class="bx">Send</div><small>"Sent" before confirmed</small></div>
         </div>
+        <div class="jfoot">90 minutes · 18 friction points logged · the 6 that can cost real money</div>
       </div>
       <h3 style="margin-top:44px">Then I checked whether it was just me.</h3>
       <p style="margin-top:10px">One person's session isn't evidence, so I kept only the patterns I could also find in outside research. Four held up, and each one is built into CryptoSim:</p>
