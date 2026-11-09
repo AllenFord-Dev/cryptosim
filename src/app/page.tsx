@@ -42,6 +42,8 @@ export default function Home() {
   return (
     <>
       {firstRun && <Onboarding />}
+      {/* Keeps Home hidden behind the name screen as it slides away, until the tutorial's first step. */}
+      {(firstRun || state.tour === "intro") && <div className="fixed inset-0 z-[55] mx-auto max-w-[430px] bg-bg" aria-hidden />}
       <TabScreen
         title="Home"
         tone="white"

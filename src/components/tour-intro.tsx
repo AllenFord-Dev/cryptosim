@@ -16,9 +16,10 @@ export function TourIntro({ onStart }: { onStart: () => void }) {
   const spread = (TRADE - fee) * (SPREAD_RATE / (1 + SPREAD_RATE));
 
   return (
-    <div className="fixed inset-0 z-[70]" role="dialog" aria-modal="true" aria-label="Your first trade">
-      <div className="anim-dim absolute inset-0 bg-[rgba(18,17,26,0.45)]" />
-      <div className="anim-sheet absolute inset-x-2 bottom-2 mx-auto max-w-[414px] rounded-[34px] bg-card px-5 pb-[calc(20px+var(--safe-bottom))] pt-5">
+    <div role="dialog" aria-modal="true" aria-label="Your first trade">
+      {/* A plain backdrop under the name screen as it slides away, so Home never shows through before the tutorial starts. */}
+      <div className="fixed inset-0 z-[55] mx-auto max-w-[430px] bg-bg" aria-hidden />
+      <div className="anim-sheet fixed inset-x-2 z-[70] bottom-2 mx-auto max-w-[414px] rounded-[34px] bg-card px-5 pb-[calc(20px+var(--safe-bottom))] pt-5">
         <div className="relative h-[232px] overflow-hidden rounded-[24px] bg-brand-tint" aria-hidden>
           <span className="absolute bottom-10 left-[42px] top-14 border-l-2 border-dashed border-track" />
           <Frag className="left-4 top-5 w-[240px]">

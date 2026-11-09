@@ -38,6 +38,7 @@ function MissionBody() {
   const starter = params.get("starter") === "1";
   const mission = missionById(id);
   const [phase, setPhase] = useState<Phase>({ kind: "intro" });
+  const [introSeed] = useState(() => Date.now());
 
   if (!mission) {
     return (
@@ -47,7 +48,7 @@ function MissionBody() {
       </div>
     );
   }
-  if (phase.kind === "intro") return <Intro mission={mission} prove={prove} starter={starter} onStart={() => setPhase({ kind: "play", seed: Date.now() })} />;
+  if (phase.kind === "intro") return <Intro mission={mission} prove={prove} starter={starter} seed={introSeed} onStart={() => setPhase({ kind: "play", seed: introSeed })} />;
   if (phase.kind === "play" && mission.id === "pay-back")
     return <PayBackPlay key={phase.seed} mission={mission} seed={phase.seed} prove={prove} starter={starter} onDone={(r) => setPhase({ kind: "done", ...r })} />;
   if (phase.kind === "play")
@@ -55,8 +56,10 @@ function MissionBody() {
   return <Done mission={mission} result={phase} starter={starter} onReplay={() => setPhase({ kind: "play", seed: Date.now() })} />;
 }
 
-function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prove: boolean; starter: boolean; onStart: () => void }) {
+function Intro({ mission, prove, starter, seed, onStart }: { mission: MissionDef; prove: boolean; starter: boolean; seed: number; onStart: () => void }) {
   const { state } = useApp();
+  // The opening scene of this run (the same one you'll play), shown as a preview of what's coming.
+  const preview = useMemo(() => mission.build(seeded(seed))[0]?.visuals.find((v) => v.type === "chat" || v.type === "post" || v.type === "drop"), [mission, seed]);
   const rec = state.missions[mission.id];
   const skill = skillById(mission.skills[0])!;
   const st = skillStatus(state, skill);
@@ -76,6 +79,11 @@ function Intro({ mission, prove, starter, onStart }: { mission: MissionDef; prov
         {starter && <div className="pb-2 text-[13px] font-bold text-brand">Tutorial · Part 2 of 3</div>}
         <h1 className="text-[32px] font-extrabold leading-[1.08] tracking-[-0.03em]">{prove ? `Prove it: ${mission.title}` : mission.title}</h1>
         <p className="pt-3 text-[16px] leading-[1.5] text-body">{prove ? "A version you haven't seen. Finish without a mistake to prove the skill." : mission.blurb}</p>
+        {preview && (
+          <div className="pointer-events-none mt-6" aria-hidden>
+            <Visuals visuals={[preview]} />
+          </div>
+        )}
         <div className="mt-6 border-t border-line">
           {rows.map(([k, v]) => (
             <div key={k} className="flex min-h-[52px] items-center justify-between gap-4 border-b border-line py-3 text-[16px]">
