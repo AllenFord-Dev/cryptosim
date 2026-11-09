@@ -414,6 +414,33 @@ main{padding-top:96px}
 .pair .fr{max-width:230px}
 .anno .fr{max-width:none}
 @media (max-width:760px){.side,.side.flip{grid-template-columns:1fr}.side.flip .shot{order:0}.shot.tile{max-width:420px}.shot.tile .duo{width:56%}}
+/* First session: three patterns, each with what it became */
+.sess .pats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin-top:6px}
+.sess .pat{background:var(--bg);border:1px solid var(--line);padding:18px 18px 16px;display:flex;flex-direction:column}
+.sess .pat b{font-family:"Newsreader",serif;font-weight:500;font-size:21px;line-height:1.2;color:var(--ink);letter-spacing:-.01em}
+.sess .pat ul{list-style:none;margin:12px 0 0;padding:0;flex:1}
+.sess .pat li{font-family:"Schibsted Grotesk",sans-serif;font-size:13.5px;line-height:1.45;color:var(--panel-ink);padding:8px 0 8px 12px;border-top:1px solid var(--line);position:relative}
+.sess .pat li::before{content:"";position:absolute;left:0;top:15px;width:5px;height:5px;border-radius:50%;background:var(--bad)}
+.sess .became{margin:12px 0 0;font-family:"Schibsted Grotesk",sans-serif;font-size:13.5px;line-height:1.45;color:var(--ink);background:var(--accent-soft);padding:10px 12px}
+.sess .became span{display:block;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);margin-bottom:3px}
+@media (max-width:820px){.sess .pats{grid-template-columns:1fr}}
+/* Down the crypto rabbit hole: a collage of real sources, like a research wall */
+.hole{position:relative;margin-top:26px;background:var(--panel);border:1px solid var(--line);height:560px;overflow:hidden}
+.hole .hcap{position:absolute;left:28px;top:24px;font-family:"Geist Mono",ui-monospace,monospace;font-size:20px;letter-spacing:.02em;text-transform:uppercase;color:var(--faint)}
+.hole .hcap::after{content:"";display:block;width:16px;height:16px;background:var(--accent);margin:6px 0 0 72px}
+.clip{position:absolute;display:block;text-decoration:none;color:#16151E;background:#fff;padding:14px 16px;box-shadow:0 1px 2px rgba(0,0,0,.08),0 10px 24px -10px rgba(20,10,60,.28);transition:transform .25s ease,box-shadow .25s ease;font-family:"Schibsted Grotesk",sans-serif}
+.clip:hover{z-index:5;box-shadow:0 2px 4px rgba(0,0,0,.1),0 18px 36px -12px rgba(20,10,60,.4)}
+.clip small{display:block;font-size:11px;color:#77738A;letter-spacing:.02em;margin-bottom:6px}
+.clip strong{display:block;font-weight:600;line-height:1.2}
+.clip span{display:block;font-size:12.5px;line-height:1.45;color:#4A4758;margin-top:6px}
+.c-stat{left:5%;top:110px;width:28%;rotate:-2deg}.c-stat strong{font-family:"Newsreader",serif;font-weight:500;font-size:56px;line-height:1;color:var(--bad)}
+.c-news{left:36%;top:64px;width:31%;rotate:1.2deg;border-top:4px solid #16151E}.c-news strong{font-family:"Newsreader",serif;font-weight:500;font-size:22px}
+.c-paper{left:70%;top:92px;width:26%;rotate:2.4deg;background:#FBFAF6}.c-paper strong{font-family:"Newsreader",serif;font-weight:500;font-size:20px}
+.c-fbi{left:8%;top:322px;width:30%;rotate:1.6deg;background:#14223D;color:#fff}.c-fbi small{color:#9FB0D0}.c-fbi span{color:#C9D3E6}.c-fbi strong{font-size:17px}
+.c-study{left:41%;top:300px;width:29%;rotate:-1.8deg;background:#FFF6D6}.c-study strong{font-family:"Newsreader",serif;font-style:italic;font-weight:500;font-size:19px}
+.c-num{left:73%;top:330px;width:22%;rotate:-2.6deg;background:var(--accent);color:#fff}.c-num small{color:rgba(255,255,255,.75)}.c-num span{color:rgba(255,255,255,.88)}.c-num strong{font-family:"Newsreader",serif;font-weight:500;font-size:44px;line-height:1}
+.clip:hover{rotate:0deg}
+@media (max-width:820px){.hole{height:auto;padding:70px 16px 16px;display:grid;gap:14px}.clip{position:static;width:auto!important;rotate:0deg!important}}
 </style>
 
 <header class="top">
@@ -575,24 +602,36 @@ main{padding-top:96px}
       <p class="label">Research</p>
       <h2>I started with my own first wallet.</h2>
       <p class="lede">Before designing anything, I set up a real wallet, got test funds and sent my first transactions on a low-fee network, logging every moment I got stuck.</p>
-      <div class="panel">
-        <div class="cap">My first session · 90 minutes · 18 friction points</div>
-        <ul class="log">
-          <li>Two apps with nearly identical names, but opposite custody models.</li>
-          <li>I pasted my recovery phrase into a chat seconds after a "do not share" warning.</li>
-          <li>Copying my address gave five options, with no guidance on which to use.</li>
-          <li>"Successfully sent" appeared before the transfer was confirmed.</li>
-          <li>The fee was shown only after I sent, and only in ETH.</li>
-          <li>Every address was shortened to its first and last few characters.</li>
-        </ul>
-        <p class="note">6 of 18 shown.</p>
+      <div class="panel sess">
+        <div class="cap">My first session · 90 minutes · 18 friction points, grouped into the three patterns that shaped the product</div>
+        <div class="pats">
+          <div class="pat">
+            <b>Warnings don't stop you.</b>
+            <ul><li>I pasted my recovery phrase into a chat seconds after a "do not share" warning.</li></ul>
+            <p class="became"><span>Became</span>Missions where you make the risky move in a safe place and see what it costs, instead of reading another warning.</p>
+          </div>
+          <div class="pat">
+            <b>The screen hides what matters.</b>
+            <ul><li>Every address was shortened to its first and last few characters.</li><li>The fee was shown only after I sent, and only in ETH.</li><li>Copying my address gave five options, with no guidance on which to use.</li></ul>
+            <p class="became"><span>Became</span>Pay a friend back, which shows the full address, and a fee question before the first buy.</p>
+          </div>
+          <div class="pat">
+            <b>You can't tell what's real.</b>
+            <ul><li>"Successfully sent" appeared before the transfer was confirmed.</li><li>Two apps with nearly identical names worked in opposite ways: one held my keys, one didn't.</li></ul>
+            <p class="became"><span>Became</span>A last step that's real: one test send you check yourself on the network.</p>
+          </div>
+        </div>
       </div>
-      <h3 style="margin-top:44px">Then I zoomed out from my own session.</h3>
-      <p style="margin-top:10px">One person's session isn't evidence, so I kept only the patterns that outside research also showed. Three held up and shaped everything after:</p>
-      <div class="three">
-        <div><b>People check the ends. Scammers change the middle.</b><p>Wallets shorten addresses to the first and last few characters, and look-alikes are built to match exactly those.</p></div>
-        <div><b>Fees show up too late.</b><p>My fee appeared only after I sent, and only in ETH. One in five people who've owned crypto say fees surprised them.</p></div>
-        <div><b>No one to ask, so scammers answer.</b><p>There's no bank to call, and fake "support" targets exactly the people looking for help.</p></div>
+      <h3 style="margin-top:56px">Then I checked whether it was just me.</h3>
+      <p style="margin-top:10px">One session isn't evidence. So I went looking for each pattern in surveys, research and real incidents. All three showed up, at scale.</p>
+      <div class="hole" role="list" aria-label="Sources that back the three patterns">
+        <div class="hcap">Down the crypto rabbit hole</div>
+        <a role="listitem" class="clip c-stat" href="https://www.kraken.com/learn/crypto-safety-survey" target="_blank" rel="noopener"><small>Kraken survey · 789 US holders · 2025</small><strong>21%</strong><span>have sent crypto to the wrong wallet address. 48% call themselves their own biggest security threat.</span></a>
+        <a role="listitem" class="clip c-news" href="https://www.coindesk.com/business/2024/05/03/exploiter-steals-68m-worth-of-crypto-through-address-poisoning" target="_blank" rel="noopener"><small>CoinDesk · May 3, 2024</small><strong>Exploiter Steals $68M Worth of Crypto Through Address Poisoning</strong><span>The fake address matched the real one only at the start and end.</span></a>
+        <a role="listitem" class="clip c-paper" href="https://www.usenix.org/conference/usenixsecurity25/presentation/tsuchiya" target="_blank" rel="noopener"><small>USENIX Security 2025 · research paper</small><strong>Blockchain Address Poisoning</strong><span>270M attacks targeting 17M victims over two years, at least $83.8M lost.</span></a>
+        <a role="listitem" class="clip c-fbi" href="https://www.malwarebytes.com/blog/news/2024/08/scammers-are-impersonating-cryptocurrency-exchanges-fbi-warns" target="_blank" rel="noopener"><small>FBI public service announcement · Aug 2024</small><strong>Scammers are impersonating crypto exchange employees</strong><span>They claim your account is compromised, then ask for your login.</span></a>
+        <a role="listitem" class="clip c-study" href="https://www.schneier.com/blog/archives/2015/03/how_we_become_h.html" target="_blank" rel="noopener"><small>BYU brain-imaging study · Anderson et al.</small><strong>"A dramatic drop … after only the second exposure to a warning."</strong><span>People's brains stop processing warnings almost immediately.</span></a>
+        <a role="listitem" class="clip c-num" href="https://www.theblock.co/post/397134/fbi-says-crypto-related-fraud-losses-hit-record-11-4-billion-in-2025-with-seniors-bearing-the-brunt" target="_blank" rel="noopener"><small>FBI IC3 · 2025 losses</small><strong>$11.4B</strong><span>in crypto-related fraud, across 181,565 complaints.</span></a>
       </div>
       <div class="panel">
         <div class="cap">What the wallet shows vs what's real</div>
