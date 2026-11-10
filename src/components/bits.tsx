@@ -160,8 +160,8 @@ export function Splash() {
       <div className="splash-brand -mt-10 flex-col items-center gap-4 text-white">
         <LogoMark size={104} tone="light" animate />
         <span className="splash-name text-[34px] leading-none tracking-[-0.04em]">
-          <span className="font-medium">crypto</span>
-          <span className="font-extrabold text-[#C9B8FF]">sim</span>
+          <span className="font-normal text-[#C9B8FF]">crypto</span>
+          <span className="font-extrabold text-white">sim</span>
         </span>
       </div>
     </div>
@@ -183,8 +183,8 @@ export function Onboarding({ onDone }: { onDone?: () => void } = {}) {
         <div className="flex flex-1 flex-col items-center justify-center gap-4">
           <LogoMark size={104} tone="light" animate />
           <span className="welcome-name text-[34px] leading-none tracking-[-0.04em]">
-            <span className="font-medium">crypto</span>
-            <span className="font-extrabold text-[#C9B8FF]">sim</span>
+            <span className="font-normal text-[#C9B8FF]">crypto</span>
+            <span className="font-extrabold text-white">sim</span>
           </span>
         </div>
         <div className="welcome-bottom flex flex-col">

@@ -213,7 +213,7 @@ body {
 @keyframes splashOut { to { transform: translateX(-100%); } }
 @keyframes lockOff { to { transform: translateX(-170%); opacity: 0; } }
 .logo-lock { position: relative; animation: lockCenter 0.7s cubic-bezier(0.65, 0, 0.35, 1) 0.95s both; }
-.logo-lock > svg { position: relative; z-index: 2; }
+.logo-lock > svg, .logo-lock > img { position: relative; z-index: 2; }
 .splash-leave { animation: splashOut 0.5s cubic-bezier(0.65, 0, 0.35, 1) forwards; }
 html[data-nosplash] .splash { display: none; }
 @keyframes wDrop { from { transform: translateY(-60px); opacity: 0; } to { transform: none; opacity: 1; } }
